@@ -4,13 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Citations animées</title>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet" />
 <style>
+  /* Import direct de la police Google Fonts via @import */
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+
   body, html {
     margin: 0;
     padding: 0;
     background-color: #191919;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Quicksand', Arial, sans-serif;
     height: 100%;
     overflow: hidden;
     display: flex;
@@ -34,6 +36,7 @@
     transform: translate(-50%, -50%);
     opacity: 1;
     transition: opacity 1.5s ease;
+    font-family: 'Quicksand', Arial, sans-serif; /* Réapplication pour s’assurer */
   }
 </style>
 </head>
