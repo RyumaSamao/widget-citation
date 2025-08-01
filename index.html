@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Citations animées</title>
 <style>
-  /* Import direct de la police Google Fonts via @import */
-  @import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+  /* Import de la police Quicksand */
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap');
 
   body, html {
     margin: 0;
@@ -14,29 +14,27 @@
     background-color: #191919;
     font-family: 'Quicksand', Arial, sans-serif;
     height: 100%;
-    overflow: hidden;
+    overflow: hidden; /* Empêche la scrollbar */
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
   #quote-container {
-    height: 100px; /* fixe la hauteur pour éviter la scrollbar */
-    width: 90vw;
-    max-width: 600px;
-    overflow: hidden;
+    width: 100%;
+    text-align: center;
     position: relative;
   }
+
   #quote {
     color: white;
-    font-size: 22px;
-    text-align: center;
+    font-size: 16px; /* Écriture petite */
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     opacity: 1;
     transition: opacity 1.5s ease;
-    font-family: 'Quicksand', Arial, sans-serif; /* Réapplication pour s’assurer */
   }
 </style>
 </head>
@@ -51,12 +49,10 @@
   const quoteDiv = document.getElementById("quote");
 
   function showNextQuote() {
-    // fade out
     quoteDiv.style.opacity = 0;
     setTimeout(() => {
       index = (index + 1) % quotes.length;
       quoteDiv.textContent = quotes[index];
-      // fade in
       quoteDiv.style.opacity = 1;
     }, 1500);
   }
