@@ -4,35 +4,37 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Citations animées</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
 <style>
   body {
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
     background-color: #000000; /* fond noir */
     color: #ffffff; /* texte blanc */
-    font-family: 'Poppins', sans-serif;
-    display: flex; justify-content: center; align-items: center;
+    font-family: 'Bangers', cursive; /* police extravagante */
     height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
   }
   .quote-container {
+    position: relative;
     width: 80%;
     max-width: 600px;
-    position: relative;
+    height: 100px;
     text-align: center;
-    font-size: 2rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    user-select: none;
   }
   .quote {
     position: absolute;
-    top: 0;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
+    font-size: 2.5rem;
     width: 100%;
+    letter-spacing: 2px;
   }
   .quote.active {
     opacity: 1;
@@ -40,10 +42,10 @@
 </style>
 </head>
 <body>
-<div class="quote-container">
-  <div class="quote active">Bonjour</div>
-  <div class="quote">Au revoir</div>
-</div>
+  <div class="quote-container">
+    <div class="quote active">Bonjour</div>
+    <div class="quote">Au revoir</div>
+  </div>
 
 <script>
   const quotes = document.querySelectorAll('.quote');
@@ -54,10 +56,10 @@
     setTimeout(() => {
       index = (index + 1) % quotes.length;
       quotes[index].classList.add('active');
-    }, 1500); // attendre que la première disparaisse avant d'afficher la suivante
+    }, 1500);
   }
 
-  setInterval(showNextQuote, 10000);
+  setInterval(showNextQuote, 5000);
 </script>
 </body>
 </html>
