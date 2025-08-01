@@ -3,64 +3,56 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Widget Citations</title>
+<title>Citations animées</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
   body {
-    background: #ffffff;
-    color: #333333;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0; padding: 0;
+    background-color: #111; /* noir très foncé */
+    color: #eee; /* blanc cassé */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex; justify-content: center; align-items: center;
     height: 100vh;
-    margin: 0;
+    overflow: hidden;
   }
-  .quote-box {
+  .quote-container {
+    width: 80%;
     max-width: 600px;
-    background: #f9f9f9;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    padding: 30px;
     text-align: center;
-  }
-  .quote-text {
     font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 20px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    user-select: none;
   }
-  .quote-author {
-    font-size: 1.2rem;
-    font-style: italic;
-    color: #777777;
+  .quote {
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+    border-radius: 20px;
+  }
+  .quote.active {
+    opacity: 1;
   }
 </style>
 </head>
 <body>
-  <div class="quote-box">
-    <div class="quote-text" id="quoteText">bonjour</div>
-    <div class="quote-author" id="quoteAuthor"></div>
-  </div>
+<div class="quote-container">
+  <div class="quote active">Bonjour</div>
+  <div class="quote">Au revoir</div>
+</div>
 
 <script>
-  const quotes = [
-    { text: "bonjour", author: "" },
-    { text: "aurevoir", author: "" }
-  ];
-
+  const quotes = document.querySelectorAll('.quote');
   let index = 0;
-  const quoteTextEl = document.getElementById('quoteText');
-  const quoteAuthorEl = document.getElementById('quoteAuthor');
 
-  function showQuote() {
-    const q = quotes[index];
-    quoteTextEl.textContent = q.text;
-    quoteAuthorEl.textContent = q.author;
+  function showNextQuote() {
+    quotes[index].classList.remove('active');
     index = (index + 1) % quotes.length;
+    quotes[index].classList.add('active');
   }
 
-  showQuote();
-  setInterval(showQuote, 10000); // Change toutes les 10 secondes
+  setInterval(showNextQuote, 10000);
 </script>
 </body>
 </html>
