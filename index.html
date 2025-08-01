@@ -4,51 +4,52 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Citations qui tournent</title>
-<!-- Import Google Font Quicksand -->
-<link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet" />
 <style>
   body {
+    margin: 0; padding: 2rem;
     background-color: #191919;
     color: white;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 14px; /* taille plus petite */
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
   }
   #quote {
-    max-width: 400px;
-    text-align: center;
-    opacity: 1;
-    transition: opacity 1s ease;
     position: relative;
+    width: 80vw;
+    max-width: 600px;
+    text-align: center;
+    min-height: 3em;
+  }
+  .quote-text {
+    position: absolute;
+    width: 100%;
+    top: 0; left: 0;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+  .quote-text.active {
+    opacity: 1;
   }
 </style>
 </head>
 <body>
-  <div id="quote"></div>
+  <div id="quote">
+    <div class="quote-text active">Bonjour</div>
+    <div class="quote-text">Au revoir</div>
+  </div>
+
 <script>
-  const quotes = [
-    "bonjour",
-    "aurevoir"
-  ];
-
-  let index = 0;
-  const quoteElem = document.getElementById('quote');
-
-  function showQuote() {
-    quoteElem.style.opacity = 0;
-    setTimeout(() => {
-      quoteElem.textContent = quotes[index];
-      quoteElem.style.opacity = 1;
-      index = (index + 1) % quotes.length;
-    }, 1000);
-  }
-
-  showQuote();
-  setInterval(showQuote, 10000);
+  const quotes = document.querySelectorAll('.quote-text');
+  let current = 0;
+  setInterval(() => {
+    quotes[current].classList.remove('active');
+    current = (current + 1) % quotes.length;
+    quotes[current].classList.add('active');
+  }, 4000);
 </script>
 </body>
 </html>
