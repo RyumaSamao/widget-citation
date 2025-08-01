@@ -7,8 +7,8 @@
 <style>
   body {
     margin: 0; padding: 0;
-    background-color: #111; /* noir très foncé */
-    color: #eee; /* blanc cassé */
+    background-color: #121212; /* fond noir doux */
+    color: #fff; /* écriture blanche */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex; justify-content: center; align-items: center;
     height: 100vh;
@@ -17,19 +17,20 @@
   .quote-container {
     width: 80%;
     max-width: 600px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 40px; /* très arrondi */
+    padding: 40px 50px;
     text-align: center;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 500;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     user-select: none;
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
   }
   .quote {
     opacity: 0;
-    transition: opacity 1.2s ease-in-out;
-    border-radius: 20px;
+    transition: opacity 1.5s ease-in-out;
+    border-radius: 40px;
   }
   .quote.active {
     opacity: 1;
