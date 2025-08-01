@@ -6,15 +6,17 @@
 <title>Citations animées</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
 <style>
-  html, body {
+  body {
     margin: 0;
     padding: 0;
-    background-color: #191919; /* fond gris foncé */
+    background-color: #191919; /* fond sombre */
     color: #ffffff; /* texte blanc */
     font-family: 'Bangers', cursive; /* police extravagante */
-    height: 100%;
-    width: 100%;
-    overflow: hidden; /* enlève toute scrollbar */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* plus de scrollbar */
   }
   .quote-container {
     position: relative;
@@ -22,9 +24,6 @@
     max-width: 600px;
     height: 100px;
     text-align: center;
-    margin: auto;
-    top: 50%;
-    transform: translateY(-50%);
   }
   .quote {
     position: absolute;
@@ -33,7 +32,7 @@
     transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
-    font-size: 2.2rem;
+    font-size: 25px; /* taille réduite */
     width: 100%;
     letter-spacing: 2px;
   }
