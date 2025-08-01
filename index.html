@@ -1,55 +1,66 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Citations</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background-color: #191919;
-      color: white;
-      font-family: 'Bangers', cursive;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden; /* enlève la scrollbar */
-    }
-
-    #quote {
-      font-size: 20px;
-      text-align: center;
-      position: absolute;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Citations animées</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #000000; /* fond noir */
+    color: #ffffff; /* texte blanc */
+    font-family: 'Bangers', cursive; /* police extravagante */
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* enlève toute scrollbar */
+  }
+  .quote-container {
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+    height: 100px;
+    text-align: center;
+    margin: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .quote {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    font-size: 2.5rem;
+    width: 100%;
+    letter-spacing: 2px;
+  }
+  .quote.active {
+    opacity: 1;
+  }
+</style>
 </head>
 <body>
-  <div id="quote"></div>
+  <div class="quote-container">
+    <div class="quote active">Bonjour</div>
+    <div class="quote">Au revoir</div>
+  </div>
 
-  <script>
-    const quotes = [
-      "Bonjour",
-      "Aurevoir"
-    ];
+<script>
+  const quotes = document.querySelectorAll('.quote');
+  let index = 0;
 
-    let index = 0;
-    const quoteElement = document.getElementById("quote");
+  function showNextQuote() {
+    quotes[index].classList.remove('active');
+    setTimeout(() => {
+      index = (index + 1) % quotes.length;
+      quotes[index].classList.add('active');
+    }, 1500);
+  }
 
-    function showQuote() {
-      quoteElement.style.opacity = 0;
-      setTimeout(() => {
-        quoteElement.textContent = quotes[index];
-        quoteElement.style.opacity = 1;
-        index = (index + 1) % quotes.length;
-      }, 1000);
-    }
-
-    showQuote();
-    setInterval(showQuote, 4000); 
-  </script>
+  setInterval(showNextQuote, 5000);
+</script>
 </body>
 </html>
