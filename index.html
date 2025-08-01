@@ -3,63 +3,50 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Citations animées</title>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+<title>Citations qui tournent</title>
 <style>
   body {
-    margin: 0;
-    padding: 0;
-    background-color: #000000; /* fond noir */
-    color: #ffffff; /* texte blanc */
-    font-family: 'Quicksand', sans-serif; /* police chill */
-    height: 100vh;
+    background-color: #191919;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px; /* taille plus petite */
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    height: 100vh;
+    margin: 0;
   }
-  .quote-container {
-    position: relative;
-    width: 80%;
-    max-width: 600px;
-    height: 100px;
+  #quote {
+    max-width: 400px;
     text-align: center;
-  }
-  .quote {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    transition: opacity 1.5s ease-in-out;
-    font-size: 2.5rem;
-    width: 100%;
-    letter-spacing: 1px;
-  }
-  .quote.active {
     opacity: 1;
+    transition: opacity 1s ease;
+    position: relative;
   }
 </style>
 </head>
 <body>
-  <div class="quote-container">
-    <div class="quote active">Bonjour</div>
-    <div class="quote">Au revoir</div>
-  </div>
-
+  <div id="quote"></div>
 <script>
-  const quotes = document.querySelectorAll('.quote');
-  let index = 0;
+  const quotes = [
+    "bonjour",
+    "aurevoir"
+  ];
 
-  function showNextQuote() {
-    quotes[index].classList.remove('active');
+  let index = 0;
+  const quoteElem = document.getElementById('quote');
+
+  function showQuote() {
+    quoteElem.style.opacity = 0;
     setTimeout(() => {
+      quoteElem.textContent = quotes[index];
+      quoteElem.style.opacity = 1;
       index = (index + 1) % quotes.length;
-      quotes[index].classList.add('active');
-    }, 1500);
+    }, 1000);
   }
 
-  setInterval(showNextQuote, 5000);
+  showQuote();
+  setInterval(showQuote, 10000);
 </script>
 </body>
 </html>
