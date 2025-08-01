@@ -3,53 +3,62 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Citations qui tournent</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet" />
+<title>Citations animées</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet" />
 <style>
-  body {
-    margin: 0; padding: 2rem;
+  body, html {
+    margin: 0;
+    padding: 0;
     background-color: #191919;
-    color: white;
-    font-family: 'Fredoka One', cursive;
-    font-size: 20px;
+    font-family: 'Quicksand', sans-serif;
+    height: 100%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+  }
+  #quote-container {
+    height: 100px; /* fixe la hauteur pour éviter la scrollbar */
+    width: 90vw;
+    max-width: 600px;
+    overflow: hidden;
+    position: relative;
   }
   #quote {
-    position: relative;
-    width: 80vw;
-    max-width: 600px;
+    color: white;
+    font-size: 22px;
     text-align: center;
-    min-height: 3em;
-  }
-  .quote-text {
     position: absolute;
-    width: 100%;
-    top: 0; left: 0;
-    opacity: 0;
-    transition: opacity 1s ease-in-out;
-  }
-  .quote-text.active {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     opacity: 1;
+    transition: opacity 1.5s ease;
   }
 </style>
 </head>
 <body>
-  <div id="quote">
-    <div class="quote-text active">Bonjour</div>
-    <div class="quote-text">Au revoir</div>
-  </div>
+<div id="quote-container">
+  <div id="quote">bonjour</div>
+</div>
 
 <script>
-  const quotes = document.querySelectorAll('.quote-text');
-  let current = 0;
-  setInterval(() => {
-    quotes[current].classList.remove('active');
-    current = (current + 1) % quotes.length;
-    quotes[current].classList.add('active');
-  }, 4000);
+  const quotes = ["bonjour", "aurevoir"];
+  let index = 0;
+  const quoteDiv = document.getElementById("quote");
+
+  function showNextQuote() {
+    // fade out
+    quoteDiv.style.opacity = 0;
+    setTimeout(() => {
+      index = (index + 1) % quotes.length;
+      quoteDiv.textContent = quotes[index];
+      // fade in
+      quoteDiv.style.opacity = 1;
+    }, 1500);
+  }
+
+  setInterval(showNextQuote, 5000);
 </script>
 </body>
 </html>
