@@ -4,12 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Citations animées</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
   body {
     margin: 0; padding: 0;
     background-color: #000000; /* fond noir */
     color: #ffffff; /* texte blanc */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
     display: flex; justify-content: center; align-items: center;
     height: 100vh;
     overflow: hidden;
@@ -17,20 +18,21 @@
   .quote-container {
     width: 80%;
     max-width: 600px;
-    background: rgba(255, 255, 255, 0.1); /* léger fond blanc transparent */
-    border-radius: 40px; /* très arrondi */
-    padding: 40px 50px;
+    position: relative;
     text-align: center;
     font-size: 2rem;
     font-weight: 500;
     letter-spacing: 0.06em;
     user-select: none;
-    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
   }
   .quote {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
-    border-radius: 40px;
+    width: 100%;
   }
   .quote.active {
     opacity: 1;
@@ -49,8 +51,10 @@
 
   function showNextQuote() {
     quotes[index].classList.remove('active');
-    index = (index + 1) % quotes.length;
-    quotes[index].classList.add('active');
+    setTimeout(() => {
+      index = (index + 1) % quotes.length;
+      quotes[index].classList.add('active');
+    }, 1500); // attendre que la première disparaisse avant d'afficher la suivante
   }
 
   setInterval(showNextQuote, 10000);
