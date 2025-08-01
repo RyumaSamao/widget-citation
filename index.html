@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Widget Citations</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+  body {
+    background: #ffffff;
+    color: #333333;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .quote-box {
+    max-width: 600px;
+    background: #f9f9f9;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  .quote-text {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  .quote-author {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #777777;
+  }
+</style>
+</head>
+<body>
+  <div class="quote-box">
+    <div class="quote-text" id="quoteText">bonjour</div>
+    <div class="quote-author" id="quoteAuthor"></div>
+  </div>
+
+<script>
+  const quotes = [
+    { text: "bonjour", author: "" },
+    { text: "aurevoir", author: "" }
+  ];
+
+  let index = 0;
+  const quoteTextEl = document.getElementById('quoteText');
+  const quoteAuthorEl = document.getElementById('quoteAuthor');
+
+  function showQuote() {
+    const q = quotes[index];
+    quoteTextEl.textContent = q.text;
+    quoteAuthorEl.textContent = q.author;
+    index = (index + 1) % quotes.length;
+  }
+
+  showQuote();
+  setInterval(showQuote, 10000); // Change toutes les 10 secondes
+</script>
+</body>
+</html>
