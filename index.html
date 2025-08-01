@@ -1,63 +1,55 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Citations animées</title>
-<style>
-  /* Import de la police Quicksand */
-  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #191919;
+      color: white;
+      font-family: 'Quicksand', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden; /* enlève la scrollbar */
+    }
 
-  body, html {
-    margin: 0;
-    padding: 0;
-    background-color: #191919;
-    font-family: 'Quicksand', Arial, sans-serif;
-    height: 100%;
-    overflow: hidden; /* Empêche la scrollbar */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  #quote-container {
-    width: 100%;
-    text-align: center;
-    position: relative;
-  }
-
-  #quote {
-    color: white;
-    font-size: 16px; /* Écriture petite */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 1;
-    transition: opacity 1.5s ease;
-  }
-</style>
+    #quote {
+      font-size: 14px;
+      text-align: center;
+      position: absolute;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+  </style>
 </head>
 <body>
-<div id="quote-container">
-  <div id="quote">bonjour</div>
-</div>
+  <div id="quote"></div>
 
-<script>
-  const quotes = ["bonjour", "aurevoir"];
-  let index = 0;
-  const quoteDiv = document.getElementById("quote");
+  <script>
+    const quotes = [
+      "Bonjour",
+      "Aurevoir"
+    ];
 
-  function showNextQuote() {
-    quoteDiv.style.opacity = 0;
-    setTimeout(() => {
-      index = (index + 1) % quotes.length;
-      quoteDiv.textContent = quotes[index];
-      quoteDiv.style.opacity = 1;
-    }, 1500);
-  }
+    let index = 0;
+    const quoteElement = document.getElementById("quote");
 
-  setInterval(showNextQuote, 5000);
-</script>
+    function showQuote() {
+      quoteElement.style.opacity = 0;
+      setTimeout(() => {
+        quoteElement.textContent = quotes[index];
+        quoteElement.style.opacity = 1;
+        index = (index + 1) % quotes.length;
+      }, 1000);
+    }
+
+    showQuote();
+    setInterval(showQuote, 4000); 
+  </script>
 </body>
 </html>
