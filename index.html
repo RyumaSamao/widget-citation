@@ -9,7 +9,7 @@
   html, body {
     margin: 0;
     padding: 0;
-    background-color: #000000; /* fond noir */
+    background-color: #191919; /* fond gris foncé */
     color: #ffffff; /* texte blanc */
     font-family: 'Bangers', cursive; /* police extravagante */
     height: 100%;
@@ -24,43 +24,4 @@
     text-align: center;
     margin: auto;
     top: 50%;
-    transform: translateY(-50%);
-  }
-  .quote {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    transition: opacity 1.5s ease-in-out;
-    font-size: 2.5rem;
-    width: 100%;
-    letter-spacing: 2px;
-  }
-  .quote.active {
-    opacity: 1;
-  }
-</style>
-</head>
-<body>
-  <div class="quote-container">
-    <div class="quote active">Bonjour</div>
-    <div class="quote">Au revoir</div>
-  </div>
-
-<script>
-  const quotes = document.querySelectorAll('.quote');
-  let index = 0;
-
-  function showNextQuote() {
-    quotes[index].classList.remove('active');
-    setTimeout(() => {
-      index = (index + 1) % quotes.length;
-      quotes[index].classList.add('active');
-    }, 1500);
-  }
-
-  setInterval(showNextQuote, 5000);
-</script>
-</body>
-</html>
+    transform:
