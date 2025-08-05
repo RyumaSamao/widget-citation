@@ -14,9 +14,12 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     height: 100vh;
   }
-  .quote-container {
-    display: flex; align-items: center; justify-content: center;
-    max-width: 900px; width: 90%;
+  .quote-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 900px;
+    width: 90%;
     margin-bottom: 20px;
   }
   .quote-text {
@@ -26,14 +29,44 @@
     max-width: 700px;
     user-select: none;
     text-align: center;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
   }
-  .quote-text.hidden {
-    display: none;
+  .quote-text.fade-out {
+    opacity: 0;
+  }
+  .btn-audio {
+    margin-left: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  .btn-audio:hover {
+    background: white;
+    transform: scale(1.1);
+  }
+  .btn-audio svg {
+    fill: white;
+    width: 24px;
+    height: 24px;
+    transition: fill 0.3s;
+  }
+  .btn-audio:hover svg {
+    fill: #191919;
   }
   .controls {
-    display: flex; justify-content: center; gap: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
   }
-  button {
+  button.control-btn {
     background: transparent;
     border: 2px solid white;
     color: white;
@@ -45,45 +78,30 @@
     user-select: none;
     transition: background 0.3s, color 0.3s;
   }
-  button:hover {
+  button.control-btn:hover {
     background: white;
     color: #191919;
   }
-  button:focus {
+  button.control-btn:focus {
     outline: none;
-  }
-  .btn-icon {
-    width: 40px; height: 40px;
-    padding: 0;
-    display: flex; justify-content: center; align-items: center;
-    border-radius: 50%;
-  }
-  svg {
-    fill: white;
-    width: 22px;
-    height: 22px;
-    pointer-events: none;
-  }
-  button:hover svg {
-    fill: #191919;
   }
 </style>
 </head>
 <body>
 
-<div class="quote-container">
+<div class="quote-row">
   <div id="quote" class="quote-text"></div>
-</div>
-
-<div class="controls">
-  <button id="prevBtn" aria-label="Citation précédente">◀</button>
-  <button id="playPauseBtn" aria-label="Pause la rotation">❚❚</button>
-  <button id="audioBtn" aria-label="Jouer/arrêter audio" class="btn-icon" title="Jouer/arrêter audio">
+  <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
       <polygon points="8,5 19,12 8,19"></polygon>
     </svg>
   </button>
-  <button id="nextBtn" aria-label="Citation suivante">▶</button>
+</div>
+
+<div class="controls">
+  <button id="prevBtn" class="control-btn" aria-label="Citation précédente">◀</button>
+  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
+  <button id="nextBtn" class="control-btn" aria-label="Citation suivante">▶</button>
 </div>
 
 <script>
@@ -121,8 +139,14 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   function showQuote(index) {
     if(index < 0) index = quotes.length - 1;
     if(index >= quotes.length) index = 0;
-    currentIndex = index;
-    quoteEl.textContent = quotes[currentIndex].text;
+
+    // fade out, changer le texte, fade in
+    quoteEl.classList.add('fade-out');
+    setTimeout(() => {
+      currentIndex = index;
+      quoteEl.textContent = quotes[currentIndex].text;
+      quoteEl.classList.remove('fade-out');
+    }, 900);
   }
 
   function nextQuote() {
@@ -163,19 +187,10 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
       audioPlaying = false;
       audioIcon.innerHTML = `<polygon points="8,5 19,12 8,19"></polygon>`;
     } else {
-      // Ici tu mettras la source audio adaptée à la citation (fichier mp3, etc)
-      // Pour l'exemple, je laisse vide ou tu peux mettre une url par défaut
-      // audio.src = quotes[currentIndex].audio || 'exemple.mp3';
-      // audio.play();
-
-      // Pour l'exemple on simule juste un son avec un bip court
-      // On peut faire ça avec l'API Web Audio si tu veux, sinon tu remplaces par un vrai fichier
-
-      audio.src = ''; // vide pour l'instant
-      audio.play().catch(() => { /* Pas d'audio */ });
-
+      audio.src = ''; // Vide pour l'instant, à remplacer par fichier audio réel
+      audio.play().catch(() => { /* Pas d'audio pour l'instant */ });
       audioPlaying = true;
-      audioIcon.innerHTML = `<rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" />`; // icône pause
+      audioIcon.innerHTML = `<rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" />`;
     }
   }
 
@@ -190,7 +205,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   playPauseBtn.addEventListener('click', toggleRotation);
   audioBtn.addEventListener('click', toggleAudio);
 
-  // Lancement initial
+  // Initial
   showQuote(currentIndex);
   startRotation();
 </script>
