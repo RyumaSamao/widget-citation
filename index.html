@@ -9,20 +9,20 @@
   body {
     margin: 0;
     padding: 0;
-    background-color: #191919; /* fond sombre */
+    background-color: #191919; /* fond gris foncé */
     color: #ffffff; /* texte blanc */
     font-family: 'Bangers', cursive; /* police extravagante */
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* plus de scrollbar */
+    overflow: hidden;
   }
   .quote-container {
     position: relative;
     width: 80%;
     max-width: 600px;
-    height: 100px;
+    height: 120px;
     text-align: center;
   }
   .quote {
@@ -32,9 +32,10 @@
     transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
-    font-size: 25px; /* taille réduite */
+    font-size: 25px;
     width: 100%;
     letter-spacing: 2px;
+    line-height: 1.4;
   }
   .quote.active {
     opacity: 1;
@@ -44,13 +45,10 @@
 <body>
   <div class="quote-container">
     <div class="quote active">Kaizoku-Ō ni naru otoko da !!!</div>
-    <div class="quote" data-character="Robin" style="text-align: center; font-size: 30px; line-height: 1.2;">
-  Connaître le passé, c’est connaître l’avenir.<br>
-  - Nico Robin
-</div>
-
-</div>
-
+    <div class="quote">
+      Connaître le passé, c’est connaître l’avenir.<br>
+      - Nico Robin
+    </div>
   </div>
 
 <script>
@@ -58,12 +56,10 @@
   let index = 0;
 
   function showNextQuote() {
-    quotes[index].classList.remove('active');
-    setTimeout(() => {
-      index = (index + 1) % quotes.length;
-      quotes[index].classList.add('active');
-    }, 1500);
-  }
+    // Enlever la classe active de toutes les citations
+    quotes.forEach(q => q.classList.remove('active'));
+
+    //
 
   setInterval(showNextQuote, 5000);
 </script>
