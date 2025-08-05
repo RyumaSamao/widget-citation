@@ -24,7 +24,7 @@
 
   /* Zone des citations */
   .quote-container {
-    max-width: 1000px; /* Plus large qu'avant */
+    max-width: 1000px; /* Citation plus large */
     text-align: center;
     margin-bottom: 20px;
     padding: 0 20px;
@@ -45,17 +45,10 @@
     opacity: 0;
   }
 
-  /* Bloc des boutons */
-  .buttons-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
+  /* Bloc des contrôles */
   .controls {
     display: flex;
-    justify-content: center;
+    align-items: center;
     gap: 15px;
   }
 
@@ -77,8 +70,8 @@
     color: #191919;
   }
 
+  /* Bouton audio aligné à droite de la flèche ▶ */
   .btn-audio {
-    align-self: flex-end; /* Le bouton audio sera à droite */
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -121,12 +114,10 @@
 </div>
 
 <!-- Boutons -->
-<div class="buttons-container">
-  <div class="controls">
-    <button id="prevBtn" class="control-btn" aria-label="Citation précédente">◀</button>
-    <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
-    <button id="nextBtn" class="control-btn" aria-label="Citation suivante">▶</button>
-  </div>
+<div class="controls">
+  <button id="prevBtn" class="control-btn" aria-label="Citation précédente">◀</button>
+  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
+  <button id="nextBtn" class="control-btn" aria-label="Citation suivante">▶</button>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
       <polygon points="8,5 19,12 8,19"></polygon>
