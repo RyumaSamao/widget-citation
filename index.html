@@ -31,7 +31,7 @@
   }
 
   .quote-text {
-    font-size: clamp(14px, 2vw, 22px); /* Taille dynamique auto-ajustée */
+    font-size: clamp(18px, 2.3vw, 26px); /* plus grand par défaut */
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
@@ -39,6 +39,11 @@
     transition: opacity 1s ease-in-out;
     white-space: normal;
     word-wrap: break-word;
+  }
+
+  /* Taille réduite si citation longue */
+  .quote-text.long-quote {
+    font-size: clamp(14px, 2vw, 18px);
   }
 
   .quote-text.fade-out {
@@ -71,7 +76,7 @@
     color: #191919;
   }
 
-  /* Bouton audio aligné à droite de la flèche ▶ */
+  /* Bouton audio */
   .btn-audio {
     width: 50px;
     height: 50px;
@@ -191,6 +196,14 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
     setTimeout(() => {
       currentIndex = index;
+
+      // Vérifie si la citation est longue
+      if (quotes[currentIndex].text.length > 200) {
+        quoteEl.classList.add('long-quote');
+      } else {
+        quoteEl.classList.remove('long-quote');
+      }
+
       quoteEl.textContent = quotes[currentIndex].text;
       quoteEl.classList.remove('fade-out');
       audioBtn.classList.remove('fade-out');
