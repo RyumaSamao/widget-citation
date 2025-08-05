@@ -51,7 +51,7 @@
     <div class="quote">Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien.<br>- Monkey D. Luffy</div>
     <div class="quote">Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles.<br>- Fujitora</div>
     <div class="quote">Il y a des batailles qu'on ne gagne pas avec les poings.<br>- Marshall D. Teach</div>
-    <div class="quote" data-duration="10000">
+    <div class="quote">
       Quand croyez-vous qu’un homme meurt ?<br>
       Quand il se prend une balle en plein cœur ? Non !<br>
       Quand il est atteint d’une maladie incurable ? Non !<br>
@@ -97,7 +97,8 @@
     const quoteElement = quotes[index];
     quoteElement.classList.add('active');
 
-    const duration = parseInt(quoteElement.dataset.duration) || 5000;
+    // 10s par défaut pour chaque citation
+    const duration = parseInt(quoteElement.dataset.duration) || 10000;
     current++;
 
     clearTimeout(timeoutId);
