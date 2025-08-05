@@ -3,48 +3,197 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Test bouton play</title>
+<title>Player Citations One Piece</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet" />
 <style>
   body {
     margin: 0; padding: 0;
+    background: #191919;
+    color: white;
+    font-family: 'Bangers', cursive;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     height: 100vh;
-    background-color: #191919;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
-  .btn-play {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: 3px solid white;
-    background-color: transparent;
+  .quote-container {
+    display: flex; align-items: center; justify-content: center;
+    max-width: 900px; width: 90%;
+    margin-bottom: 20px;
+  }
+  .quote-text {
+    font-size: 22px;
+    line-height: 1.6;
+    letter-spacing: 1px;
+    max-width: 700px;
+    user-select: none;
+    text-align: center;
+  }
+  .quote-text.hidden {
+    display: none;
+  }
+  .controls {
+    display: flex; justify-content: center; gap: 15px;
+  }
+  button {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    font-family: 'Bangers', cursive;
+    font-size: 18px;
     cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s, transform 0.2s;
+    padding: 10px 16px;
+    border-radius: 6px;
+    user-select: none;
+    transition: background 0.3s, color 0.3s;
   }
-  .btn-play:hover {
-    background-color: white;
-    transform: scale(1.1);
+  button:hover {
+    background: white;
+    color: #191919;
   }
-  .btn-play svg {
+  button:focus {
+    outline: none;
+  }
+  .btn-icon {
+    width: 40px; height: 40px;
+    padding: 0;
+    display: flex; justify-content: center; align-items: center;
+    border-radius: 50%;
+  }
+  svg {
     fill: white;
-    width: 30px;
-    height: 30px;
-    transition: fill 0.3s;
+    width: 22px;
+    height: 22px;
+    pointer-events: none;
   }
-  .btn-play:hover svg {
+  button:hover svg {
     fill: #191919;
   }
 </style>
 </head>
 <body>
-  <button class="btn-play" aria-label="Bouton play">
-    <svg viewBox="0 0 24 24">
-      <polygon points="8,5 19,12 8,19" />
+
+<div class="quote-container">
+  <div id="quote" class="quote-text"></div>
+</div>
+
+<div class="controls">
+  <button id="prevBtn" aria-label="Citation précédente">◀</button>
+  <button id="playPauseBtn" aria-label="Pause la rotation">❚❚</button>
+  <button id="audioBtn" aria-label="Jouer/arrêter audio" class="btn-icon" title="Jouer/arrêter audio">
+    <svg viewBox="0 0 24 24" id="audioIcon">
+      <polygon points="8,5 19,12 8,19"></polygon>
     </svg>
   </button>
+  <button id="nextBtn" aria-label="Citation suivante">▶</button>
+</div>
+
+<script>
+  const quotes = [
+    {text: "Kaizoku-Ō ni naru otoko da !!! - Monkey D. Luffy", audio: null},
+    {text: "Connaître le passé, c'est connaître l'avenir - Nico Robin", audio: null},
+    {text: "Le monde est un théâtre où seuls les forts dictent les règles - Donquixote Doflamingo", audio: null},
+    {text: "Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\" - Gol D. Roger", audio: null},
+    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien - Monkey D. Luffy", audio: null},
+    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles - Fujitora", audio: null},
+    {text: "Il y a des batailles qu'on ne gagne pas avec les poings - Marshall D. Teach", audio: null},
+    {text: `Quand croyez-vous qu’un homme meurt ?
+Quand il se prend une balle en plein cœur ? Non !
+Quand il est atteint d’une maladie incurable ? Non !
+Quand il a avalé une soupe de champignons vénéneux ? NON !
+… Un homme meurt lorsque son souvenir tombe dans l’oubli ! - Dr Hiluluk`, audio: null},
+    {text: "Le vainqueur définira la signification de la justice ! - Donquixote Doflamingo", audio: null},
+    {text: "Le One Piece EXISTE !!! - Edward Newgate", audio: null},
+    {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu - Fujitora", audio: null},
+  ];
+
+  let currentIndex = 0;
+  let rotationActive = true;
+  let rotationTimer;
+  let audioPlaying = false;
+  let audio = new Audio();
+
+  const quoteEl = document.getElementById('quote');
+  const prevBtn = document.getElementById('prevBtn');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const audioBtn = document.getElementById('audioBtn');
+  const audioIcon = document.getElementById('audioIcon');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function showQuote(index) {
+    if(index < 0) index = quotes.length - 1;
+    if(index >= quotes.length) index = 0;
+    currentIndex = index;
+    quoteEl.textContent = quotes[currentIndex].text;
+  }
+
+  function nextQuote() {
+    showQuote(currentIndex + 1);
+  }
+
+  function prevQuote() {
+    showQuote(currentIndex - 1);
+  }
+
+  function startRotation() {
+    rotationActive = true;
+    playPauseBtn.textContent = "❚❚"; // pause icon
+    rotationTimer = setTimeout(() => {
+      nextQuote();
+      if(rotationActive) startRotation();
+    }, 10000);
+  }
+
+  function stopRotation() {
+    rotationActive = false;
+    playPauseBtn.textContent = "▶"; // play icon
+    clearTimeout(rotationTimer);
+  }
+
+  function toggleRotation() {
+    if(rotationActive) {
+      stopRotation();
+    } else {
+      startRotation();
+    }
+  }
+
+  function toggleAudio() {
+    if(audioPlaying) {
+      audio.pause();
+      audio.currentTime = 0;
+      audioPlaying = false;
+      audioIcon.innerHTML = `<polygon points="8,5 19,12 8,19"></polygon>`;
+    } else {
+      // Ici tu mettras la source audio adaptée à la citation (fichier mp3, etc)
+      // Pour l'exemple, je laisse vide ou tu peux mettre une url par défaut
+      // audio.src = quotes[currentIndex].audio || 'exemple.mp3';
+      // audio.play();
+
+      // Pour l'exemple on simule juste un son avec un bip court
+      // On peut faire ça avec l'API Web Audio si tu veux, sinon tu remplaces par un vrai fichier
+
+      audio.src = ''; // vide pour l'instant
+      audio.play().catch(() => { /* Pas d'audio */ });
+
+      audioPlaying = true;
+      audioIcon.innerHTML = `<rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" />`; // icône pause
+    }
+  }
+
+  prevBtn.addEventListener('click', () => {
+    stopRotation();
+    prevQuote();
+  });
+  nextBtn.addEventListener('click', () => {
+    stopRotation();
+    nextQuote();
+  });
+  playPauseBtn.addEventListener('click', toggleRotation);
+  audioBtn.addEventListener('click', toggleAudio);
+
+  // Lancement initial
+  showQuote(currentIndex);
+  startRotation();
+</script>
+
 </body>
 </html>
