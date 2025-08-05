@@ -21,22 +21,27 @@
     max-width: 1000px;
     width: 90%;
     margin-bottom: 20px;
-    gap: 15px;
-    text-align: center;
-    flex-wrap: wrap;
+    position: relative;
   }
   .quote-text {
+    flex: 1;
     font-size: 22px;
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
+    text-align: center;
     opacity: 1;
     transition: opacity 1s ease-in-out;
+    padding-right: 60px; /* espace pour le bouton audio */
   }
   .quote-text.fade-out {
     opacity: 0;
   }
   .btn-audio {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
     width: 50px;
     height: 50px;
     border-radius: 50%;
