@@ -65,10 +65,10 @@
   </div>
 
 <script>
-  const quotes = document.querySelectorAll('.quote');
+  const quotes = Array.from(document.querySelectorAll('.quote')); // ✅ conversion en tableau
   let shuffledIndexes = [];
   let current = 0;
-  let intervalId;
+  let timeoutId;
 
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -97,8 +97,8 @@
     const duration = parseInt(quoteElement.dataset.duration) || 5000; // 10s si défini sinon 5s
     current++;
 
-    clearInterval(intervalId);
-    intervalId = setTimeout(showNextQuote, duration);
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(showNextQuote, duration);
   }
 
   resetShuffle();
