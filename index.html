@@ -174,6 +174,8 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   let audioPlaying = false;
   let audio = new Audio();
   let availableIndexes = [...quotes.keys()];
+  let history = [];
+  let historyIndex = -1; // position dans l'historique
 
   const quoteEl = document.getElementById('quote');
   const prevBtn = document.getElementById('prevBtn');
@@ -182,7 +184,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   const audioIcon = document.getElementById('audioIcon');
   const nextBtn = document.getElementById('nextBtn');
 
-  function getRandomQuoteIndex() {
+  function getNextRandomIndex() {
     if (availableIndexes.length === 0) {
       availableIndexes = [...quotes.keys()];
     }
@@ -210,19 +212,35 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
     }, 900);
   }
 
-  function nextQuote() {
-    showQuote(getRandomQuoteIndex());
+  function showQuoteFromHistory() {
+    const idx = history[historyIndex];
+    showQuote(idx);
   }
 
-  function prevQuote() {
-    showQuote(getRandomQuoteIndex());
+  function showNextQuote() {
+    if (historyIndex < history.length - 1) {
+      historyIndex++;
+      showQuoteFromHistory();
+    } else {
+      const nextIdx = getNextRandomIndex();
+      history.push(nextIdx);
+      historyIndex++;
+      showQuote(nextIdx);
+    }
+  }
+
+  function showPrevQuote() {
+    if (historyIndex > 0) {
+      historyIndex--;
+      showQuoteFromHistory();
+    }
   }
 
   function startRotation() {
     rotationActive = true;
     playPauseBtn.textContent = "❚❚";
     rotationTimer = setTimeout(() => {
-      nextQuote();
+      showNextQuote();
       if (rotationActive) startRotation();
     }, 10000);
   }
@@ -245,7 +263,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
       audioPlaying = false;
       audioIcon.innerHTML = `<polygon points="8,5 19,12 8,19"></polygon>`;
     } else {
-      audio.src = ''; // à remplacer par un fichier audio réel
+      audio.src = ''; // Remplacer par URL audio réel si besoin
       audio.play().catch(() => {});
       audioPlaying = true;
       audioIcon.innerHTML = `<rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" />`;
@@ -254,16 +272,17 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
   prevBtn.addEventListener('click', () => {
     stopRotation();
-    prevQuote();
+    showPrevQuote();
   });
   nextBtn.addEventListener('click', () => {
     stopRotation();
-    nextQuote();
+    showNextQuote();
   });
   playPauseBtn.addEventListener('click', toggleRotation);
   audioBtn.addEventListener('click', toggleAudio);
 
-  showQuote(getRandomQuoteIndex());
+  // Démarre avec la première citation aléatoire
+  showNextQuote();
   startRotation();
 </script>
 
