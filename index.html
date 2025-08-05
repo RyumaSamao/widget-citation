@@ -24,14 +24,14 @@
 
   /* Zone des citations */
   .quote-container {
-    max-width: 1000px; /* Large sur PC */
+    max-width: 1000px;
     text-align: center;
     margin-bottom: 20px;
     padding: 0 20px;
   }
 
   .quote-text {
-    font-size: 22px;
+    font-size: clamp(14px, 2vw, 22px); /* Taille dynamique auto-ajustée */
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
@@ -109,15 +109,11 @@
   /* Responsive : pour mobile */
   @media (max-width: 768px) {
     .quote-container {
-      max-width: 90%; /* Réduit sur mobile */
-    }
-
-    .quote-text {
-      font-size: 18px; /* Texte légèrement réduit sur mobile */
+      max-width: 90%;
     }
 
     .controls {
-      flex-wrap: wrap; /* Les boutons passent sur 2 lignes si nécessaire */
+      flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
     }
