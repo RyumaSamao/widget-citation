@@ -21,7 +21,6 @@
     max-width: 1000px;
     width: 90%;
     margin-bottom: 20px;
-    position: relative;
   }
   .quote-text {
     flex: 1;
@@ -32,14 +31,12 @@
     text-align: center;
     opacity: 1;
     transition: opacity 1s ease-in-out;
-    margin-right: 80px; /* laisse la place pour le bouton audio */
   }
   .quote-text.fade-out {
     opacity: 0;
   }
   .btn-audio {
-    position: absolute;
-    right: 0;
+    margin-left: 20px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -49,7 +46,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: opacity 1s ease-in-out, background-color 0.3s, transform 0.2s;
+    opacity: 1;
+  }
+  .btn-audio.fade-out {
+    opacity: 0;
   }
   .btn-audio:hover {
     background: white;
@@ -140,14 +141,17 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   const nextBtn = document.getElementById('nextBtn');
 
   function showQuote(index) {
-    if(index < 0) index = quotes.length - 1;
-    if(index >= quotes.length) index = 0;
+    if (index < 0) index = quotes.length - 1;
+    if (index >= quotes.length) index = 0;
 
     quoteEl.classList.add('fade-out');
+    audioBtn.classList.add('fade-out');
+
     setTimeout(() => {
       currentIndex = index;
       quoteEl.textContent = quotes[currentIndex].text;
       quoteEl.classList.remove('fade-out');
+      audioBtn.classList.remove('fade-out');
     }, 900);
   }
 
@@ -164,7 +168,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
     playPauseBtn.textContent = "❚❚";
     rotationTimer = setTimeout(() => {
       nextQuote();
-      if(rotationActive) startRotation();
+      if (rotationActive) startRotation();
     }, 10000);
   }
 
@@ -175,7 +179,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   }
 
   function toggleRotation() {
-    if(rotationActive) {
+    if (rotationActive) {
       stopRotation();
     } else {
       startRotation();
@@ -183,14 +187,14 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   }
 
   function toggleAudio() {
-    if(audioPlaying) {
+    if (audioPlaying) {
       audio.pause();
       audio.currentTime = 0;
       audioPlaying = false;
       audioIcon.innerHTML = `<polygon points="8,5 19,12 8,19"></polygon>`;
     } else {
-      audio.src = ''; // remplacer par un vrai fichier audio
-      audio.play().catch(() => { /* pas d'audio pour l'instant */ });
+      audio.src = ''; // à remplacer par un fichier audio réel
+      audio.play().catch(() => { /* pas d'audio dispo */ });
       audioPlaying = true;
       audioIcon.innerHTML = `<rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" />`;
     }
