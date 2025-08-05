@@ -22,15 +22,12 @@
     height: 100vh;
   }
 
-  /* Citation + bouton collés */
-  .quote-row {
-    display: inline-flex; /* Citation et bouton alignés côte à côte */
-    align-items: center;
-    justify-content: center;
-    gap: 8px; /* Petit espace entre le texte et le bouton */
-    max-width: 90%;
-    margin-bottom: 20px;
+  /* Zone des citations */
+  .quote-container {
+    max-width: 1000px; /* Plus large qu'avant */
     text-align: center;
+    margin-bottom: 20px;
+    padding: 0 20px;
   }
 
   .quote-text {
@@ -38,7 +35,6 @@
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
-    text-align: center;
     opacity: 1;
     transition: opacity 1s ease-in-out;
     white-space: normal;
@@ -49,39 +45,12 @@
     opacity: 0;
   }
 
-  .btn-audio {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid white;
-    background: transparent;
-    cursor: pointer;
+  /* Bloc des boutons */
+  .buttons-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    transition: opacity 1s ease-in-out, background-color 0.3s, transform 0.2s;
-    opacity: 1;
-    flex-shrink: 0;
-  }
-
-  .btn-audio.fade-out {
-    opacity: 0;
-  }
-
-  .btn-audio:hover {
-    background: white;
-    transform: scale(1.1);
-  }
-
-  .btn-audio svg {
-    fill: white;
-    width: 24px;
-    height: 24px;
-    transition: fill 0.3s;
-  }
-
-  .btn-audio:hover svg {
-    fill: #191919;
+    gap: 10px;
   }
 
   .controls {
@@ -108,28 +77,61 @@
     color: #191919;
   }
 
-  button.control-btn:focus {
-    outline: none;
+  .btn-audio {
+    align-self: flex-end; /* Le bouton audio sera à droite */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1s ease-in-out, background-color 0.3s, transform 0.2s;
+    opacity: 1;
+  }
+
+  .btn-audio.fade-out {
+    opacity: 0;
+  }
+
+  .btn-audio:hover {
+    background: white;
+    transform: scale(1.1);
+  }
+
+  .btn-audio svg {
+    fill: white;
+    width: 24px;
+    height: 24px;
+    transition: fill 0.3s;
+  }
+
+  .btn-audio:hover svg {
+    fill: #191919;
   }
 </style>
 </head>
 <body>
 
-<!-- Citation + bouton audio -->
-<div class="quote-row">
+<!-- Zone de citation -->
+<div class="quote-container">
   <div id="quote" class="quote-text"></div>
+</div>
+
+<!-- Boutons -->
+<div class="buttons-container">
+  <div class="controls">
+    <button id="prevBtn" class="control-btn" aria-label="Citation précédente">◀</button>
+    <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
+    <button id="nextBtn" class="control-btn" aria-label="Citation suivante">▶</button>
+  </div>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
       <polygon points="8,5 19,12 8,19"></polygon>
     </svg>
   </button>
-</div>
-
-<!-- Contrôles -->
-<div class="controls">
-  <button id="prevBtn" class="control-btn" aria-label="Citation précédente">◀</button>
-  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
-  <button id="nextBtn" class="control-btn" aria-label="Citation suivante">▶</button>
 </div>
 
 <script>
