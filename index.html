@@ -9,7 +9,7 @@
   html, body {
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Enlève la barre de scroll si nécessaire */
+    overflow: hidden;
   }
   body {
     background: #191919;
@@ -21,16 +21,18 @@
     justify-content: center;
     height: 100vh;
   }
+
+  /* Citation + bouton collés */
   .quote-row {
-    display: flex;
+    display: inline-flex; /* Citation et bouton alignés côte à côte */
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    max-width: 1200px; /* Plus large qu'avant */
-    width: 95%;
+    gap: 8px; /* Petit espace entre le texte et le bouton */
+    max-width: 90%;
     margin-bottom: 20px;
     text-align: center;
   }
+
   .quote-text {
     font-size: 22px;
     line-height: 1.6;
@@ -39,13 +41,14 @@
     text-align: center;
     opacity: 1;
     transition: opacity 1s ease-in-out;
-    flex: 1;
-    white-space: normal;      /* Garde un retour à la ligne normal */
-    word-wrap: break-word;    /* Coupe proprement si besoin */
+    white-space: normal;
+    word-wrap: break-word;
   }
+
   .quote-text.fade-out {
     opacity: 0;
   }
+
   .btn-audio {
     width: 50px;
     height: 50px;
@@ -60,27 +63,33 @@
     opacity: 1;
     flex-shrink: 0;
   }
+
   .btn-audio.fade-out {
     opacity: 0;
   }
+
   .btn-audio:hover {
     background: white;
     transform: scale(1.1);
   }
+
   .btn-audio svg {
     fill: white;
     width: 24px;
     height: 24px;
     transition: fill 0.3s;
   }
+
   .btn-audio:hover svg {
     fill: #191919;
   }
+
   .controls {
     display: flex;
     justify-content: center;
     gap: 15px;
   }
+
   button.control-btn {
     background: transparent;
     border: 2px solid white;
@@ -93,10 +102,12 @@
     user-select: none;
     transition: background 0.3s, color 0.3s;
   }
+
   button.control-btn:hover {
     background: white;
     color: #191919;
   }
+
   button.control-btn:focus {
     outline: none;
   }
@@ -104,6 +115,7 @@
 </head>
 <body>
 
+<!-- Citation + bouton audio -->
 <div class="quote-row">
   <div id="quote" class="quote-text"></div>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
@@ -113,6 +125,7 @@
   </button>
 </div>
 
+<!-- Contrôles -->
 <div class="controls">
   <button id="prevBtn" class="control-btn" aria-label="Citation précédente">◀</button>
   <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
@@ -157,8 +170,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
       availableIndexes = [...quotes.keys()];
     }
     const randomIdx = Math.floor(Math.random() * availableIndexes.length);
-    const selected = availableIndexes.splice(randomIdx, 1)[0];
-    return selected;
+    return availableIndexes.splice(randomIdx, 1)[0];
   }
 
   function showQuote(index) {
