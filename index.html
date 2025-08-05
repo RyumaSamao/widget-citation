@@ -65,7 +65,7 @@
   </div>
 
 <script>
-  const quotes = Array.from(document.querySelectorAll('.quote')); // ✅ conversion en tableau
+  const quotes = document.querySelectorAll('.quote');
   let shuffledIndexes = [];
   let current = 0;
   let timeoutId;
@@ -78,7 +78,10 @@
   }
 
   function resetShuffle() {
-    shuffledIndexes = quotes.map((_, i) => i);
+    shuffledIndexes = [];
+    for (let i = 0; i < quotes.length; i++) {
+      shuffledIndexes.push(i);
+    }
     shuffle(shuffledIndexes);
     current = 0;
   }
@@ -94,7 +97,7 @@
     const quoteElement = quotes[index];
     quoteElement.classList.add('active');
 
-    const duration = parseInt(quoteElement.dataset.duration) || 5000; // 10s si défini sinon 5s
+    const duration = parseInt(quoteElement.dataset.duration) || 5000;
     current++;
 
     clearTimeout(timeoutId);
