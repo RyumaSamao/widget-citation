@@ -24,7 +24,7 @@
 
   /* Zone des citations */
   .quote-container {
-    max-width: 1000px; /* Citation plus large */
+    max-width: 1000px; /* Large sur PC */
     text-align: center;
     margin-bottom: 20px;
     padding: 0 20px;
@@ -50,6 +50,7 @@
     display: flex;
     align-items: center;
     gap: 15px;
+    flex-wrap: nowrap;
   }
 
   button.control-btn {
@@ -103,6 +104,28 @@
 
   .btn-audio:hover svg {
     fill: #191919;
+  }
+
+  /* Responsive : pour mobile */
+  @media (max-width: 768px) {
+    .quote-container {
+      max-width: 90%; /* Réduit sur mobile */
+    }
+
+    .quote-text {
+      font-size: 18px; /* Texte légèrement réduit sur mobile */
+    }
+
+    .controls {
+      flex-wrap: wrap; /* Les boutons passent sur 2 lignes si nécessaire */
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-audio {
+      width: 45px;
+      height: 45px;
+    }
   }
 </style>
 </head>
