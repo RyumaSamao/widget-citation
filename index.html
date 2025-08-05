@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Citations animées</title>
+<title>Citations animées - One Piece</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
 <style>
   body {
     margin: 0;
     padding: 0;
-    background-color: #191919;
-    color: #fff;
-    font-family: 'Bangers', cursive;
+    background-color: #191919; /* fond gris foncé */
+    color: #ffffff; /* texte blanc */
+    font-family: 'Bangers', cursive; /* police extravagante */
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -22,7 +22,7 @@
     position: relative;
     width: 80%;
     max-width: 600px;
-    height: 120px;
+    height: 140px;
     text-align: center;
   }
   .quote {
@@ -45,26 +45,28 @@
 <body>
   <div class="quote-container">
     <div class="quote">Kaizoku-Ō ni naru otoko da !!!</div>
-    <div class="quote">
-      Connaître le passé, c’est connaître l’avenir.<br>
-      - Nico Robin
-    </div>
-<div class="quote">Le monde est un théâtre où seuls les forts dictent les règles.<br>- Donquixote Doflamingo</div>
+    <div class="quote">Connaître le passé, c’est connaître l’avenir.<br>- Nico Robin</div>
+    <div class="quote">Le monde est un théâtre où seuls les forts dictent les règles.<br>- Donquixote Doflamingo</div>
   </div>
 
 <script>
   const quotes = document.querySelectorAll('.quote');
-  let index = -1;
+  let lastIndex = -1;
 
-  function showNextQuote() {
-    console.log('Changement de citation'); // Pour debug
+  function showRandomQuote() {
     quotes.forEach(q => q.classList.remove('active'));
-    index = (index + 1) % quotes.length;
-    quotes[index].classList.add('active');
+
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * quotes.length);
+    } while (newIndex === lastIndex);
+
+    quotes[newIndex].classList.add('active');
+    lastIndex = newIndex;
   }
 
-  showNextQuote();
-  setInterval(showNextQuote, 5000);
+  showRandomQuote();
+  setInterval(showRandomQuote, 5000);
 </script>
 </body>
 </html>
