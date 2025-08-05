@@ -9,9 +9,9 @@
   body {
     margin: 0;
     padding: 0;
-    background-color: #191919; /* fond gris foncé */
-    color: #ffffff; /* texte blanc */
-    font-family: 'Bangers', cursive; /* police extravagante */
+    background-color: #191919;
+    color: #fff;
+    font-family: 'Bangers', cursive;
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -56,20 +56,13 @@
   let index = -1;
 
   function showNextQuote() {
-    // Enlever la classe active de toutes les citations
+    console.log('Changement de citation'); // Pour debug
     quotes.forEach(q => q.classList.remove('active'));
-
-    // Passer à la citation suivante
     index = (index + 1) % quotes.length;
-
-    // Activer uniquement la citation choisie
     quotes[index].classList.add('active');
   }
 
-  // Afficher directement la première citation
   showNextQuote();
-
-  // Changer de citation toutes les 5 secondes
   setInterval(showNextQuote, 5000);
 </script>
 </body>
