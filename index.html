@@ -44,7 +44,7 @@
 </head>
 <body>
   <div class="quote-container">
-    <div class="quote active">Kaizoku-Ō ni naru otoko da !!!</div>
+    <div class="quote">Kaizoku-Ō ni naru otoko da !!!</div>
     <div class="quote">
       Connaître le passé, c’est connaître l’avenir.<br>
       - Nico Robin
@@ -53,14 +53,23 @@
 
 <script>
   const quotes = document.querySelectorAll('.quote');
-  let index = 0;
+  let index = -1;
 
   function showNextQuote() {
     // Enlever la classe active de toutes les citations
     quotes.forEach(q => q.classList.remove('active'));
 
-    //
+    // Passer à la citation suivante
+    index = (index + 1) % quotes.length;
 
+    // Activer uniquement la citation choisie
+    quotes[index].classList.add('active');
+  }
+
+  // Afficher directement la première citation
+  showNextQuote();
+
+  // Changer de citation toutes les 5 secondes
   setInterval(showNextQuote, 5000);
 </script>
 </body>
