@@ -9,9 +9,9 @@
   body {
     margin: 0;
     padding: 0;
-    background-color: #191919; /* fond gris foncé */
-    color: #ffffff; /* texte blanc */
-    font-family: 'Bangers', cursive; /* police extravagante */
+    background-color: #191919;
+    color: #ffffff;
+    font-family: 'Bangers', cursive;
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -21,8 +21,8 @@
   .quote-container {
     position: relative;
     width: 80%;
-    max-width: 600px;
-    height: 140px;
+    max-width: 800px;
+    height: 220px;
     text-align: center;
   }
   .quote {
@@ -32,10 +32,10 @@
     transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
-    font-size: 25px;
+    font-size: 22px;
     width: 100%;
-    letter-spacing: 2px;
-    line-height: 1.4;
+    letter-spacing: 1px;
+    line-height: 1.6;
   }
   .quote.active {
     opacity: 1;
@@ -44,29 +44,65 @@
 </head>
 <body>
   <div class="quote-container">
-    <div class="quote">Kaizoku-Ō ni naru otoko da !!!</div>
-    <div class="quote">Connaître le passé, c’est connaître l’avenir.<br>- Nico Robin</div>
+    <div class="quote">Kaizoku-Ō ni naru otoko da !!!<br>- Monkey D. Luffy</div>
+    <div class="quote">Connaître le passé, c'est connaître l'avenir.<br>- Nico Robin</div>
     <div class="quote">Le monde est un théâtre où seuls les forts dictent les règles.<br>- Donquixote Doflamingo</div>
+    <div class="quote">Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes prêts à donner un sens au mot "Liberté".<br>- Gol D. Roger</div>
+    <div class="quote">Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien.<br>- Monkey D. Luffy</div>
+    <div class="quote">Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles.<br>- Fujitora</div>
+    <div class="quote">Il y a des batailles qu'on ne gagne pas avec les poings.<br>- Marshall D. Teach</div>
+    <div class="quote" data-duration="10000">
+      Quand croyez-vous qu’un homme meurt ?<br>
+      Quand il se prend une balle en plein cœur ? Non !<br>
+      Quand il est atteint d’une maladie incurable ? Non !<br>
+      Quand il a avalé une soupe de champignons vénéneux ? NON !<br>
+      … Un homme meurt lorsque son souvenir tombe dans l’oubli !<br>
+      - Dr Hiluluk
+    </div>
+    <div class="quote">Le vainqueur définira la signification de la justice !<br>- Donquixote Doflamingo</div>
+    <div class="quote">Le One Piece EXISTE !!!<br>- Edward Newgate</div>
+    <div class="quote">Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu.<br>- Fujitora</div>
   </div>
 
 <script>
   const quotes = document.querySelectorAll('.quote');
-  let lastIndex = -1;
+  let shuffledIndexes = [];
+  let current = 0;
+  let intervalId;
 
-  function showRandomQuote() {
-    quotes.forEach(q => q.classList.remove('active'));
-
-    let newIndex;
-    do {
-      newIndex = Math.floor(Math.random() * quotes.length);
-    } while (newIndex === lastIndex);
-
-    quotes[newIndex].classList.add('active');
-    lastIndex = newIndex;
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
   }
 
-  showRandomQuote();
-  setInterval(showRandomQuote, 5000);
+  function resetShuffle() {
+    shuffledIndexes = quotes.map((_, i) => i);
+    shuffle(shuffledIndexes);
+    current = 0;
+  }
+
+  function showNextQuote() {
+    quotes.forEach(q => q.classList.remove('active'));
+
+    if (current >= shuffledIndexes.length) {
+      resetShuffle();
+    }
+
+    const index = shuffledIndexes[current];
+    const quoteElement = quotes[index];
+    quoteElement.classList.add('active');
+
+    const duration = parseInt(quoteElement.dataset.duration) || 5000; // 10s si défini sinon 5s
+    current++;
+
+    clearInterval(intervalId);
+    intervalId = setTimeout(showNextQuote, duration);
+  }
+
+  resetShuffle();
+  showNextQuote();
 </script>
 </body>
 </html>
