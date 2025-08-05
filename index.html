@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Citations animées - One Piece</title>
+<title>Citations animées - One Piece avec bouton play</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
 <style>
   body {
@@ -21,47 +21,67 @@
   .quote-container {
     position: relative;
     width: 80%;
-    max-width: 800px;
-    height: 220px;
+    max-width: 900px;
+    height: 140px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  .quote {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    transition: opacity 1.5s ease-in-out;
+  .quote-wrapper {
+    flex: 1;
     font-size: 22px;
-    width: 100%;
     letter-spacing: 1px;
     line-height: 1.6;
+    user-select: none;
+  }
+  .quote {
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
   }
   .quote.active {
     opacity: 1;
+  }
+  .btn-play {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background-color: transparent;
+    cursor: pointer;
+    margin-left: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  .btn-play:hover {
+    background-color: white;
+    transform: scale(1.1);
+  }
+  .btn-play svg {
+    fill: white;
+    width: 24px;
+    height: 24px;
+    transition: fill 0.3s;
+  }
+  .btn-play:hover svg {
+    fill: #191919;
   }
 </style>
 </head>
 <body>
   <div class="quote-container">
-    <div class="quote">Kaizoku-Ō ni naru otoko da !!!<br>- Monkey D. Luffy</div>
-    <div class="quote">Connaître le passé, c'est connaître l'avenir.<br>- Nico Robin</div>
-    <div class="quote">Le monde est un théâtre où seuls les forts dictent les règles.<br>- Donquixote Doflamingo</div>
-    <div class="quote">Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes prêts à donner un sens au mot "Liberté".<br>- Gol D. Roger</div>
-    <div class="quote">Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien.<br>- Monkey D. Luffy</div>
-    <div class="quote">Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles.<br>- Fujitora</div>
-    <div class="quote">Il y a des batailles qu'on ne gagne pas avec les poings.<br>- Marshall D. Teach</div>
-    <div class="quote">
-      Quand croyez-vous qu’un homme meurt ?<br>
-      Quand il se prend une balle en plein cœur ? Non !<br>
-      Quand il est atteint d’une maladie incurable ? Non !<br>
-      Quand il a avalé une soupe de champignons vénéneux ? NON !<br>
-      … Un homme meurt lorsque son souvenir tombe dans l’oubli !<br>
-      - Dr Hiluluk
+    <div class="quote-wrapper">
+      <div class="quote">Kaizoku-Ō ni naru otoko da !!!<br>- Monkey D. Luffy</div>
+      <div class="quote">Connaître le passé, c'est connaître l'avenir.<br>- Nico Robin</div>
+      <div class="quote">Le monde est un théâtre où seuls les forts dictent les règles.<br>- Donquixote Doflamingo</div>
     </div>
-    <div class="quote">Le vainqueur définira la signification de la justice !<br>- Donquixote Doflamingo</div>
-    <div class="quote">Le One Piece EXISTE !!!<br>- Edward Newgate</div>
-    <div class="quote">Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu.<br>- Fujitora</div>
+    <button class="btn-play" aria-label="Jouer la citation">
+      <svg viewBox="0 0 24 24" >
+        <polygon points="8,5 19,12 8,19" />
+      </svg>
+    </button>
   </div>
 
 <script>
@@ -94,19 +114,23 @@
     }
 
     const index = shuffledIndexes[current];
-    const quoteElement = quotes[index];
-    quoteElement.classList.add('active');
+    quotes[index].classList.add('active');
 
-    // 10s par défaut pour chaque citation
-    const duration = parseInt(quoteElement.dataset.duration) || 10000;
     current++;
 
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(showNextQuote, duration);
+    timeoutId = setTimeout(showNextQuote, 10000);
   }
 
   resetShuffle();
   showNextQuote();
+
+  // bouton play qui force le changement de citation au clic
+  const btnPlay = document.querySelector('.btn-play');
+  btnPlay.addEventListener('click', () => {
+    clearTimeout(timeoutId);
+    showNextQuote();
+  });
 </script>
 </body>
 </html>
