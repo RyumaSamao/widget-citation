@@ -1,1 +1,82 @@
-bhjn
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toggle Liste</title>
+  <style>
+    body {
+      background-color: #191919;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+
+    .toggle-container {
+      margin-bottom: 15px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .toggle-header {
+      background-color: #2c2c2c;
+      padding: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    .toggle-content {
+      max-height: 0;
+      overflow: hidden;
+      background-color: #333;
+      transition: max-height 0.4s ease-out, padding 0.4s ease;
+      padding: 0 15px;
+    }
+
+    .toggle-content.open {
+      padding: 15px;
+      max-height: 500px; /* assez grand pour le contenu */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toggle-container">
+    <div class="toggle-header">📺 En attente des prochains épisodes</div>
+    <div class="toggle-content">
+      <ul>
+        <li>One Piece</li>
+        <li>My Hero Academia</li>
+        <li>Jujutsu Kaisen</li>
+        <!-- Ajoute ce que tu veux ici -->
+      </ul>
+    </div>
+  </div>
+
+  <div class="toggle-container">
+    <div class="toggle-header">✅ Terminés</div>
+    <div class="toggle-content">
+      <ul>
+        <li>Chainsaw Man</li>
+        <li>Death Note</li>
+        <li>Erased</li>
+        <!-- Ajoute ce que tu veux ici -->
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const headers = document.querySelectorAll('.toggle-header');
+
+    headers.forEach(header => {
+      header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+        content.classList.toggle('open');
+      });
+    });
+  </script>
+
+</body>
+</html>
