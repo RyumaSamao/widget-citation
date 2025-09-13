@@ -22,7 +22,6 @@
     height: 100vh;
   }
 
-  /* Zone des citations */
   .quote-container {
     max-width: 1000px;
     text-align: center;
@@ -41,23 +40,23 @@
     word-wrap: break-word;
   }
 
-  .quote-author {
-    font-size: clamp(18px, 2.3vw, 26px);
-    margin-top: 8px;
-    display: block;
-  }
-
-  /* Taille réduite si citation longue */
   .quote-text.long-quote {
     font-size: clamp(14px, 2vw, 18px);
   }
 
-  .quote-text.fade-out,
+  .quote-text.fade-out {
+    opacity: 0;
+  }
+
+  .quote-author {
+    font-size: clamp(18px, 2.3vw, 26px);
+    margin-top: 8px;
+  }
+
   .quote-author.fade-out {
     opacity: 0;
   }
 
-  /* Bloc des contrôles */
   .controls {
     display: flex;
     align-items: center;
@@ -70,12 +69,14 @@
     border: 2px solid white;
     color: white;
     font-family: 'Bangers', cursive;
-    font-size: 20px;
     cursor: pointer;
-    padding: 10px 18px;
-    border-radius: 6px;
     user-select: none;
     transition: background 0.3s, color 0.3s;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
   }
 
   button.control-btn:hover {
@@ -83,11 +84,16 @@
     color: #191919;
   }
 
-  /* Bouton pause/lecture carré */
+  .btn-rect {
+    width: 60px;
+    border-radius: 6px;
+    font-weight: 900;
+  }
+
   .btn-audio {
-    width: 70px;
-    height: 70px;
-    border-radius: 8px; /* léger arrondi */
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     border: 2px solid white;
     background: transparent;
     cursor: pointer;
@@ -101,21 +107,17 @@
     background: white;
   }
 
-  .btn-audio svg {
+  .btn-audio svg,
+  .btn-rect svg {
     fill: white;
     width: 28px;
     height: 28px;
     transition: fill 0.3s;
   }
 
-  .btn-audio:hover svg {
-    fill: #191919; /* icône noire sur fond blanc */
-  }
-
-  /* Doubles flèches plus épaisses */
-  .btn-double {
-    font-size: 36px;
-    font-weight: 900;
+  .btn-audio:hover svg,
+  .btn-rect:hover svg {
+    fill: #191919;
   }
 
   @media (max-width: 768px) {
@@ -129,31 +131,37 @@
       gap: 10px;
     }
 
-    .btn-audio {
-      width: 55px;
-      height: 55px;
+    .btn-audio,
+    .btn-rect {
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+    }
+
+    .btn-audio svg,
+    .btn-rect svg {
+      width: 24px;
+      height: 24px;
     }
   }
 </style>
 </head>
 <body>
 
-<!-- Zone de citation -->
 <div class="quote-container">
   <div id="quote" class="quote-text"></div>
   <span id="author" class="quote-author"></span>
 </div>
 
-<!-- Boutons -->
 <div class="controls">
-  <button id="prevBtn" class="control-btn btn-double" aria-label="Citation précédente">≪</button>
-  <button id="playPauseBtn" class="btn-audio" aria-label="Pause/lecture auto">
+  <button id="prevBtn" class="control-btn btn-rect">≪</button>
+  <button id="playPauseBtn" class="control-btn btn-rect">
     <svg viewBox="0 0 24 24" id="playPauseIcon">
       <polygon points="7,5 19,12 7,19"></polygon>
     </svg>
   </button>
-  <button id="nextBtn" class="control-btn btn-double" aria-label="Citation suivante">≫</button>
-  <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
+  <button id="nextBtn" class="control-btn btn-rect">≫</button>
+  <button id="audioBtn" class="btn-audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
       <polygon points="8,5 19,12 8,19"></polygon>
     </svg>
@@ -176,7 +184,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 … Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: null},
     {text: "Le vainqueur définira la signification de la justice !", author: "Donquixote Doflamingo", audio: null},
     {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: null},
-    {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu", author: "Fujitora", audio: null},
+    {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu", author: "Fujitora", audio: null}
   ];
 
   let currentIndex = 0;
@@ -184,9 +192,6 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   let rotationTimer;
   let audioPlaying = false;
   let audio = new Audio();
-  let availableIndexes = [...quotes.keys()];
-  let history = [];
-  let historyIndex = -1;
 
   const quoteEl = document.getElementById('quote');
   const authorEl = document.getElementById('author');
@@ -197,105 +202,64 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   const audioBtn = document.getElementById('audioBtn');
   const audioIcon = document.getElementById('audioIcon');
 
-  function getNextRandomIndex() {
-    if (availableIndexes.length === 0) {
-      availableIndexes = [...quotes.keys()];
-    }
-    const randomIdx = Math.floor(Math.random() * availableIndexes.length);
-    return availableIndexes.splice(randomIdx, 1)[0];
-  }
-
   function showQuote(index) {
     quoteEl.classList.add('fade-out');
     authorEl.classList.add('fade-out');
-    audioBtn.classList.add('fade-out');
-
     setTimeout(() => {
       currentIndex = index;
-      if (quotes[currentIndex].text.length > 200) {
-        quoteEl.classList.add('long-quote');
-      } else {
-        quoteEl.classList.remove('long-quote');
-      }
-
-      quoteEl.textContent = quotes[currentIndex].text;
-      authorEl.textContent = `- ${quotes[currentIndex].author}`;
+      if (quotes[index].text.length > 200) quoteEl.classList.add('long-quote');
+      else quoteEl.classList.remove('long-quote');
+      quoteEl.textContent = quotes[index].text;
+      authorEl.textContent = `- ${quotes[index].author}`;
       quoteEl.classList.remove('fade-out');
       authorEl.classList.remove('fade-out');
-      audioBtn.classList.remove('fade-out');
-    }, 900);
+    }, 500);
   }
 
-  function showQuoteFromHistory() {
-    const idx = history[historyIndex];
-    showQuote(idx);
+  function nextQuote() {
+    currentIndex = (currentIndex + 1) % quotes.length;
+    showQuote(currentIndex);
   }
 
-  function showNextQuote() {
-    if (historyIndex < history.length - 1) {
-      historyIndex++;
-      showQuoteFromHistory();
-    } else {
-      const nextIdx = getNextRandomIndex();
-      history.push(nextIdx);
-      historyIndex++;
-      showQuote(nextIdx);
-    }
-  }
-
-  function showPrevQuote() {
-    if (historyIndex > 0) {
-      historyIndex--;
-      showQuoteFromHistory();
-    }
+  function prevQuote() {
+    currentIndex = (currentIndex - 1 + quotes.length) % quotes.length;
+    showQuote(currentIndex);
   }
 
   function startRotation() {
     rotationActive = true;
-    playPauseIcon.innerHTML = `<rect x="5" y="5" width="5" height="14" /><rect x="14" y="5" width="5" height="14" />`;
-    rotationTimer = setTimeout(() => {
-      showNextQuote();
-      if (rotationActive) startRotation();
-    }, 10000);
+    playPauseIcon.innerHTML = `<rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" />`;
+    rotationTimer = setInterval(nextQuote, 10000);
   }
 
   function stopRotation() {
     rotationActive = false;
     playPauseIcon.innerHTML = `<polygon points="7,5 19,12 7,19"></polygon>`;
-    clearTimeout(rotationTimer);
+    clearInterval(rotationTimer);
   }
 
-  function toggleRotation() {
+  playPauseBtn.addEventListener('click', () => {
     if (rotationActive) stopRotation();
     else startRotation();
-  }
+  });
 
-  function toggleAudio() {
+  prevBtn.addEventListener('click', prevQuote);
+  nextBtn.addEventListener('click', nextQuote);
+
+  audioBtn.addEventListener('click', () => {
     if (audioPlaying) {
       audio.pause();
-      audio.currentTime = 0;
       audioPlaying = false;
       audioIcon.innerHTML = `<polygon points="8,5 19,12 8,19"></polygon>`;
     } else {
-      audio.src = ''; // URL audio si besoin
-      audio.play().catch(() => {});
+      audio.src = '';
+      audio.play().catch(()=>{});
       audioPlaying = true;
       audioIcon.innerHTML = `<rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" />`;
     }
-  }
-
-  prevBtn.addEventListener('click', () => {
-    stopRotation();
-    showPrevQuote();
   });
-  nextBtn.addEventListener('click', () => {
-    stopRotation();
-    showNextQuote();
-  });
-  playPauseBtn.addEventListener('click', toggleRotation);
-  audioBtn.addEventListener('click', toggleAudio);
 
-  showNextQuote();
+  showQuote(currentIndex);
   startRotation();
 </script>
 
