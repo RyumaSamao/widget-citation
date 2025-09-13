@@ -22,7 +22,6 @@
     height: 100vh;
   }
 
-  /* Zone des citations */
   .quote-container {
     max-width: 1000px;
     text-align: center;
@@ -49,7 +48,6 @@
     opacity: 0;
   }
 
-  /* Bloc des contrôles */
   .controls {
     display: flex;
     align-items: center;
@@ -126,11 +124,12 @@
   <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
-      <!-- Haut-parleur + 3 barres de volume -->
-      <path d="M3 9v6h4l5 5V4L7 9H3z"/>
-      <path d="M14 8c.55.46 1 1.12 1 2s-.45 1.54-1 2"/>
-      <path d="M16.5 6c1.38 1.17 2 2.79 2 4s-.62 2.83-2 4"/>
-      <path d="M19 4.5c2 1.75 2 4.75 0 6.5"/>
+      <!-- Haut-parleur -->
+      <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
+      <!-- Barres de volume -->
+      <rect x="15" y="7" width="2" height="10"></rect>
+      <rect x="18" y="5" width="2" height="14"></rect>
+      <rect x="21" y="3" width="2" height="18"></rect>
     </svg>
   </button>
 </div>
@@ -239,12 +238,10 @@
       audio.pause();
       audio.currentTime = 0;
       audioPlaying = false;
-      audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M14 8c.55.46 1 1.12 1 2s-.45 1.54-1 2"/><path d="M16.5 6c1.38 1.17 2 2.79 2 4s-.62 2.83-2 4"/><path d="M19 4.5c2 1.75 2 4.75 0 6.5"/>`;
     } else {
       audio.src = ''; // URL audio réel
       audio.play().catch(() => {});
       audioPlaying = true;
-      audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M14 8c.55.46 1 1.12 1 2s-.45 1.54-1 2"/><path d="M16.5 6c1.38 1.17 2 2.79 2 4s-.62 2.83-2 4"/><path d="M19 4.5c2 1.75 2 4.75 0 6.5"/>`;
     }
   }
 
