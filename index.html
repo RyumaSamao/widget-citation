@@ -31,7 +31,7 @@
   }
 
   .quote-text, .quote-author {
-    font-size: clamp(18px, 2.3vw, 26px); /* même taille pour citation et nom */
+    font-size: clamp(18px, 2.3vw, 26px); /* même taille citation et nom */
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
@@ -64,7 +64,7 @@
     font-family: 'Bangers', cursive;
     font-size: 18px;
     cursor: pointer;
-    padding: 10px 30px; /* largeur plus large pour rectangle couché */
+    padding: 10px 30px; /* rectangle couché */
     border-radius: 6px;
     user-select: none;
     transition: background 0.3s, color 0.3s;
@@ -88,12 +88,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 1s ease-in-out, background-color 0.3s, transform 0.2s;
-    opacity: 1;
-  }
-
-  .btn-audio.fade-out {
-    opacity: 0;
+    transition: background-color 0.3s, transform 0.2s;
   }
 
   .btn-audio:hover {
@@ -130,7 +125,6 @@
   <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
   <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
-    <!-- Logo audio style YouTube -->
     <svg viewBox="0 0 24 24" id="audioIcon">
       <path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>
     </svg>
@@ -186,11 +180,8 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
     setTimeout(() => {
       currentIndex = index;
-      if (quotes[currentIndex].text.length > 200) {
-        quoteEl.classList.add('long-quote');
-      } else {
-        quoteEl.classList.remove('long-quote');
-      }
+      if (quotes[currentIndex].text.length > 200) quoteEl.classList.add('long-quote');
+      else quoteEl.classList.remove('long-quote');
 
       quoteEl.textContent = quotes[currentIndex].text;
       authorEl.textContent = "- " + quotes[currentIndex].author;
@@ -249,4 +240,22 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
       audio.currentTime = 0;
       audioPlaying = false;
       audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>`;
-    } else
+    } else {
+      audio.src = ''; // URL audio réel
+      audio.play().catch(() => {});
+      audioPlaying = true;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>`;
+    }
+  }
+
+  prevBtn.addEventListener('click', () => { stopRotation(); showPrevQuote(); });
+  nextBtn.addEventListener('click', () => { stopRotation(); showNextQuote(); });
+  playPauseBtn.addEventListener('click', toggleRotation);
+  audioBtn.addEventListener('click', toggleAudio);
+
+  showNextQuote();
+  startRotation();
+</script>
+
+</body>
+</html>
