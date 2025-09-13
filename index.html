@@ -31,7 +31,7 @@
   }
 
   .quote-text, .quote-author {
-    font-size: clamp(18px, 2.3vw, 26px); /* même taille citation et nom */
+    font-size: clamp(18px, 2.3vw, 26px);
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
@@ -64,7 +64,7 @@
     font-family: 'Bangers', cursive;
     font-size: 18px;
     cursor: pointer;
-    padding: 10px 30px; /* rectangle couché */
+    padding: 10px 30px;
     border-radius: 6px;
     user-select: none;
     transition: background 0.3s, color 0.3s;
@@ -126,7 +126,7 @@
   <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
-      <path d="M3 10v4h4l5 5V5l-5 5H3zm13.5-2.5v7c1.66-1.36 2.5-3.24 2.5-4.5s-.84-3.14-2.5-4.5z"></path>
+      <path d="M3 10v4h4l5 5V5l-5 5H3zM14 7a5 5 0 010 10M16.5 4.5a9 9 0 010 15"></path>
     </svg>
   </button>
 </div>
@@ -235,12 +235,12 @@
       audio.pause();
       audio.currentTime = 0;
       audioPlaying = false;
-      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zm13.5-2.5v7c1.66-1.36 2.5-3.24 2.5-4.5s-.84-3.14-2.5-4.5z"></path>`;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM14 7a5 5 0 010 10M16.5 4.5a9 9 0 010 15"></path>`;
     } else {
       audio.src = ''; // URL audio réel
       audio.play().catch(() => {});
       audioPlaying = true;
-      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zm13.5-2.5v7c1.66-1.36 2.5-3.24 2.5-4.5s-.84-3.14-2.5-4.5z"></path>`;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM14 7a5 5 0 010 10M16.5 4.5a9 9 0 010 15"></path>`;
     }
   }
 
