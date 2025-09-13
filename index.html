@@ -41,32 +41,18 @@
     word-wrap: break-word;
   }
 
-  /* Taille réduite si citation longue */
+  .quote-author {
+    font-size: clamp(18px, 2.3vw, 26px);
+    margin-top: 8px;
+    display: block;
+  }
+
   .quote-text.long-quote {
     font-size: clamp(14px, 2vw, 18px);
   }
 
-  .quote-text.fade-out {
-    opacity: 0;
-  }
-
-  /* NOM DU PERSONNAGE - même taille que la citation (s'adapte si long-quote) */
-  .character-name {
-    display: block;
-    margin-top: 8px;
-    color: white;
-    opacity: 0.9;
-    /* même taille que la citation par défaut */
-    font-size: clamp(18px, 2.3vw, 26px);
-    transition: opacity 1s ease-in-out, font-size 0.2s;
-  }
-
-  /* si la citation a la classe long-quote, on réduit la taille du nom aussi */
-  .quote-text.long-quote + .character-name {
-    font-size: clamp(14px, 2vw, 18px);
-  }
-
-  .character-name.fade-out {
+  .quote-text.fade-out,
+  .quote-author.fade-out {
     opacity: 0;
   }
 
@@ -83,15 +69,12 @@
     border: 2px solid white;
     color: white;
     font-family: 'Bangers', cursive;
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
-    padding: 10px 16px;
+    padding: 10px 18px;
     border-radius: 6px;
     user-select: none;
     transition: background 0.3s, color 0.3s;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
   }
 
   button.control-btn:hover {
@@ -99,23 +82,10 @@
     color: #191919;
   }
 
-  /* ensure svg icons inside control buttons are white and constrained */
-  .control-btn svg {
-    width: 20px;
-    height: 20px;
-    fill: white;
-    transition: transform 0.15s ease;
-    transform-origin: center center;
-  }
-
-  /* Play icon scale (only the svg is scaled, button size unchanged) */
-  #ppIcon.play {
-    transform: scale(1.6);
-  }
-
+  /* Bouton audio/pause */
   .btn-audio {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     border: 2px solid white;
     background: transparent;
@@ -133,20 +103,21 @@
 
   .btn-audio:hover {
     background: white;
-    transform: scale(1.06);
+    transform: scale(1.1);
   }
 
   .btn-audio svg {
     fill: white;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     transition: fill 0.3s;
   }
 
   .btn-audio:hover svg {
-    fill: #191919;
+    fill: #191919; /* devient noir sur fond blanc */
   }
 
+  /* Responsive */
   @media (max-width: 768px) {
     .quote-container {
       max-width: 90%;
@@ -162,35 +133,28 @@
       width: 45px;
       height: 45px;
     }
-
-    .control-btn svg { width: 18px; height: 18px; }
   }
 </style>
 </head>
 <body>
 
+<!-- Zone de citation -->
 <div class="quote-container">
   <div id="quote" class="quote-text"></div>
-  <span id="character" class="character-name"></span>
+  <span id="author" class="quote-author"></span>
 </div>
 
+<!-- Boutons -->
 <div class="controls">
-  <!-- double chevrons blancs (pas d'emoji) -->
   <button id="prevBtn" class="control-btn" aria-label="Citation précédente">≪</button>
-
-  <!-- bouton lecture/pause : svg à l'intérieur ; le triangle sera agrandi via la classe "play" sur le svg -->
-  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">
-    <svg id="ppIcon" viewBox="0 0 24 24" aria-hidden="true">
-      <!-- par défaut : pause (deux rectangles) -->
-      <rect x="6" y="5" width="4" height="14"></rect>
-      <rect x="14" y="5" width="4" height="14"></rect>
+  <button id="playPauseBtn" class="btn-audio" aria-label="Pause/lecture auto">
+    <svg viewBox="0 0 24 24" id="playPauseIcon">
+      <polygon points="7,5 19,12 7,19"></polygon>
     </svg>
   </button>
-
   <button id="nextBtn" class="control-btn" aria-label="Citation suivante">≫</button>
-
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
-    <svg viewBox="0 0 24 24" id="audioIcon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" id="audioIcon">
       <polygon points="8,5 19,12 8,19"></polygon>
     </svg>
   </button>
@@ -198,21 +162,21 @@
 
 <script>
   const quotes = [
-    {text: "Kaizoku-Ō ni naru otoko da !!!", character: "Monkey D. Luffy", audio: null},
-    {text: "Connaître le passé, c'est connaître l'avenir", character: "Nico Robin", audio: null},
-    {text: "Le monde est un théâtre où seuls les forts dictent les règles", character: "Donquixote Doflamingo", audio: null},
-    {text: "Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\"", character: "Gol D. Roger", audio: null},
-    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", character: "Monkey D. Luffy", audio: null},
-    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", character: "Fujitora", audio: null},
-    {text: "Il y a des batailles qu'on ne gagne pas avec les poings", character: "Marshall D. Teach", audio: null},
+    {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: null},
+    {text: "Connaître le passé, c'est connaître l'avenir", author: "Nico Robin", audio: null},
+    {text: "Le monde est un théâtre où seuls les forts dictent les règles", author: "Donquixote Doflamingo", audio: null},
+    {text: "Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\"", author: "Gol D. Roger", audio: null},
+    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: null},
+    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: null},
+    {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: null},
     {text: `Quand croyez-vous qu’un homme meurt ?
 Quand il se prend une balle en plein cœur ? Non !
 Quand il est atteint d’une maladie incurable ? Non !
 Quand il a avalé une soupe de champignons vénéneux ? NON !
-… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, character: "Dr Hiluluk", audio: null},
-    {text: "Le vainqueur définira la signification de la justice !", character: "Donquixote Doflamingo", audio: null},
-    {text: "Le One Piece EXISTE !!!", character: "Edward Newgate", audio: null},
-    {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu", character: "Fujitora", audio: null},
+… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: null},
+    {text: "Le vainqueur définira la signification de la justice !", author: "Donquixote Doflamingo", audio: null},
+    {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: null},
+    {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu", author: "Fujitora", audio: null},
   ];
 
   let currentIndex = 0;
@@ -225,10 +189,10 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   let historyIndex = -1;
 
   const quoteEl = document.getElementById('quote');
-  const characterEl = document.getElementById('character');
+  const authorEl = document.getElementById('author');
   const prevBtn = document.getElementById('prevBtn');
   const playPauseBtn = document.getElementById('playPauseBtn');
-  const ppIcon = document.getElementById('ppIcon'); // svg inside play/pause
+  const playPauseIcon = document.getElementById('playPauseIcon');
   const audioBtn = document.getElementById('audioBtn');
   const audioIcon = document.getElementById('audioIcon');
   const nextBtn = document.getElementById('nextBtn');
@@ -243,24 +207,21 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
   function showQuote(index) {
     quoteEl.classList.add('fade-out');
-    characterEl.classList.add('fade-out');
+    authorEl.classList.add('fade-out');
     audioBtn.classList.add('fade-out');
 
     setTimeout(() => {
       currentIndex = index;
-
       if (quotes[currentIndex].text.length > 200) {
         quoteEl.classList.add('long-quote');
       } else {
         quoteEl.classList.remove('long-quote');
       }
 
-      // texte + nom (avec tiret devant)
       quoteEl.textContent = quotes[currentIndex].text;
-      characterEl.textContent = '- ' + quotes[currentIndex].character;
-
+      authorEl.textContent = `- ${quotes[currentIndex].author}`;
       quoteEl.classList.remove('fade-out');
-      characterEl.classList.remove('fade-out');
+      authorEl.classList.remove('fade-out');
       audioBtn.classList.remove('fade-out');
     }, 900);
   }
@@ -291,11 +252,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
   function startRotation() {
     rotationActive = true;
-    // mettre icône pause (deux rectangles) et retirer agrandissement
-    ppIcon.classList.remove('play');
-    ppIcon.innerHTML = `<rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect>`;
-    playPauseBtn.setAttribute('aria-label', 'Pause la rotation');
-
+    playPauseIcon.innerHTML = `<rect x="5" y="5" width="5" height="14" /><rect x="14" y="5" width="5" height="14" />`;
     rotationTimer = setTimeout(() => {
       showNextQuote();
       if (rotationActive) startRotation();
@@ -304,10 +261,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
   function stopRotation() {
     rotationActive = false;
-    // mettre icône lecture (triangle) et agrandir le svg (seul le triangle grandit)
-    ppIcon.innerHTML = `<polygon points="8,5 19,12 8,19"></polygon>`;
-    ppIcon.classList.add('play'); // applique transform: scale(1.6)
-    playPauseBtn.setAttribute('aria-label', 'Lecture la rotation');
+    playPauseIcon.innerHTML = `<polygon points="7,5 19,12 7,19"></polygon>`;
     clearTimeout(rotationTimer);
   }
 
@@ -323,7 +277,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
       audioPlaying = false;
       audioIcon.innerHTML = `<polygon points="8,5 19,12 8,19"></polygon>`;
     } else {
-      audio.src = ''; // Remplacer par URL audio réel si besoin
+      audio.src = ''; // URL audio si besoin
       audio.play().catch(() => {});
       audioPlaying = true;
       audioIcon.innerHTML = `<rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" />`;
@@ -341,7 +295,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   playPauseBtn.addEventListener('click', toggleRotation);
   audioBtn.addEventListener('click', toggleAudio);
 
-  // Démarrage : première citation aléatoire
+  // Première citation
   showNextQuote();
   startRotation();
 </script>
