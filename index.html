@@ -31,7 +31,7 @@
   }
 
   .quote-text, .quote-author {
-    font-size: clamp(18px, 2.3vw, 26px);
+    font-size: clamp(18px, 2.3vw, 26px); /* même taille citation et nom */
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
@@ -126,7 +126,7 @@
   <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
-      <path d="M3 9v6h4l5 5V4l-5 5H3zM14 8.5v7l5-3.5-5-3.5z"></path>
+      <path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>
     </svg>
   </button>
 </div>
@@ -226,4 +226,36 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
   function stopRotation() {
     rotationActive = false;
-    playPauseBtn
+    playPauseBtn.textContent = "▶";
+    clearTimeout(rotationTimer);
+  }
+
+  function toggleRotation() {
+    rotationActive ? stopRotation() : startRotation();
+  }
+
+  function toggleAudio() {
+    if (audioPlaying) {
+      audio.pause();
+      audio.currentTime = 0;
+      audioPlaying = false;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>`;
+    } else {
+      audio.src = ''; // URL audio réel
+      audio.play().catch(() => {});
+      audioPlaying = true;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>`;
+    }
+  }
+
+  prevBtn.addEventListener('click', () => { stopRotation(); showPrevQuote(); });
+  nextBtn.addEventListener('click', () => { stopRotation(); showNextQuote(); });
+  playPauseBtn.addEventListener('click', toggleRotation);
+  audioBtn.addEventListener('click', toggleAudio);
+
+  showNextQuote();
+  startRotation();
+</script>
+
+</body>
+</html>
