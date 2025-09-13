@@ -126,7 +126,7 @@
   <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
-      <path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>
+      <path d="M3 10v4h4l5 5V5l-5 5H3zM14.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM17.5 12c0-3.03-1.64-5.64-4-7v14c2.36-1.36 4-3.97 4-7z"></path>
     </svg>
   </button>
 </div>
@@ -140,11 +140,7 @@
     {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: null},
     {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: null},
     {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: null},
-    {text: `Quand croyez-vous qu’un homme meurt ?
-Quand il se prend une balle en plein cœur ? Non !
-Quand il est atteint d’une maladie incurable ? Non !
-Quand il a avalé une soupe de champignons vénéneux ? NON !
-… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: null},
+    {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: null},
     {text: "Le vainqueur définira la signification de la justice !", author: "Donquixote Doflamingo", audio: null},
     {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: null},
     {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu", author: "Fujitora", audio: null},
@@ -239,12 +235,12 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
       audio.pause();
       audio.currentTime = 0;
       audioPlaying = false;
-      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>`;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM14.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM17.5 12c0-3.03-1.64-5.64-4-7v14c2.36-1.36 4-3.97 4-7z"></path>`;
     } else {
       audio.src = ''; // URL audio réel
       audio.play().catch(() => {});
       audioPlaying = true;
-      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>`;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM14.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM17.5 12c0-3.03-1.64-5.64-4-7v14c2.36-1.36 4-3.97 4-7z"></path>`;
     }
   }
 
