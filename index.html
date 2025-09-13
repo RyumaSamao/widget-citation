@@ -31,7 +31,7 @@
   }
 
   .quote-text, .quote-author {
-    font-size: clamp(18px, 2.3vw, 26px);
+    font-size: clamp(18px, 2.3vw, 26px); /* même taille citation et nom */
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
@@ -49,6 +49,7 @@
     opacity: 0;
   }
 
+  /* Bloc des contrôles */
   .controls {
     display: flex;
     align-items: center;
@@ -63,14 +64,13 @@
     font-family: 'Bangers', cursive;
     font-size: 18px;
     cursor: pointer;
-    height: 50px; /* même hauteur qu’avant */
-    padding: 0 20px; /* rectangle couché */
+    padding: 10px 30px; /* rectangle couché */
     border-radius: 6px;
     user-select: none;
+    transition: background 0.3s, color 0.3s;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background 0.3s, color 0.3s;
   }
 
   button.control-btn:hover {
@@ -78,7 +78,6 @@
     color: #191919;
   }
 
-  /* Bouton audio */
   .btn-audio {
     width: 50px;
     height: 50px;
@@ -98,8 +97,8 @@
 
   .btn-audio svg {
     fill: white;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     transition: fill 0.3s;
   }
 
@@ -108,20 +107,9 @@
   }
 
   @media (max-width: 768px) {
-    .quote-container {
-      max-width: 90%;
-    }
-
-    .controls {
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .btn-audio {
-      width: 45px;
-      height: 45px;
-    }
+    .quote-container { max-width: 90%; }
+    .controls { flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .btn-audio { width: 45px; height: 45px; }
   }
 </style>
 </head>
@@ -134,88 +122,139 @@
 
 <div class="controls">
   <button id="prevBtn" class="control-btn" aria-label="Citation précédente">⏮</button>
-  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">▶</button>
+  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
   <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
-  <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio">
+  <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
-      <path d="M3 9v6h4l5 5V4L7 9H3z"></path>
+      <path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>
     </svg>
   </button>
 </div>
 
 <script>
   const quotes = [
-    {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy"},
-    {text: "Connaître le passé, c'est connaître l'avenir", author: "Nico Robin"},
-    {text: "Le monde est un théâtre où seuls les forts dictent les règles", author: "Donquixote Doflamingo"},
-    {text: "Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\"", author: "Gol D. Roger"},
-    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy"},
-    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora"},
-    {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach"},
+    {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: null},
+    {text: "Connaître le passé, c'est connaître l'avenir", author: "Nico Robin", audio: null},
+    {text: "Le monde est un théâtre où seuls les forts dictent les règles", author: "Donquixote Doflamingo", audio: null},
+    {text: "Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\"", author: "Gol D. Roger", audio: null},
+    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: null},
+    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: null},
+    {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: null},
     {text: `Quand croyez-vous qu’un homme meurt ?
 Quand il se prend une balle en plein cœur ? Non !
 Quand il est atteint d’une maladie incurable ? Non !
 Quand il a avalé une soupe de champignons vénéneux ? NON !
-… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk"},
-    {text: "Le vainqueur définira la signification de la justice !", author: "Donquixote Doflamingo"},
-    {text: "Le One Piece EXISTE !!!", author: "Edward Newgate"},
-    {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu", author: "Fujitora"},
+… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: null},
+    {text: "Le vainqueur définira la signification de la justice !", author: "Donquixote Doflamingo", audio: null},
+    {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: null},
+    {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu", author: "Fujitora", audio: null},
   ];
 
   let currentIndex = 0;
   let rotationActive = true;
   let rotationTimer;
+  let audioPlaying = false;
+  let audio = new Audio();
+  let availableIndexes = [...quotes.keys()];
+  let history = [];
+  let historyIndex = -1;
 
   const quoteEl = document.getElementById('quote');
   const authorEl = document.getElementById('author');
   const prevBtn = document.getElementById('prevBtn');
   const playPauseBtn = document.getElementById('playPauseBtn');
   const audioBtn = document.getElementById('audioBtn');
+  const audioIcon = document.getElementById('audioIcon');
   const nextBtn = document.getElementById('nextBtn');
+
+  function getNextRandomIndex() {
+    if (availableIndexes.length === 0) availableIndexes = [...quotes.keys()];
+    const randomIdx = Math.floor(Math.random() * availableIndexes.length);
+    return availableIndexes.splice(randomIdx, 1)[0];
+  }
 
   function showQuote(index) {
     quoteEl.classList.add('fade-out');
     authorEl.classList.add('fade-out');
+    audioBtn.classList.add('fade-out');
 
     setTimeout(() => {
       currentIndex = index;
-      const q = quotes[currentIndex];
-      quoteEl.textContent = q.text;
-      authorEl.textContent = `- ${q.author}`;
+      if (quotes[currentIndex].text.length > 200) quoteEl.classList.add('long-quote');
+      else quoteEl.classList.remove('long-quote');
+
+      quoteEl.textContent = quotes[currentIndex].text;
+      authorEl.textContent = "- " + quotes[currentIndex].author;
+
       quoteEl.classList.remove('fade-out');
       authorEl.classList.remove('fade-out');
-    }, 500);
+      audioBtn.classList.remove('fade-out');
+    }, 900);
+  }
+
+  function showQuoteFromHistory() {
+    showQuote(history[historyIndex]);
   }
 
   function showNextQuote() {
-    currentIndex = (currentIndex + 1) % quotes.length;
-    showQuote(currentIndex);
-  }
-
-  function showPrevQuote() {
-    currentIndex = (currentIndex - 1 + quotes.length) % quotes.length;
-    showQuote(currentIndex);
-  }
-
-  function toggleRotation() {
-    if (rotationActive) {
-      clearInterval(rotationTimer);
-      rotationActive = false;
-      playPauseBtn.textContent = "▶";
+    if (historyIndex < history.length - 1) {
+      historyIndex++;
+      showQuoteFromHistory();
     } else {
-      rotationTimer = setInterval(showNextQuote, 10000);
-      rotationActive = true;
-      playPauseBtn.textContent = "❚❚";
+      const nextIdx = getNextRandomIndex();
+      history.push(nextIdx);
+      historyIndex++;
+      showQuote(nextIdx);
     }
   }
 
-  prevBtn.addEventListener('click', () => { showPrevQuote(); });
-  nextBtn.addEventListener('click', () => { showNextQuote(); });
-  playPauseBtn.addEventListener('click', toggleRotation);
+  function showPrevQuote() {
+    if (historyIndex > 0) {
+      historyIndex--;
+      showQuoteFromHistory();
+    }
+  }
 
-  // Démarrage auto
-  showQuote(currentIndex);
-  rotationTimer = setInterval(showNextQuote, 10000);
+  function startRotation() {
+    rotationActive = true;
+    playPauseBtn.textContent = "❚❚";
+    rotationTimer = setTimeout(() => {
+      showNextQuote();
+      if (rotationActive) startRotation();
+    }, 10000);
+  }
+
+  function stopRotation() {
+    rotationActive = false;
+    playPauseBtn.textContent = "▶";
+    clearTimeout(rotationTimer);
+  }
+
+  function toggleRotation() {
+    rotationActive ? stopRotation() : startRotation();
+  }
+
+  function toggleAudio() {
+    if (audioPlaying) {
+      audio.pause();
+      audio.currentTime = 0;
+      audioPlaying = false;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>`;
+    } else {
+      audio.src = ''; // URL audio réel
+      audio.play().catch(() => {});
+      audioPlaying = true;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03z"></path>`;
+    }
+  }
+
+  prevBtn.addEventListener('click', () => { stopRotation(); showPrevQuote(); });
+  nextBtn.addEventListener('click', () => { stopRotation(); showNextQuote(); });
+  playPauseBtn.addEventListener('click', toggleRotation);
+  audioBtn.addEventListener('click', toggleAudio);
+
+  showNextQuote();
+  startRotation();
 </script>
 
 </body>
