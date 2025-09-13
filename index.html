@@ -41,6 +41,7 @@
     word-wrap: break-word;
   }
 
+  /* Taille réduite si citation longue */
   .quote-text.long-quote {
     font-size: clamp(14px, 2vw, 18px);
   }
@@ -49,11 +50,24 @@
     opacity: 0;
   }
 
+  /* NOM DU PERSONNAGE - même taille que la citation (s'adapte si long-quote) */
   .character-name {
     display: block;
     margin-top: 8px;
-    font-size: 18px;
-    opacity: 0.8;
+    color: white;
+    opacity: 0.9;
+    /* même taille que la citation par défaut */
+    font-size: clamp(18px, 2.3vw, 26px);
+    transition: opacity 1s ease-in-out, font-size 0.2s;
+  }
+
+  /* si la citation a la classe long-quote, on réduit la taille du nom aussi */
+  .quote-text.long-quote + .character-name {
+    font-size: clamp(14px, 2vw, 18px);
+  }
+
+  .character-name.fade-out {
+    opacity: 0;
   }
 
   /* Bloc des contrôles */
@@ -75,11 +89,28 @@
     border-radius: 6px;
     user-select: none;
     transition: background 0.3s, color 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   button.control-btn:hover {
     background: white;
     color: #191919;
+  }
+
+  /* ensure svg icons inside control buttons are white and constrained */
+  .control-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+    transition: transform 0.15s ease;
+    transform-origin: center center;
+  }
+
+  /* Play icon scale (only the svg is scaled, button size unchanged) */
+  #ppIcon.play {
+    transform: scale(1.6);
   }
 
   .btn-audio {
@@ -102,7 +133,7 @@
 
   .btn-audio:hover {
     background: white;
-    transform: scale(1.1);
+    transform: scale(1.06);
   }
 
   .btn-audio svg {
@@ -131,6 +162,8 @@
       width: 45px;
       height: 45px;
     }
+
+    .control-btn svg { width: 18px; height: 18px; }
   }
 </style>
 </head>
@@ -142,11 +175,22 @@
 </div>
 
 <div class="controls">
-  <button id="prevBtn" class="control-btn" aria-label="Citation précédente">⏪</button>
-  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
-  <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏩</button>
+  <!-- double chevrons blancs (pas d'emoji) -->
+  <button id="prevBtn" class="control-btn" aria-label="Citation précédente">≪</button>
+
+  <!-- bouton lecture/pause : svg à l'intérieur ; le triangle sera agrandi via la classe "play" sur le svg -->
+  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">
+    <svg id="ppIcon" viewBox="0 0 24 24" aria-hidden="true">
+      <!-- par défaut : pause (deux rectangles) -->
+      <rect x="6" y="5" width="4" height="14"></rect>
+      <rect x="14" y="5" width="4" height="14"></rect>
+    </svg>
+  </button>
+
+  <button id="nextBtn" class="control-btn" aria-label="Citation suivante">≫</button>
+
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
-    <svg viewBox="0 0 24 24" id="audioIcon">
+    <svg viewBox="0 0 24 24" id="audioIcon" aria-hidden="true">
       <polygon points="8,5 19,12 8,19"></polygon>
     </svg>
   </button>
@@ -184,6 +228,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   const characterEl = document.getElementById('character');
   const prevBtn = document.getElementById('prevBtn');
   const playPauseBtn = document.getElementById('playPauseBtn');
+  const ppIcon = document.getElementById('ppIcon'); // svg inside play/pause
   const audioBtn = document.getElementById('audioBtn');
   const audioIcon = document.getElementById('audioIcon');
   const nextBtn = document.getElementById('nextBtn');
@@ -210,8 +255,9 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
         quoteEl.classList.remove('long-quote');
       }
 
+      // texte + nom (avec tiret devant)
       quoteEl.textContent = quotes[currentIndex].text;
-      characterEl.textContent = quotes[currentIndex].character;
+      characterEl.textContent = '- ' + quotes[currentIndex].character;
 
       quoteEl.classList.remove('fade-out');
       characterEl.classList.remove('fade-out');
@@ -245,7 +291,11 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
   function startRotation() {
     rotationActive = true;
-    playPauseBtn.textContent = "❚❚";
+    // mettre icône pause (deux rectangles) et retirer agrandissement
+    ppIcon.classList.remove('play');
+    ppIcon.innerHTML = `<rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect>`;
+    playPauseBtn.setAttribute('aria-label', 'Pause la rotation');
+
     rotationTimer = setTimeout(() => {
       showNextQuote();
       if (rotationActive) startRotation();
@@ -254,17 +304,16 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
   function stopRotation() {
     rotationActive = false;
-    playPauseBtn.textContent = "▶";
-    playPauseBtn.style.fontSize = "28px"; // triangle plus grand
+    // mettre icône lecture (triangle) et agrandir le svg (seul le triangle grandit)
+    ppIcon.innerHTML = `<polygon points="8,5 19,12 8,19"></polygon>`;
+    ppIcon.classList.add('play'); // applique transform: scale(1.6)
+    playPauseBtn.setAttribute('aria-label', 'Lecture la rotation');
     clearTimeout(rotationTimer);
   }
 
   function toggleRotation() {
     if (rotationActive) stopRotation();
-    else {
-      playPauseBtn.style.fontSize = "18px"; // remet à la taille normale pause
-      startRotation();
-    }
+    else startRotation();
   }
 
   function toggleAudio() {
@@ -292,6 +341,7 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   playPauseBtn.addEventListener('click', toggleRotation);
   audioBtn.addEventListener('click', toggleAudio);
 
+  // Démarrage : première citation aléatoire
   showNextQuote();
   startRotation();
 </script>
