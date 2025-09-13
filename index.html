@@ -126,7 +126,7 @@
   <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
-      <path d="M3 10v4h4l5 5V5l-5 5H3zM14.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM17.5 12c0-3.03-1.64-5.64-4-7v14c2.36-1.36 4-3.97 4-7z"></path>
+      <path d="M3 10v4h4l5 5V5l-5 5H3zm13.5-2.5v7c1.66-1.36 2.5-3.24 2.5-4.5s-.84-3.14-2.5-4.5z"></path>
     </svg>
   </button>
 </div>
@@ -235,12 +235,12 @@
       audio.pause();
       audio.currentTime = 0;
       audioPlaying = false;
-      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM14.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM17.5 12c0-3.03-1.64-5.64-4-7v14c2.36-1.36 4-3.97 4-7z"></path>`;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zm13.5-2.5v7c1.66-1.36 2.5-3.24 2.5-4.5s-.84-3.14-2.5-4.5z"></path>`;
     } else {
       audio.src = ''; // URL audio réel
       audio.play().catch(() => {});
       audioPlaying = true;
-      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM14.5 12c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM17.5 12c0-3.03-1.64-5.64-4-7v14c2.36-1.36 4-3.97 4-7z"></path>`;
+      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zm13.5-2.5v7c1.66-1.36 2.5-3.24 2.5-4.5s-.84-3.14-2.5-4.5z"></path>`;
     }
   }
 
