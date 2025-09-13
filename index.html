@@ -174,7 +174,7 @@
   function showQuote(index) {
     quoteEl.classList.add('fade-out');
     authorEl.classList.add('fade-out');
-    audioBtn.classList.add('fade-out');
+    // le bouton audio reste visible
 
     setTimeout(() => {
       currentIndex = index;
@@ -186,7 +186,6 @@
 
       quoteEl.classList.remove('fade-out');
       authorEl.classList.remove('fade-out');
-      audioBtn.classList.remove('fade-out');
     }, 900);
   }
 
