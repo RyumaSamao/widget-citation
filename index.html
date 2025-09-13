@@ -31,7 +31,7 @@
   }
 
   .quote-text {
-    font-size: clamp(18px, 2.3vw, 26px); /* plus grand par défaut */
+    font-size: clamp(18px, 2.3vw, 26px);
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
@@ -41,13 +41,19 @@
     word-wrap: break-word;
   }
 
-  /* Taille réduite si citation longue */
   .quote-text.long-quote {
     font-size: clamp(14px, 2vw, 18px);
   }
 
   .quote-text.fade-out {
     opacity: 0;
+  }
+
+  .character-name {
+    display: block;
+    margin-top: 8px;
+    font-size: 18px;
+    opacity: 0.8;
   }
 
   /* Bloc des contrôles */
@@ -76,7 +82,6 @@
     color: #191919;
   }
 
-  /* Bouton audio */
   .btn-audio {
     width: 50px;
     height: 50px;
@@ -111,7 +116,6 @@
     fill: #191919;
   }
 
-  /* Responsive : pour mobile */
   @media (max-width: 768px) {
     .quote-container {
       max-width: 90%;
@@ -132,16 +136,15 @@
 </head>
 <body>
 
-<!-- Zone de citation -->
 <div class="quote-container">
   <div id="quote" class="quote-text"></div>
+  <span id="character" class="character-name"></span>
 </div>
 
-<!-- Boutons -->
 <div class="controls">
-  <button id="prevBtn" class="control-btn" aria-label="Citation précédente">◀</button>
+  <button id="prevBtn" class="control-btn" aria-label="Citation précédente">⏪</button>
   <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
-  <button id="nextBtn" class="control-btn" aria-label="Citation suivante">▶</button>
+  <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏩</button>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
       <polygon points="8,5 19,12 8,19"></polygon>
@@ -151,21 +154,21 @@
 
 <script>
   const quotes = [
-    {text: "Kaizoku-Ō ni naru otoko da !!! - Monkey D. Luffy", audio: null},
-    {text: "Connaître le passé, c'est connaître l'avenir - Nico Robin", audio: null},
-    {text: "Le monde est un théâtre où seuls les forts dictent les règles - Donquixote Doflamingo", audio: null},
-    {text: "Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\" - Gol D. Roger", audio: null},
-    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien - Monkey D. Luffy", audio: null},
-    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles - Fujitora", audio: null},
-    {text: "Il y a des batailles qu'on ne gagne pas avec les poings - Marshall D. Teach", audio: null},
+    {text: "Kaizoku-Ō ni naru otoko da !!!", character: "Monkey D. Luffy", audio: null},
+    {text: "Connaître le passé, c'est connaître l'avenir", character: "Nico Robin", audio: null},
+    {text: "Le monde est un théâtre où seuls les forts dictent les règles", character: "Donquixote Doflamingo", audio: null},
+    {text: "Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\"", character: "Gol D. Roger", audio: null},
+    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", character: "Monkey D. Luffy", audio: null},
+    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", character: "Fujitora", audio: null},
+    {text: "Il y a des batailles qu'on ne gagne pas avec les poings", character: "Marshall D. Teach", audio: null},
     {text: `Quand croyez-vous qu’un homme meurt ?
 Quand il se prend une balle en plein cœur ? Non !
 Quand il est atteint d’une maladie incurable ? Non !
 Quand il a avalé une soupe de champignons vénéneux ? NON !
-… Un homme meurt lorsque son souvenir tombe dans l’oubli ! - Dr Hiluluk`, audio: null},
-    {text: "Le vainqueur définira la signification de la justice ! - Donquixote Doflamingo", audio: null},
-    {text: "Le One Piece EXISTE !!! - Edward Newgate", audio: null},
-    {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu - Fujitora", audio: null},
+… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, character: "Dr Hiluluk", audio: null},
+    {text: "Le vainqueur définira la signification de la justice !", character: "Donquixote Doflamingo", audio: null},
+    {text: "Le One Piece EXISTE !!!", character: "Edward Newgate", audio: null},
+    {text: "Si nous perdons notre crédibilité en admettant nos erreurs, alors nous n'en avions pas en premier lieu", character: "Fujitora", audio: null},
   ];
 
   let currentIndex = 0;
@@ -175,9 +178,10 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   let audio = new Audio();
   let availableIndexes = [...quotes.keys()];
   let history = [];
-  let historyIndex = -1; // position dans l'historique
+  let historyIndex = -1;
 
   const quoteEl = document.getElementById('quote');
+  const characterEl = document.getElementById('character');
   const prevBtn = document.getElementById('prevBtn');
   const playPauseBtn = document.getElementById('playPauseBtn');
   const audioBtn = document.getElementById('audioBtn');
@@ -194,12 +198,12 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
 
   function showQuote(index) {
     quoteEl.classList.add('fade-out');
+    characterEl.classList.add('fade-out');
     audioBtn.classList.add('fade-out');
 
     setTimeout(() => {
       currentIndex = index;
 
-      // Vérifie si la citation est longue
       if (quotes[currentIndex].text.length > 200) {
         quoteEl.classList.add('long-quote');
       } else {
@@ -207,7 +211,10 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
       }
 
       quoteEl.textContent = quotes[currentIndex].text;
+      characterEl.textContent = quotes[currentIndex].character;
+
       quoteEl.classList.remove('fade-out');
+      characterEl.classList.remove('fade-out');
       audioBtn.classList.remove('fade-out');
     }, 900);
   }
@@ -248,12 +255,16 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   function stopRotation() {
     rotationActive = false;
     playPauseBtn.textContent = "▶";
+    playPauseBtn.style.fontSize = "28px"; // triangle plus grand
     clearTimeout(rotationTimer);
   }
 
   function toggleRotation() {
     if (rotationActive) stopRotation();
-    else startRotation();
+    else {
+      playPauseBtn.style.fontSize = "18px"; // remet à la taille normale pause
+      startRotation();
+    }
   }
 
   function toggleAudio() {
@@ -281,7 +292,6 @@ Quand il a avalé une soupe de champignons vénéneux ? NON !
   playPauseBtn.addEventListener('click', toggleRotation);
   audioBtn.addEventListener('click', toggleAudio);
 
-  // Démarre avec la première citation aléatoire
   showNextQuote();
   startRotation();
 </script>
