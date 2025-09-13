@@ -126,7 +126,11 @@
   <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
   <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
     <svg viewBox="0 0 24 24" id="audioIcon">
-      <path d="M3 10v4h4l5 5V5l-5 5H3zM14 7a5 5 0 010 10M16.5 4.5a9 9 0 010 15"></path>
+      <!-- Haut-parleur + 3 barres de volume -->
+      <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+      <path d="M14 8c.55.46 1 1.12 1 2s-.45 1.54-1 2"/>
+      <path d="M16.5 6c1.38 1.17 2 2.79 2 4s-.62 2.83-2 4"/>
+      <path d="M19 4.5c2 1.75 2 4.75 0 6.5"/>
     </svg>
   </button>
 </div>
@@ -235,12 +239,12 @@
       audio.pause();
       audio.currentTime = 0;
       audioPlaying = false;
-      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM14 7a5 5 0 010 10M16.5 4.5a9 9 0 010 15"></path>`;
+      audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M14 8c.55.46 1 1.12 1 2s-.45 1.54-1 2"/><path d="M16.5 6c1.38 1.17 2 2.79 2 4s-.62 2.83-2 4"/><path d="M19 4.5c2 1.75 2 4.75 0 6.5"/>`;
     } else {
       audio.src = ''; // URL audio réel
       audio.play().catch(() => {});
       audioPlaying = true;
-      audioIcon.innerHTML = `<path d="M3 10v4h4l5 5V5l-5 5H3zM14 7a5 5 0 010 10M16.5 4.5a9 9 0 010 15"></path>`;
+      audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M14 8c.55.46 1 1.12 1 2s-.45 1.54-1 2"/><path d="M16.5 6c1.38 1.17 2 2.79 2 4s-.62 2.83-2 4"/><path d="M19 4.5c2 1.75 2 4.75 0 6.5"/>`;
     }
   }
 
