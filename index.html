@@ -165,7 +165,6 @@
   const prevBtn = document.getElementById('prevBtn');
   const playPauseBtn = document.getElementById('playPauseBtn');
   const audioBtn = document.getElementById('audioBtn');
-  const audioIcon = document.getElementById('audioIcon');
   const nextBtn = document.getElementById('nextBtn');
 
   function getNextRandomIndex() {
@@ -226,4 +225,33 @@
   function stopRotation() {
     rotationActive = false;
     playPauseBtn.textContent = "▶";
-    clearTimeout(rotation
+    clearTimeout(rotationTimer);
+  }
+
+  function toggleRotation() {
+    rotationActive ? stopRotation() : startRotation();
+  }
+
+  function toggleAudio() {
+    if (audioPlaying) {
+      audio.pause();
+      audio.currentTime = 0;
+      audioPlaying = false;
+    } else if (quotes[currentIndex].audio) {
+      audio.src = quotes[currentIndex].audio;
+      audio.play().catch(() => {});
+      audioPlaying = true;
+    }
+  }
+
+  prevBtn.addEventListener('click', () => { stopRotation(); showPrevQuote(); });
+  nextBtn.addEventListener('click', () => { stopRotation(); showNextQuote(); });
+  playPauseBtn.addEventListener('click', toggleRotation);
+  audioBtn.addEventListener('click', toggleAudio);
+
+  showNextQuote();
+  startRotation();
+</script>
+
+</body>
+</html>
