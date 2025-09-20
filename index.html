@@ -138,10 +138,10 @@
     {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: null},
     {text: "Connaître le passé, c'est connaître l'avenir", author: "Nico Robin", audio: null},
     {text: "Le monde est un théâtre où seuls les forts dictent les règles", author: "Donquixote Doflamingo", audio: null},
-    {text: "Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes\nprêts à donner un sens au mot \"Liberté\"", author: "Gol D. Roger", audio: null},
+    {text: "Rien ne peut les arrêter, et il en sera ainsi tant qu’il y aura des hommes<br>prêts à donner un sens au mot \"Liberté\"", author: "Gol D. Roger", audio: null},
     {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: null},
     {text: "Vivre n'est pas un crime", author: "Franky", audio: null},
-    {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde ! ", author: "Gol D. Roger", audio: null},
+    {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !<br>Je l'ai laissé quelque part en ce monde !", author: "Gol D. Roger", audio: null},
     {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author: "Marshall D. Teach", audio: null},
     {text: "Ça fait un bail, hein chapeau de paille ?", author: "Crocodile", audio: null},
     {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: null},
@@ -150,7 +150,7 @@
     {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: null},
     {text: "Le vainqueur définira la signification de la justice !", author: "Donquixote Doflamingo", audio: null},
     {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: null},
-    {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: null},
+    {text: "Si nous perdons notre crédibilité en admettant nos erreurs,<br>alors nous n'en avions pas en premier lieu", author: "Fujitora", audio: null},
   ];
 
   let currentIndex = 0;
@@ -179,14 +179,14 @@
   function showQuote(index) {
     quoteEl.classList.add('fade-out');
     authorEl.classList.add('fade-out');
-    // bouton audio reste visible
 
     setTimeout(() => {
       currentIndex = index;
       if (quotes[currentIndex].text.length > 200) quoteEl.classList.add('long-quote');
       else quoteEl.classList.remove('long-quote');
 
-      quoteEl.textContent = quotes[currentIndex].text;
+      // innerHTML pour garder les <br>
+      quoteEl.innerHTML = quotes[currentIndex].text;
       authorEl.textContent = "- " + quotes[currentIndex].author;
 
       quoteEl.classList.remove('fade-out');
