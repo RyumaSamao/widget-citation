@@ -36,12 +36,17 @@
     user-select: none;
     opacity: 1;
     transition: opacity 1s ease-in-out;
-    white-space: normal;
+    white-space: pre-line; /* ✅ pour afficher les sauts de ligne */
     word-wrap: break-word;
   }
 
   .quote-text.long-quote {
     font-size: clamp(14px, 2vw, 18px);
+  }
+
+  /* ✅ cas spécial Hiluluk : pas de découpe aux \n */
+  .hiluluk {
+    white-space: normal !important;
   }
 
   .fade-out {
@@ -145,7 +150,7 @@
     {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: "belmer.mp3"},
     {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: "fujitora.mp3"},
     {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: "teach_bataille.mp3"},
-    {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "hiluluk.mp3"},
+    {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "hiluluk.mp3", hiluluk: true},
     {text: "Le vainqueur définira la signification de la justice !", author: "Donquixote Doflamingo", audio: "doflamingo2.mp3"},
     {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: "edward.mp3"},
     {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitora2.mp3"},
@@ -179,8 +184,17 @@
 
     setTimeout(() => {
       currentIndex = index;
+
+      // taille police
       if (quotes[currentIndex].text.length > 200) quoteEl.classList.add('long-quote');
       else quoteEl.classList.remove('long-quote');
+
+      // gestion Hiluluk
+      if (quotes[currentIndex].hiluluk) {
+        quoteEl.classList.add('hiluluk');
+      } else {
+        quoteEl.classList.remove('hiluluk');
+      }
 
       quoteEl.textContent = quotes[currentIndex].text;
       authorEl.textContent = "- " + quotes[currentIndex].author;
