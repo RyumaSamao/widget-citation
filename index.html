@@ -36,7 +36,7 @@
     user-select: none;
     opacity: 1;
     transition: opacity 1s ease-in-out;
-    white-space: pre-line; /* ✅ pour afficher les sauts de ligne */
+    white-space: pre-line; /* permet d'interpréter les \n comme retours */
     word-wrap: break-word;
   }
 
@@ -44,7 +44,7 @@
     font-size: clamp(14px, 2vw, 18px);
   }
 
-  /* ✅ cas spécial Hiluluk : pas de découpe aux \n */
+  /* Cas spécial Hiluluk : on n'applique pas pre-line pour garder le bloc "normal" */
   .hiluluk {
     white-space: normal !important;
   }
@@ -158,10 +158,11 @@
 
   let currentIndex = 0;
   let rotationActive = true;
-  let rotationTimer;
+  let rotationTimer = null;
   let audioPlaying = false;
-  let audio = new Audio();
-  let availableIndexes = [...quotes.keys()];
+  let audio = null;
+  let rotationWasActiveBeforeAudio = false;
+  let availableIndexes = quotes.map((_, i) => i);
   let history = [];
   let historyIndex = -1;
 
@@ -173,23 +174,34 @@
   const nextBtn = document.getElementById('nextBtn');
 
   function getNextRandomIndex() {
-    if (availableIndexes.length === 0) availableIndexes = [...quotes.keys()];
+    if (availableIndexes.length === 0) availableIndexes = quotes.map((_, i) => i);
     const randomIdx = Math.floor(Math.random() * availableIndexes.length);
     return availableIndexes.splice(randomIdx, 1)[0];
   }
 
+  function stopAudio() {
+    if (audio) {
+      try { audio.pause(); } catch (e) {}
+      try { audio.currentTime = 0; } catch (e) {}
+      audio = null;
+    }
+    audioPlaying = false;
+  }
+
   function showQuote(index) {
+    // couper l'audio quand on change de citation
+    stopAudio();
+
     quoteEl.classList.add('fade-out');
     authorEl.classList.add('fade-out');
 
     setTimeout(() => {
       currentIndex = index;
 
-      // taille police
       if (quotes[currentIndex].text.length > 200) quoteEl.classList.add('long-quote');
       else quoteEl.classList.remove('long-quote');
 
-      // gestion Hiluluk
+      // gestion Hiluluk (cas spécial : ne pas appliquer pre-line)
       if (quotes[currentIndex].hiluluk) {
         quoteEl.classList.add('hiluluk');
       } else {
@@ -230,6 +242,7 @@
   function startRotation() {
     rotationActive = true;
     playPauseBtn.textContent = "❚❚";
+    clearTimeout(rotationTimer);
     rotationTimer = setTimeout(() => {
       showNextQuote();
       if (rotationActive) startRotation();
@@ -247,22 +260,50 @@
   }
 
   function toggleAudio() {
+    // si audio en cours -> on l'arrête
     if (audioPlaying) {
-      audio.pause();
-      audio.currentTime = 0;
-      audioPlaying = false;
-    } else if (quotes[currentIndex].audio) {
-      audio.src = quotes[currentIndex].audio;
-      audio.play().catch(() => {});
-      audioPlaying = true;
+      stopAudio();
+      return;
     }
+
+    // si pas de fichier audio pour cette citation, rien à faire
+    if (!quotes[currentIndex].audio) return;
+
+    // on mémorise si la rotation était active pour pouvoir la relancer après l'audio
+    rotationWasActiveBeforeAudio = rotationActive;
+
+    // on met la rotation en pause (comme si on avait cliqué sur play/pause)
+    if (rotationActive) stopRotation();
+
+    // création et lecture de l'audio courant
+    audio = new Audio(quotes[currentIndex].audio);
+    audioPlaying = true;
+    audio.play().catch(() => {
+      // ignore les erreurs de lecture (ex: fichier manquant)
+      audioPlaying = false;
+      audio = null;
+    });
+
+    // quand l'audio se termine -> on relance la rotation seulement si elle était active avant
+    audio.addEventListener('ended', () => {
+      audioPlaying = false;
+      audio = null;
+      if (rotationWasActiveBeforeAudio) {
+        startRotation();
+      } else {
+        // si l'utilisateur avait stoppé la rotation manuellement avant, on laisse à l'arrêt
+        playPauseBtn.textContent = "▶";
+      }
+    });
   }
 
+  // Boutons
   prevBtn.addEventListener('click', () => { stopRotation(); showPrevQuote(); });
   nextBtn.addEventListener('click', () => { stopRotation(); showNextQuote(); });
   playPauseBtn.addEventListener('click', toggleRotation);
   audioBtn.addEventListener('click', toggleAudio);
 
+  // initialisation : on affiche une première citation (aléatoire via history logic) et on démarre la rotation
   showNextQuote();
   startRotation();
 </script>
