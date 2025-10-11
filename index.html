@@ -22,6 +22,41 @@
     height: 100vh;
   }
 
+  /* --- Barre du haut (numéro + bouton quiz) --- */
+  .top-bar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .meta-info {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+
+  .quiz-btn {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    font-family: 'Bangers', cursive;
+    font-size: 14px;
+    padding: 6px 14px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .quiz-btn.active {
+    background: white;
+    color: #191919;
+  }
+
   .quote-container {
     max-width: 1000px;
     text-align: center;
@@ -36,7 +71,7 @@
     user-select: none;
     opacity: 1;
     transition: opacity 1s ease-in-out;
-    white-space: pre-line; /* permet d'interpréter les \n comme retours */
+    white-space: pre-line;
     word-wrap: break-word;
   }
 
@@ -44,7 +79,6 @@
     font-size: clamp(14px, 2vw, 18px);
   }
 
-  /* Cas spécial Hiluluk : on n'applique pas pre-line pour garder le bloc "normal" */
   .hiluluk {
     white-space: normal !important;
   }
@@ -118,6 +152,12 @@
 </head>
 <body>
 
+<!-- Barre du haut -->
+<div class="top-bar">
+  <div id="metaInfo" class="meta-info"></div>
+  <button id="quizBtn" class="quiz-btn">Quiz</button>
+</div>
+
 <div class="quote-container">
   <div id="quote" class="quote-text"></div>
   <div id="author" class="quote-author"></div>
@@ -138,22 +178,22 @@
 
 <script>
   const quotes = [
-    {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "LuffyTokoda.mp3"},
-    {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "GeantsNika.mp3"},
-    {text: "Kizaru ! Nous sommes 100 fois plus forts qu'avant !!", author: "Monkey D. Luffy", audio: "Kizaru100x.mp3"},
-    {text: "Mettez les voiles !!!!", author: "Monkey D. Luffy", audio: "LuffyVoile.mp3"},
-    {text: "La passion et les rêves sont comme le temps, rien ne peut les arrêter, et il en sera ainsi\ntant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\"", author: "Gol D. Roger", audio: "dragonroger.mp3"},
-    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: "luffynom.mp3"},
-    {text: "Vivre n'est pas un crime", author: "Franky", audio: "Frankyvivre.m4a"},
-    {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde !", author: "Gol D. Roger", audio: "Rogertresor.mp3"},
-    {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author: "Marshall D. Teach", audio: "teachdreams.mp3"},
-    {text: "Ça fait un bail, hein chapeau de paille ?", author: "Crocodile", audio: "CrocodileHisha.mp3"},
-    {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: "belmersacrifice.mp3"},
-    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: "fujitoraaveugle.mp3"},
-    {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: "barbenoirepoings.m4a"},
-    {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "hilulukmort.m4a", hiluluk: true},
-    {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: "bbonepiece.mp3"},
-    {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a"},
+    {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "LuffyTokoda.mp3", ref: "Épisode 1"},
+    {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "GeantsNika.mp3", ref: "Scan 1044"},
+    {text: "Kizaru ! Nous sommes 100 fois plus forts qu'avant !!", author: "Monkey D. Luffy", audio: "Kizaru100x.mp3", ref: "Scan 1090"},
+    {text: "Mettez les voiles !!!!", author: "Monkey D. Luffy", audio: "LuffyVoile.mp3", ref: "Scan 325"},
+    {text: "La passion et les rêves sont comme le temps, rien ne peut les arrêter, et il en sera ainsi\ntant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\"", author: "Gol D. Roger", audio: "dragonroger.mp3", ref: "Scan 100"},
+    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: "luffynom.mp3", ref: "Scan 112"},
+    {text: "Vivre n'est pas un crime", author: "Franky", audio: "Frankyvivre.m4a", ref: "Scan 395"},
+    {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde !", author: "Gol D. Roger", audio: "Rogertresor.mp3", ref: "Épisode 1"},
+    {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author: "Marshall D. Teach", audio: "teachdreams.mp3", ref: "Scan 225"},
+    {text: "Ça fait un bail, hein chapeau de paille ?", author: "Crocodile", audio: "CrocodileHisha.mp3", ref: "Scan 1088"},
+    {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: "belmersacrifice.mp3", ref: "Épisode 37"},
+    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: "fujitoraaveugle.mp3", ref: "Scan 701"},
+    {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: "barbenoirepoings.m4a", ref: "Scan 580"},
+    {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "hilulukmort.m4a", hiluluk: true, ref: "Scan 145"},
+    {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: "bbonepiece.mp3", ref: "Scan 576"},
+    {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a", ref: "Scan 801"},
   ];
 
   let currentIndex = 0;
@@ -165,13 +205,16 @@
   let availableIndexes = quotes.map((_, i) => i);
   let history = [];
   let historyIndex = -1;
+  let quizMode = false;
 
   const quoteEl = document.getElementById('quote');
   const authorEl = document.getElementById('author');
+  const metaInfoEl = document.getElementById('metaInfo');
   const prevBtn = document.getElementById('prevBtn');
   const playPauseBtn = document.getElementById('playPauseBtn');
   const audioBtn = document.getElementById('audioBtn');
   const nextBtn = document.getElementById('nextBtn');
+  const quizBtn = document.getElementById('quizBtn');
 
   function getNextRandomIndex() {
     if (availableIndexes.length === 0) availableIndexes = quotes.map((_, i) => i);
@@ -189,30 +232,30 @@
   }
 
   function showQuote(index) {
-    // couper l'audio quand on change de citation
     stopAudio();
-
     quoteEl.classList.add('fade-out');
     authorEl.classList.add('fade-out');
+    metaInfoEl.classList.add('fade-out');
 
     setTimeout(() => {
       currentIndex = index;
+      const q = quotes[currentIndex];
 
-      if (quotes[currentIndex].text.length > 200) quoteEl.classList.add('long-quote');
+      quoteEl.textContent = q.text;
+      authorEl.textContent = "- " + q.author;
+      metaInfoEl.textContent = q.ref || "";
+
+      if (q.text.length > 200) quoteEl.classList.add('long-quote');
       else quoteEl.classList.remove('long-quote');
 
-      // gestion Hiluluk (cas spécial : ne pas appliquer pre-line)
-      if (quotes[currentIndex].hiluluk) {
-        quoteEl.classList.add('hiluluk');
-      } else {
-        quoteEl.classList.remove('hiluluk');
-      }
-
-      quoteEl.textContent = quotes[currentIndex].text;
-      authorEl.textContent = "- " + quotes[currentIndex].author;
+      if (q.hiluluk) quoteEl.classList.add('hiluluk');
+      else quoteEl.classList.remove('hiluluk');
 
       quoteEl.classList.remove('fade-out');
       authorEl.classList.remove('fade-out');
+      metaInfoEl.classList.remove('fade-out');
+
+      applyQuizMode(); // pour cacher/afficher si mode quiz actif
     }, 900);
   }
 
@@ -260,50 +303,50 @@
   }
 
   function toggleAudio() {
-    // si audio en cours -> on l'arrête
     if (audioPlaying) {
       stopAudio();
       return;
     }
-
-    // si pas de fichier audio pour cette citation, rien à faire
     if (!quotes[currentIndex].audio) return;
 
-    // on mémorise si la rotation était active pour pouvoir la relancer après l'audio
     rotationWasActiveBeforeAudio = rotationActive;
-
-    // on met la rotation en pause (comme si on avait cliqué sur play/pause)
     if (rotationActive) stopRotation();
 
-    // création et lecture de l'audio courant
     audio = new Audio(quotes[currentIndex].audio);
     audioPlaying = true;
-    audio.play().catch(() => {
-      // ignore les erreurs de lecture (ex: fichier manquant)
-      audioPlaying = false;
-      audio = null;
-    });
+    audio.play().catch(() => { audioPlaying = false; audio = null; });
 
-    // quand l'audio se termine -> on relance la rotation seulement si elle était active avant
     audio.addEventListener('ended', () => {
       audioPlaying = false;
       audio = null;
-      if (rotationWasActiveBeforeAudio) {
-        startRotation();
-      } else {
-        // si l'utilisateur avait stoppé la rotation manuellement avant, on laisse à l'arrêt
-        playPauseBtn.textContent = "▶";
-      }
+      if (rotationWasActiveBeforeAudio) startRotation();
+      else playPauseBtn.textContent = "▶";
     });
   }
 
-  // Boutons
+  function applyQuizMode() {
+    if (quizMode) {
+      metaInfoEl.style.visibility = 'hidden';
+      authorEl.style.visibility = 'hidden';
+    } else {
+      metaInfoEl.style.visibility = 'visible';
+      authorEl.style.visibility = 'visible';
+    }
+  }
+
+  function toggleQuiz() {
+    quizMode = !quizMode;
+    quizBtn.classList.toggle('active', quizMode);
+    applyQuizMode();
+  }
+
   prevBtn.addEventListener('click', () => { stopRotation(); showPrevQuote(); });
   nextBtn.addEventListener('click', () => { stopRotation(); showNextQuote(); });
   playPauseBtn.addEventListener('click', toggleRotation);
   audioBtn.addEventListener('click', toggleAudio);
+  quizBtn.addEventListener('click', toggleQuiz);
 
-  // initialisation : on affiche une première citation (aléatoire via history logic) et on démarre la rotation
+  // Initialisation
   showNextQuote();
   startRotation();
 </script>
