@@ -41,6 +41,14 @@ body {
   margin-bottom: 2rem;
 }
 
+.search-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  position: relative;
+}
+
 .search-bar {
   flex: 1;
   display: flex;
@@ -50,9 +58,8 @@ body {
 
 .search-bar input {
   width: 100%;
-  max-width: 560px;
   padding: 8px 12px;
-  font-size: 20px;
+  font-size: 18px;
   border-radius: 10px;
   border: none;
   outline: none;
@@ -60,7 +67,7 @@ body {
 
 .search-bar .reset-search {
   position: absolute;
-  right: 4px; /* croix collée */
+  right: 2px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 20px;
@@ -72,14 +79,14 @@ body {
 }
 .search-bar .reset-search:hover { color: #ff6666; }
 
-.scan-number {
-  font-size: 20px;
-  opacity: 1;
-  transition: opacity 0.9s ease-in-out;
-  min-width: 180px; /* compteur à gauche */
+.search-counter {
+  margin-right: 8px;
+  font-size: 18px;
+  min-width: 120px;
   text-align: left;
 }
 
+/* Quiz button */
 .quiz-btn {
   font-size: 20px;
   padding: 6px 12px;
@@ -133,7 +140,7 @@ body {
 .controls {
   display: flex;
   align-items: center;
-  gap: 20px; /* boutons plus larges */
+  gap: 20px;
   flex-wrap: nowrap;
   margin-top: 8px;
 }
@@ -145,7 +152,7 @@ button.control-btn {
   font-family: 'Bangers', cursive;
   font-size: 18px;
   cursor: pointer;
-  padding: 12px 30px; /* boutons plus larges */
+  padding: 10px 22px;
   border-radius: 6px;
   user-select: none;
   transition: background 0.3s, color 0.3s;
@@ -160,8 +167,8 @@ button.control-btn:hover {
 }
 
 .btn-audio {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   border: 2px solid white;
   background: transparent;
@@ -173,13 +180,13 @@ button.control-btn:hover {
 }
 
 .btn-audio:hover { background: white; }
-.btn-audio svg { fill: white; width: 32px; height: 32px; transition: fill 0.3s; }
+.btn-audio svg { fill: white; width: 28px; height: 28px; transition: fill 0.3s; }
 .btn-audio:hover svg { fill: #191919; }
 
 @media (max-width: 768px) {
   .main-wrap { padding: 0 12px; }
   .search-bar input { font-size: 16px; }
-  .scan-number, .quiz-btn { font-size: 16px; }
+  .search-counter, .quiz-btn { font-size: 16px; }
   .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
 }
 </style>
@@ -189,13 +196,13 @@ button.control-btn:hover {
 
   <!-- TOP CONTROLS -->
   <div class="top-controls">
-    <div id="scanNumber" class="scan-number"></div>
-
-    <div class="search-bar">
-      <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
-      <button class="reset-search">✖</button>
+    <div class="search-wrapper">
+      <div id="searchCounter" class="search-counter">Citations : 0</div>
+      <div class="search-bar">
+        <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
+        <button class="reset-search">✖</button>
+      </div>
     </div>
-
     <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
 
@@ -243,7 +250,7 @@ const quotes = [
 // DOM
 const quoteEl = document.getElementById('quote');
 const authorEl = document.getElementById('author');
-const scanEl = document.getElementById('scanNumber');
+const scanEl = document.getElementById('searchCounter');
 const prevBtn = document.getElementById('prevBtn');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const audioBtn = document.getElementById('audioBtn');
@@ -265,100 +272,70 @@ let poolHistory = [];
 let poolHistoryIndex = -1;
 let quizMode = false;
 
-/* UTIL */
-function applyFade(el, hide) { if(!el) return; hide ? el.classList.add('fade-out') : el.classList.remove('fade-out'); }
-function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
-
-/* RENDER */
+/* FUNCTIONS */
 function renderQuoteByIndex(index){
-  stopAudio();
-  quoteEl.classList.add('fade-out');
-  authorEl.classList.add('fade-out');
-  scanEl.classList.add('fade-out');
-
-  setTimeout(()=>{
-    currentIndex=index;
-    const q=quotes[currentIndex];
-    if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
-    if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
-
-    quoteEl.textContent=q.text;
-    authorEl.textContent="- "+q.author;
-    scanEl.textContent=q.scan||"";
-
-    if(quizMode){
-      applyFade(authorEl,true);
-      applyFade(scanEl,true);
-      quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;
-    } else{
-      applyFade(authorEl,false);
-      applyFade(scanEl,false);
-      quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
-    }
-
-    quoteEl.classList.remove('fade-out');
-    authorEl.classList.remove('fade-out');
-    scanEl.classList.remove('fade-out');
-  },450);
+  currentIndex=index;
+  const q=quotes[currentIndex];
+  quoteEl.textContent=q.text;
+  authorEl.textContent="- "+q.author;
+  if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
+  if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
 }
 
-/* POOL */
-function updatePoolFromTerm(term){
-  const t=(term||"").trim().toLowerCase();
-  if(!t){ pool=quotes.map((_,i)=>i); }
-  else{
-    pool=[];
-    quotes.forEach((q,i)=>{ if(q.text.toLowerCase().includes(t)||q.author.toLowerCase().includes(t)||(q.scan && q.scan.toLowerCase().includes(t))) pool.push(i); });
-  }
+function updateCounter(){ scanEl.textContent="Citations : "+pool.length; }
+
+function updatePool(term){
+  const t=(term||"").toLowerCase();
+  pool = quotes.map((q,i)=>q.text.toLowerCase().includes(t)||q.author.toLowerCase().includes(t)||(q.scan&&q.scan.toLowerCase().includes(t))?i:null).filter(i=>i!==null);
   availablePool=pool.slice();
   poolHistory=[];
   poolHistoryIndex=-1;
+  updateCounter();
 }
 
-function getNextFromPoolRandom(){
-  if(pool.length===0) return -1;
-  if(availablePool.length===0) availablePool=pool.slice();
-  const r=Math.floor(Math.random()*availablePool.length);
-  return availablePool.splice(r,1)[0];
-}
-
-function showNextInPool(){
+function showNext(){
   if(pool.length===0) return;
   if(poolHistoryIndex<poolHistory.length-1){ poolHistoryIndex++; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
-  else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex++; renderQuoteByIndex(idx); }
+  else { 
+    const r=Math.floor(Math.random()*availablePool.length);
+    const idx=availablePool.splice(r,1)[0];
+    poolHistory.push(idx);
+    poolHistoryIndex++;
+    renderQuoteByIndex(idx);
+  }
 }
 
-function showPrevInPool(){
+function showPrev(){
   if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
 }
 
 /* ROTATION */
-function startRotation(){ rotationActive=true; playPauseBtn.textContent='❚❚'; rotationTimer=setInterval(showNextInPool,5000); }
-function stopRotation(){ rotationActive=false; playPauseBtn.textContent='▶'; if(rotationTimer){clearInterval(rotationTimer); rotationTimer=null;} }
+function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; rotationTimer=setInterval(showNext,10000); }
+function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; if(rotationTimer){clearInterval(rotationTimer); rotationTimer=null;} }
+
+/* AUDIO */
+function toggleAudio(){ 
+  if(audioPlaying){ audio.pause(); audioPlaying=false; if(rotationWasActiveBeforeAudio) startRotation(); return; }
+  const q=quotes[currentIndex];
+  if(!q.audio) return;
+  rotationWasActiveBeforeAudio=rotationActive; stopRotation();
+  audio=new Audio(q.audio); audioPlaying=true; audio.play();
+  audio.onended=()=>{ audioPlaying=false; if(rotationWasActiveBeforeAudio) startRotation(); }
+}
 
 /* EVENTS */
-nextBtn.addEventListener('click',()=>{ showNextInPool(); if(rotationActive){ stopRotation(); }});
-prevBtn.addEventListener('click',()=>{ showPrevInPool(); if(rotationActive){ stopRotation(); }});
+nextBtn.addEventListener('click',()=>{ showNext(); stopRotation(); });
+prevBtn.addEventListener('click',()=>{ showPrev(); stopRotation(); });
 playPauseBtn.addEventListener('click',()=>{ rotationActive?stopRotation():startRotation(); });
-quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; renderQuoteByIndex(currentIndex); });
-searchInput.addEventListener('input',(e)=>{ updatePoolFromTerm(e.target.value); poolHistory=[]; poolHistoryIndex=-1; showNextInPool(); });
-resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); poolHistory=[]; poolHistoryIndex=-1; showNextInPool(); });
+audioBtn.addEventListener('click',toggleAudio);
+quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; });
 
-audioBtn.addEventListener('click',()=>{
-  if(audioPlaying){ stopAudio(); } 
-  else {
-    const q=quotes[currentIndex];
-    if(q.audio){
-      rotationWasActiveBeforeAudio=rotationActive; stopRotation();
-      audio=new Audio(q.audio); audio.play(); audioPlaying=true;
-      audio.onended=()=>{ audioPlaying=false; if(rotationWasActiveBeforeAudio){ startRotation(); } }
-    }
-  }
-});
+searchInput.addEventListener('input',(e)=>{ updatePool(e.target.value); showNext(); });
+resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePool(""); showNext(); });
 
 /* INIT */
-updatePoolFromTerm('');
-showNextInPool();
+updatePool('');
+showNext();
 startRotation();
 </script>
 </body>
