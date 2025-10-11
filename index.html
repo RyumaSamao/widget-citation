@@ -31,14 +31,29 @@ body {
   align-items: center;
 }
 
-/* --- zone recherche + scan + quiz --- */
+/* --- zone recherche + compteur + quiz --- */
 .top-controls {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 2rem; /* plus d’espace sous les contrôles */
+  margin-bottom: 2rem; /* espace sous la zone */
+  font-size: 16px; /* un peu plus petit */
+}
+
+.search-wrapper {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  position: relative;
+}
+
+.count-display {
+  margin-right: 8px;
+  font-size: 16px;
+  min-width: 50px;
+  text-align: left;
 }
 
 .search-bar {
@@ -50,9 +65,9 @@ body {
 
 .search-bar input {
   width: 100%;
-  max-width: 560px;
-  padding: 8px 12px;
-  font-size: 20px;
+  max-width: 500px;
+  padding: 6px 10px;
+  font-size: 16px;
   border-radius: 10px;
   border: none;
   outline: none;
@@ -60,10 +75,10 @@ body {
 
 .search-bar .reset-search {
   position: absolute;
-  right: 6px;
+  right: 4px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 20px;
+  font-size: 16px;
   cursor: pointer;
   border: none;
   background: transparent;
@@ -72,17 +87,9 @@ body {
 }
 .search-bar .reset-search:hover { color: #ff6666; }
 
-.scan-number {
-  font-size: 20px;
-  opacity: 1;
-  transition: opacity 0.9s ease-in-out;
-  min-width: 160px;
-  text-align: left;
-}
-
 .quiz-btn {
-  font-size: 20px;
-  padding: 6px 12px;
+  font-size: 16px;
+  padding: 4px 10px;
   background: transparent;
   color: white;
   border: 2px solid white;
@@ -102,7 +109,7 @@ body {
   width: 100%;
   max-width: 1000px;
   text-align: center;
-  margin-bottom: 1.5rem; /* plus d’espace sous la citation */
+  margin-bottom: 1.5rem;
   padding: 0 20px;
 }
 
@@ -178,8 +185,9 @@ button.control-btn:hover {
 
 @media (max-width: 768px) {
   .main-wrap { padding: 0 12px; }
-  .search-bar input { font-size: 16px; }
-  .scan-number, .quiz-btn { font-size: 16px; }
+  .top-controls { font-size: 14px; }
+  .search-bar input { font-size: 14px; }
+  .quiz-btn { font-size: 14px; }
   .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
 }
 </style>
@@ -189,13 +197,13 @@ button.control-btn:hover {
 
   <!-- TOP CONTROLS -->
   <div class="top-controls">
-    <div id="scanNumber" class="scan-number"></div>
-
-    <div class="search-bar">
-      <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
-      <button class="reset-search">✖</button>
+    <div class="search-wrapper">
+      <div id="scanNumber" class="count-display">0/0</div>
+      <div class="search-bar">
+        <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
+        <button class="reset-search">✖</button>
+      </div>
     </div>
-
     <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
 
@@ -221,6 +229,7 @@ button.control-btn:hover {
 </div>
 
 <script>
+// --- même tableau quotes que précédemment ---
 const quotes = [
   {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "LuffyTokoda.mp3", scan: "Épisode 1"},
   {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "GeantsNika.mp3", scan: "Scan 1044"},
@@ -240,69 +249,37 @@ const quotes = [
   {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a", scan: "Scan 746"},
 ];
 
-// DOM
-const quoteEl = document.getElementById('quote');
-const authorEl = document.getElementById('author');
-const scanEl = document.getElementById('scanNumber');
-const prevBtn = document.getElementById('prevBtn');
-const playPauseBtn = document.getElementById('playPauseBtn');
-const audioBtn = document.getElementById('audioBtn');
-const nextBtn = document.getElementById('nextBtn');
-const quizBtn = document.getElementById('quizBtn');
-const searchInput = document.getElementById('searchInput');
-const resetSearchBtn = document.querySelector('.reset-search');
+const quoteEl=document.getElementById('quote');
+const authorEl=document.getElementById('author');
+const scanEl=document.getElementById('scanNumber');
+const prevBtn=document.getElementById('prevBtn');
+const playPauseBtn=document.getElementById('playPauseBtn');
+const audioBtn=document.getElementById('audioBtn');
+const nextBtn=document.getElementById('nextBtn');
+const quizBtn=document.getElementById('quizBtn');
+const searchInput=document.getElementById('searchInput');
+const resetSearchBtn=document.querySelector('.reset-search');
 
-let currentIndex = 0;
-let rotationActive = true;
-let rotationTimer = null;
-let audioPlaying = false;
-let audio = null;
-let rotationWasActiveBeforeAudio = false;
+let currentIndex=0, rotationActive=true, rotationTimer=null, audioPlaying=false, audio=null, rotationWasActiveBeforeAudio=false;
+let pool=quotes.map((_,i)=>i), availablePool=pool.slice(), poolHistory=[], poolHistoryIndex=-1, quizMode=false;
 
-let pool = quotes.map((_,i)=>i);
-let availablePool = pool.slice();
-let poolHistory = [];
-let poolHistoryIndex = -1;
-let quizMode = false;
+function applyFade(el,hide){if(!el)return; hide?el.classList.add('fade-out'):el.classList.remove('fade-out');}
+function stopAudio(){if(audio){try{audio.pause();}catch{}try{audio.currentTime=0}catch{}audio=null;}audioPlaying=false;}
 
-/* UTIL */
-function applyFade(el, hide) { if(!el) return; hide ? el.classList.add('fade-out') : el.classList.remove('fade-out'); }
-function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
-
-/* RENDER */
 function renderQuoteByIndex(index){
   stopAudio();
-  quoteEl.classList.add('fade-out');
-  authorEl.classList.add('fade-out');
-  scanEl.classList.add('fade-out');
-
+  quoteEl.classList.add('fade-out'); authorEl.classList.add('fade-out'); scanEl.classList.add('fade-out');
   setTimeout(()=>{
-    currentIndex=index;
-    const q=quotes[currentIndex];
-    if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
-    if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
-
-    quoteEl.textContent=q.text;
-    authorEl.textContent="- "+q.author;
-    scanEl.textContent=q.scan||"";
-
-    if(quizMode){
-      applyFade(authorEl,true);
-      applyFade(scanEl,true);
-      quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;
-    } else{
-      applyFade(authorEl,false);
-      applyFade(scanEl,false);
-      quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
-    }
-
-    quoteEl.classList.remove('fade-out');
-    authorEl.classList.remove('fade-out');
-    scanEl.classList.remove('fade-out');
+    currentIndex=index; const q=quotes[currentIndex];
+    q.text.length>200?quoteEl.classList.add('long-quote'):quoteEl.classList.remove('long-quote');
+    q.hiluluk?quoteEl.classList.add('hiluluk'):quoteEl.classList.remove('hiluluk');
+    quoteEl.textContent=q.text; authorEl.textContent="- "+q.author; scanEl.textContent=q.scan||"";
+    if(quizMode){applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;}
+    else{applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1;}
+    quoteEl.classList.remove('fade-out'); authorEl.classList.remove('fade-out'); scanEl.classList.remove('fade-out');
   },450);
 }
 
-/* POOL */
 function updatePoolFromTerm(term){
   const t=(term||"").trim().toLowerCase();
   if(!t){ pool=quotes.map((_,i)=>i); }
@@ -312,77 +289,40 @@ function updatePoolFromTerm(term){
   }
   availablePool=pool.slice();
   poolHistory=[]; poolHistoryIndex=-1;
+  updateCountDisplay();
 }
 
-function getNextFromPoolRandom(){
-  if(pool.length===0) return -1;
-  if(availablePool.length===0) availablePool=pool.slice();
-  const r=Math.floor(Math.random()*availablePool.length);
-  return availablePool.splice(r,1)[0];
-}
+function updateCountDisplay(){ scanEl.textContent=poolHistoryIndex+1+"/"+pool.length; }
 
-function showNextInPool(){
-  if(pool.length===0) return;
-  if(poolHistoryIndex<poolHistory.length-1){ poolHistoryIndex++; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
-  else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex++; renderQuoteByIndex(idx); }
-}
+function getNextFromPoolRandom(){if(pool.length===0)return-1;if(availablePool.length===0)availablePool=pool.slice(); const r=Math.floor(Math.random()*availablePool.length); return availablePool.splice(r,1)[0];}
+function showNextInPool(){if(pool.length===0)return;if(poolHistoryIndex<poolHistory.length-1){poolHistoryIndex++;renderQuoteByIndex(poolHistory[poolHistoryIndex]);}else{const idx=getNextFromPoolRandom();poolHistory.push(idx);poolHistoryIndex++;renderQuoteByIndex(idx);} updateCountDisplay();}
+function showPrevInPool(){if(poolHistoryIndex>0){poolHistoryIndex--;renderQuoteByIndex(poolHistory[poolHistoryIndex]);} updateCountDisplay();}
 
-function showPrevInPool(){
-  if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
-}
-
-/* ROTATION */
-function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive) startRotation();},10000); }
-function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer); }
+function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive)startRotation();},10000);}
+function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer);}
 function toggleRotation(){ rotationActive?stopRotation():startRotation(); }
 
-/* AUDIO */
 function toggleAudio(){ 
   if(audioPlaying){ stopAudio(); return; }
-  if(!quotes[currentIndex].audio) return;
-  rotationWasActiveBeforeAudio=rotationActive; if(rotationActive) stopRotation();
-  audio=new Audio(quotes[currentIndex].audio); audioPlaying=true; audio.play().catch(()=>{audioPlaying=false; audio=null;});
-  audio.addEventListener('ended',()=>{ audioPlaying=false; audio=null; if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; });
+  if(!quotes[currentIndex].audio)return;
+  rotationWasActiveBeforeAudio=rotationActive;if(rotationActive)stopRotation();
+  audio=new Audio(quotes[currentIndex].audio); audioPlaying=true; audio.play().catch(()=>{audioPlaying=false;audio=null;});
+  audio.addEventListener('ended',()=>{audioPlaying=false; audio=null;if(rotationWasActiveBeforeAudio)startRotation(); else playPauseBtn.textContent="▶";});
 }
 
-/* EVENTS */
-prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
-nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
+prevBtn.addEventListener('click',()=>{stopRotation();showPrevInPool();});
+nextBtn.addEventListener('click',()=>{stopRotation();showNextInPool();});
 playPauseBtn.addEventListener('click',toggleRotation);
 audioBtn.addEventListener('click',toggleAudio);
 
-quizBtn.addEventListener('click',()=>{
-  quizMode=!quizMode;
-  if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; }
-  else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }
-});
+quizBtn.addEventListener('click',()=>{quizMode=!quizMode;if(quizMode){applyFade(authorEl,true);applyFade(scanEl,true);quizBtn.classList.add('active');quizBtn.style.opacity=0.7;}else{applyFade(authorEl,false);applyFade(scanEl,false);quizBtn.classList.remove('active');quizBtn.style.opacity=1;}});
 
-// Recherche
-searchInput.addEventListener('input',(e)=>{
-  const term=e.target.value;
-  updatePoolFromTerm(term);
-  if(rotationActive) stopRotation();
-  if(pool.length===0){ quoteEl.textContent="Aucune citation trouvée pour : "+term; authorEl.textContent=""; scanEl.textContent=""; return; }
-  const first=pool[0];
-  availablePool=pool.filter(i=>i!==first);
-  poolHistory=[first]; poolHistoryIndex=0;
-  renderQuoteByIndex(first);
-});
+searchInput.addEventListener('input',(e)=>{const term=e.target.value;updatePoolFromTerm(term); stopRotation(); if(pool.length===0){quoteEl.textContent="Aucune citation trouvée pour : "+term; authorEl.textContent=""; scanEl.textContent="0/0"; return;} const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first); updateCountDisplay();});
 
-resetSearchBtn.addEventListener('click',()=>{
-  searchInput.value="";
-  updatePoolFromTerm("");
-  availablePool=pool.slice();
-  poolHistory=[]; poolHistoryIndex=-1;
-  stopRotation();
-});
+resetSearchBtn.addEventListener('click',()=>{searchInput.value="";updatePoolFromTerm("");availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; stopRotation(); updateCountDisplay();});
 
 // INIT
-updatePoolFromTerm("");
-const firstIdx=getNextFromPoolRandom();
-poolHistory.push(firstIdx); poolHistoryIndex=0;
-renderQuoteByIndex(firstIdx);
-startRotation();
+updatePoolFromTerm(""); const firstIdx=getNextFromPoolRandom(); poolHistory.push(firstIdx); poolHistoryIndex=0; renderQuoteByIndex(firstIdx); startRotation();
 </script>
 </body>
 </html>
