@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Player Citations One Piece</title>
+<title>Player Citations One Piece — Recherche & Quiz</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet" />
 <style>
   html, body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    height: 100%;
   }
   body {
     background: #191919;
@@ -19,60 +20,76 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
   }
 
-  /* 🔍 Barre de recherche */
+  /* wrapper pour centrer tout proprement */
+  .main-wrap {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* --- zone juste au-dessus des citations : recherche + numéro + quiz --- */
+  .top-controls {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px; /* collé aux citations */
+  }
+
   .search-bar {
-    position: absolute;
-    top: 15px;
-    width: 80%;
-    max-width: 500px;
+    flex: 1;
     display: flex;
     justify-content: center;
   }
 
   .search-bar input {
     width: 100%;
-    padding: 6px 10px;
-    font-size: 16px;
-    border: none;
+    max-width: 560px;
+    padding: 8px 12px;
+    font-size: 20px; /* demandé : plus gros */
     border-radius: 10px;
+    border: none;
     outline: none;
   }
 
-  /* Numéro du scan */
   .scan-number {
-    position: absolute;
-    top: 60px;
-    left: 20px;
-    font-size: 14px;
-    opacity: 0.85;
+    font-size: 20px; /* environ la moitié de la taille des citations - demandé 20px */
+    opacity: 1;
+    transition: opacity 0.9s ease-in-out;
+    min-width: 160px;
+    text-align: left;
   }
 
-  /* Bouton Quiz */
   .quiz-btn {
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    background: #333;
+    font-size: 20px; /* demandé 20px */
+    padding: 6px 12px;
+    background: transparent;
     color: white;
-    border: none;
+    border: 2px solid white;
     border-radius: 8px;
-    padding: 4px 10px;
-    font-size: 14px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.25s, color 0.25s, opacity 0.9s ease-in-out;
+    opacity: 1;
   }
 
   .quiz-btn.active {
-    background: #d62b2b;
+    background: white;
+    color: #191919;
   }
 
+  /* zone de la citation */
   .quote-container {
+    width: 100%;
     max-width: 1000px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     padding: 0 20px;
   }
 
@@ -81,10 +98,10 @@
     line-height: 1.6;
     letter-spacing: 1px;
     user-select: none;
-    opacity: 1;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 0.9s ease-in-out;
     white-space: pre-line;
     word-wrap: break-word;
+    opacity: 1;
   }
 
   .quote-text.long-quote {
@@ -96,14 +113,16 @@
   }
 
   .fade-out {
-    opacity: 0;
+    opacity: 0 !important;
   }
 
+  /* contrôles bas */
   .controls {
     display: flex;
     align-items: center;
     gap: 15px;
     flex-wrap: nowrap;
+    margin-top: 8px;
   }
 
   button.control-btn {
@@ -113,7 +132,7 @@
     font-family: 'Bangers', cursive;
     font-size: 18px;
     cursor: pointer;
-    padding: 10px 30px;
+    padding: 10px 22px;
     border-radius: 6px;
     user-select: none;
     transition: background 0.3s, color 0.3s;
@@ -140,56 +159,54 @@
     transition: background-color 0.3s, transform 0.2s;
   }
 
-  .btn-audio:hover {
-    background: white;
-  }
+  .btn-audio:hover { background: white; }
+  .btn-audio svg { fill: white; width: 28px; height: 28px; transition: fill 0.3s; }
+  .btn-audio:hover svg { fill: #191919; }
 
-  .btn-audio svg {
-    fill: white;
-    width: 28px;
-    height: 28px;
-    transition: fill 0.3s;
-  }
-
-  .btn-audio:hover svg {
-    fill: #191919;
-  }
-
+  /* accessibilité/responsive */
   @media (max-width: 768px) {
-    .quote-container { max-width: 90%; }
-    .controls { flex-wrap: wrap; justify-content: center; gap: 10px; }
-    .btn-audio { width: 45px; height: 45px; }
+    .main-wrap { padding: 0 12px; }
+    .search-bar input { font-size: 16px; }
+    .scan-number, .quiz-btn { font-size: 16px; }
+    .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
   }
 </style>
 </head>
 <body>
+  <div class="main-wrap">
 
-<!-- 🔍 Barre de recherche -->
-<div class="search-bar">
-  <input type="text" id="searchInput" placeholder="Rechercher une citation...">
-</div>
+    <!-- TOP CONTROLS (maintenant collés aux citations, taille ~20px) -->
+    <div class="top-controls">
+      <div id="scanNumber" class="scan-number"></div>
 
-<!-- Numéro du scan et bouton quiz -->
-<div class="scan-number" id="scanNumber"></div>
-<button id="quizBtn" class="quiz-btn">Quiz</button>
+      <div class="search-bar">
+        <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
+      </div>
 
-<div class="quote-container">
-  <div id="quote" class="quote-text"></div>
-  <div id="author" class="quote-author"></div>
-</div>
+      <button id="quizBtn" class="quiz-btn">Quiz</button>
+    </div>
 
-<div class="controls">
-  <button id="prevBtn" class="control-btn" aria-label="Citation précédente">⏮</button>
-  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
-  <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
-  <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
-    <svg viewBox="0 0 24 24" id="audioIcon">
-      <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
-      <rect x="14" y="8" width="2" height="8"></rect>
-      <rect x="18" y="7" width="2" height="10"></rect>
-    </svg>
-  </button>
-</div>
+    <!-- CITATION -->
+    <div class="quote-container">
+      <div id="quote" class="quote-text"></div>
+      <div id="author" class="quote-author"></div>
+    </div>
+
+    <!-- BAS : navigation + audio -->
+    <div class="controls">
+      <button id="prevBtn" class="control-btn" aria-label="Citation précédente">⏮</button>
+      <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
+      <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
+      <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
+        <svg viewBox="0 0 24 24" id="audioIcon">
+          <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
+          <rect x="14" y="8" width="2" height="8"></rect>
+          <rect x="18" y="7" width="2" height="10"></rect>
+        </svg>
+      </button>
+    </div>
+
+  </div>
 
 <script>
   const quotes = [
@@ -200,42 +217,48 @@
     {text: "La passion et les rêves sont comme le temps, rien ne peut les arrêter...", author: "Gol D. Roger", audio: "dragonroger.mp3", scan: "Épisode 48"},
     {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: "luffynom.mp3", scan: "Scan 516"},
     {text: "Vivre n'est pas un crime", author: "Franky", audio: "Frankyvivre.m4a", scan: "Scan 434"},
-    {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !", author: "Gol D. Roger", audio: "Rogertresor.mp3", scan: "Épisode 1"},
-    {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?!", author: "Marshall D. Teach", audio: "teachdreams.mp3", scan: "Scan 576"},
+    {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde !", author: "Gol D. Roger", audio: "Rogertresor.mp3", scan: "Épisode 1"},
+    {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author: "Marshall D. Teach", audio: "teachdreams.mp3", scan: "Scan 576"},
     {text: "Ça fait un bail, hein chapeau de paille ?", author: "Crocodile", audio: "CrocodileHisha.mp3", scan: "Épisode 151"},
-    {text: "Ne vous souciez ni du regard, ni de ce que disent les autres !", author: "Belmer", audio: "belmersacrifice.mp3", scan: "Épisode 37"},
+    {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: "belmersacrifice.mp3", scan: "Épisode 37"},
     {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: "fujitoraaveugle.mp3", scan: "Scan 701"},
     {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: "barbenoirepoings.m4a", scan: "Scan 580"},
-    {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "hilulukmort.m4a", scan: "Épisode 86", hiluluk: true},
+    {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "hilulukmort.m4a", scan: "Épisode 86", hiluluk: true},
     {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: "bbonepiece.mp3", scan: "Épisode 485"},
     {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a", scan: "Scan 746"},
   ];
 
+  // éléments DOM
+  const quoteEl = document.getElementById('quote');
+  const authorEl = document.getElementById('author');
+  const scanEl = document.getElementById('scanNumber');
+  const prevBtn = document.getElementById('prevBtn');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const audioBtn = document.getElementById('audioBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const quizBtn = document.getElementById('quizBtn');
+  const searchInput = document.getElementById('searchInput');
+
+  // état
   let currentIndex = 0;
   let rotationActive = true;
   let rotationTimer = null;
   let audioPlaying = false;
   let audio = null;
   let rotationWasActiveBeforeAudio = false;
-  let availableIndexes = quotes.map((_, i) => i);
-  let history = [];
-  let historyIndex = -1;
+
+  // pool (les indices actuellement valides selon la recherche)
+  let pool = quotes.map((_, i) => i);
+  let availablePool = pool.slice(); // pour éviter répétitions
+  let poolHistory = [];
+  let poolHistoryIndex = -1;
   let quizMode = false;
 
-  const quoteEl = document.getElementById('quote');
-  const authorEl = document.getElementById('author');
-  const scanEl = document.getElementById('scanNumber');
-  const quizBtn = document.getElementById('quizBtn');
-  const prevBtn = document.getElementById('prevBtn');
-  const playPauseBtn = document.getElementById('playPauseBtn');
-  const audioBtn = document.getElementById('audioBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const searchInput = document.getElementById('searchInput');
-
-  function getNextRandomIndex() {
-    if (availableIndexes.length === 0) availableIndexes = quotes.map((_, i) => i);
-    const randomIdx = Math.floor(Math.random() * availableIndexes.length);
-    return availableIndexes.splice(randomIdx, 1)[0];
+  /* ---------- UTIL ---------- */
+  function applyFadeToElement(el, hide) {
+    if (!el) return;
+    if (hide) el.classList.add('fade-out');
+    else el.classList.remove('fade-out');
   }
 
   function stopAudio() {
@@ -247,82 +270,121 @@
     audioPlaying = false;
   }
 
-  function showQuote(index) {
+  /* ---------- AFFICHAGE ---------- */
+  function renderQuoteByIndex(index) {
+    // index = index réel dans `quotes`
     stopAudio();
 
+    // fade out texte + auteur + scan (effet)
     quoteEl.classList.add('fade-out');
     authorEl.classList.add('fade-out');
+    scanEl.classList.add('fade-out');
 
     setTimeout(() => {
       currentIndex = index;
+      const q = quotes[currentIndex];
 
-      const currentQuote = quotes[currentIndex];
-      if (currentQuote.text.length > 200) quoteEl.classList.add('long-quote');
+      // long quote sizing
+      if (q.text.length > 200) quoteEl.classList.add('long-quote');
       else quoteEl.classList.remove('long-quote');
 
-      if (currentQuote.hiluluk) quoteEl.classList.add('hiluluk');
+      // hiluluk special
+      if (q.hiluluk) quoteEl.classList.add('hiluluk');
       else quoteEl.classList.remove('hiluluk');
 
-      quoteEl.textContent = currentQuote.text;
-      authorEl.textContent = "- " + currentQuote.author;
-      scanEl.textContent = currentQuote.scan;
+      quoteEl.textContent = q.text;
+      authorEl.textContent = "- " + q.author;
+      scanEl.textContent = q.scan || "";
 
+      // si quiz activé -> on cache avec fade (effet identique aux citations)
       if (quizMode) {
-        authorEl.style.visibility = 'hidden';
-        scanEl.style.visibility = 'hidden';
+        applyFadeToElement(authorEl, true);
+        applyFadeToElement(scanEl, true);
+        // pour le bouton quiz, on le marque actif (mais on laisse le bouton visible pour pouvoir désactiver)
+        quizBtn.classList.add('active');
+        // on diminue légèrement le bouton pour indiquer le mode, tout en le laissant cliquable
+        quizBtn.style.opacity = 0.7;
       } else {
-        authorEl.style.visibility = 'visible';
-        scanEl.style.visibility = 'visible';
+        applyFadeToElement(authorEl, false);
+        applyFadeToElement(scanEl, false);
+        quizBtn.classList.remove('active');
+        quizBtn.style.opacity = 1;
       }
 
+      // fade in (retirer fade-out)
       quoteEl.classList.remove('fade-out');
-      authorEl.classList.remove('fade-out');
-    }, 900);
+      authorEl.classList.remove('fade-out'); // utile si quiz n'est pas actif
+      scanEl.classList.remove('fade-out');
+    }, 450); // 450ms permet une transition fluide (tu peux ajuster)
   }
 
-  function showQuoteFromHistory() {
-    showQuote(history[historyIndex]);
-  }
-
-  function showNextQuote() {
-    if (historyIndex < history.length - 1) {
-      historyIndex++;
-      showQuoteFromHistory();
+  /* ---------- POOL / NAV ---------- */
+  function updatePoolFromTerm(term) {
+    const t = (term || "").trim().toLowerCase();
+    if (!t) {
+      pool = quotes.map((_, i) => i);
     } else {
-      const nextIdx = getNextRandomIndex();
-      history.push(nextIdx);
-      historyIndex++;
-      showQuote(nextIdx);
+      pool = [];
+      for (let i = 0; i < quotes.length; i++) {
+        const q = quotes[i];
+        if (
+          q.text.toLowerCase().includes(t) ||
+          q.author.toLowerCase().includes(t) ||
+          (q.scan && q.scan.toLowerCase().includes(t))
+        ) pool.push(i);
+      }
+    }
+    // reset disponibles + historique pool
+    availablePool = pool.slice();
+    poolHistory = [];
+    poolHistoryIndex = -1;
+  }
+
+  function getNextFromPoolRandom() {
+    if (pool.length === 0) return -1;
+    if (availablePool.length === 0) availablePool = pool.slice();
+    const r = Math.floor(Math.random() * availablePool.length);
+    return availablePool.splice(r, 1)[0];
+  }
+
+  function showNextInPool() {
+    if (pool.length === 0) return;
+    if (poolHistoryIndex < poolHistory.length - 1) {
+      poolHistoryIndex++;
+      renderQuoteByIndex(poolHistory[poolHistoryIndex]);
+    } else {
+      const idx = getNextFromPoolRandom();
+      poolHistory.push(idx);
+      poolHistoryIndex++;
+      renderQuoteByIndex(idx);
     }
   }
 
-  function showPrevQuote() {
-    if (historyIndex > 0) {
-      historyIndex--;
-      showQuoteFromHistory();
+  function showPrevInPool() {
+    if (poolHistoryIndex > 0) {
+      poolHistoryIndex--;
+      renderQuoteByIndex(poolHistory[poolHistoryIndex]);
     }
   }
 
+  /* ---------- ROTATION ---------- */
   function startRotation() {
     rotationActive = true;
     playPauseBtn.textContent = "❚❚";
     clearTimeout(rotationTimer);
     rotationTimer = setTimeout(() => {
-      showNextQuote();
+      showNextInPool();
       if (rotationActive) startRotation();
     }, 10000);
   }
-
   function stopRotation() {
     rotationActive = false;
     playPauseBtn.textContent = "▶";
     clearTimeout(rotationTimer);
   }
+  function toggleRotation() { rotationActive ? stopRotation() : startRotation(); }
 
-  function toggleRotation() {
-    rotationActive ? stopRotation() : startRotation();
-  }
-
+  /* ---------- AUDIO ---------- */
   function toggleAudio() {
     if (audioPlaying) {
       stopAudio();
@@ -335,10 +397,7 @@
 
     audio = new Audio(quotes[currentIndex].audio);
     audioPlaying = true;
-    audio.play().catch(() => {
-      audioPlaying = false;
-      audio = null;
-    });
+    audio.play().catch(() => { audioPlaying = false; audio = null; });
 
     audio.addEventListener('ended', () => {
       audioPlaying = false;
@@ -348,35 +407,81 @@
     });
   }
 
-  prevBtn.addEventListener('click', () => { stopRotation(); showPrevQuote(); });
-  nextBtn.addEventListener('click', () => { stopRotation(); showNextQuote(); });
+  /* ---------- EVENTS ---------- */
+  prevBtn.addEventListener('click', () => { stopRotation(); showPrevInPool(); });
+  nextBtn.addEventListener('click', () => { stopRotation(); showNextInPool(); });
   playPauseBtn.addEventListener('click', toggleRotation);
   audioBtn.addEventListener('click', toggleAudio);
 
-  // Mode Quiz
   quizBtn.addEventListener('click', () => {
     quizMode = !quizMode;
-    quizBtn.classList.toggle('active', quizMode);
-    showQuote(currentIndex);
-  });
-
-  // Recherche
-  searchInput.addEventListener('input', (e) => {
-    const value = e.target.value.toLowerCase();
-    const foundIndex = quotes.findIndex(q =>
-      q.text.toLowerCase().includes(value) ||
-      q.author.toLowerCase().includes(value) ||
-      q.scan.toLowerCase().includes(value)
-    );
-    if (foundIndex !== -1) {
-      stopRotation();
-      showQuote(foundIndex);
+    // applique l'effet de disparition (fade) sur auteur + scan comme demandé
+    if (quizMode) {
+      applyFadeToElement(authorEl, true);
+      applyFadeToElement(scanEl, true);
+      quizBtn.classList.add('active');
+      quizBtn.style.opacity = 0.7;
+    } else {
+      applyFadeToElement(authorEl, false);
+      applyFadeToElement(scanEl, false);
+      quizBtn.classList.remove('active');
+      quizBtn.style.opacity = 1;
     }
   });
 
-  showNextQuote();
-  startRotation();
-</script>
+  // recherche : met à jour le pool, stop la rotation et affiche la première correspondance
+  let searchTypingTimer = null;
+  searchInput.addEventListener('input', (e) => {
+    const term = e.target.value;
+    updatePoolFromTerm(term);
 
+    // stop rotation quand on tape (comportement demandé)
+    if (rotationActive) {
+      stopRotation();
+    }
+
+    if (pool.length === 0) {
+      // rien trouvé -> on peut afficher message simple dans quote
+      renderQuoteByIndex(0); // pour garder un état, mais on peut aussi montrer "Aucune citation"
+      quoteEl.textContent = "Aucune citation trouvée pour : " + term;
+      authorEl.textContent = "";
+      scanEl.textContent = "";
+      return;
+    }
+
+    // on affiche la première correspondance du pool (de façon déterministe)
+    const first = pool[0];
+    // on prépare availablePool en retirant le premier affiché pour éviter doublon immédiat
+    availablePool = pool.filter(i => i !== first);
+    poolHistory = [first];
+    poolHistoryIndex = 0;
+    renderQuoteByIndex(first);
+  });
+
+  /* ---------- INIT ---------- */
+  updatePoolFromTerm(""); // pool = tout
+  // démarrer l'historique en affichant la première citation aléatoire depuis le pool
+  const firstIdx = getNextFromPoolRandom();
+  poolHistory.push(firstIdx);
+  poolHistoryIndex = 0;
+  renderQuoteByIndex(firstIdx);
+  startRotation();
+
+  // Optionnel : si tu veux permettre "Entrée" dans la recherche pour aller à la 1ère correspondance (déjà fait), ou effacer avec Escape
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      searchInput.value = '';
+      updatePoolFromTerm('');
+      availablePool = pool.slice();
+      poolHistory = [];
+      poolHistoryIndex = -1;
+      stopRotation(); // on laisse l'utilisateur relancer s'il veut
+    }
+    if (e.key === 'Enter') {
+      // si pool contient >0, on stoppe rotation et on affiche la première (déjà géré par input)
+      stopRotation();
+    }
+  });
+</script>
 </body>
 </html>
