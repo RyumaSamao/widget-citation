@@ -22,11 +22,19 @@ body {
   justify-content: flex-start;
   padding: 20px 0;
 }
+.main-wrap {
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 /* --- TOP CONTROLS --- */
 .top-controls {
   width: 100%;
-  max-width: 1000px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -38,12 +46,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
-  min-width: 160px;
 }
 
-.left-info .count-found,
-.left-info .scan-number {
+#countFound, #scanNumber {
   font-size: 16px;
 }
 
@@ -83,13 +88,7 @@ body {
 }
 .search-bar .reset-search:hover { color: #ff6666; }
 
-.right-quiz {
-  min-width: 80px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.quiz-btn {
+.right-quiz button {
   font-size: 16px;
   padding: 6px 12px;
   background: transparent;
@@ -97,7 +96,7 @@ body {
   border: 2px solid white;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.25s, color 0.25s, opacity 0.9s ease-in-out;
+  transition: background 0.25s, color 0.25s;
 }
 
 /* --- CITATION --- */
@@ -172,7 +171,6 @@ button.control-btn:hover {
 
 @media (max-width: 768px) {
   .top-controls { flex-direction: column; align-items: stretch; gap: 12px; }
-  .left-info, .right-quiz { flex-direction: row; justify-content: space-between; }
   .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
   button.control-btn { padding: 10px 28px; font-size: 18px; }
   .btn-audio { width: 50px; height: 50px; }
@@ -185,8 +183,8 @@ button.control-btn:hover {
   <!-- TOP CONTROLS -->
   <div class="top-controls">
     <div class="left-info">
-      <div id="scanNumber" class="scan-number">Scan 1</div>
-      <div id="countFound" class="count-found">0 citations</div>
+      <div id="scanNumber">Scan 1</div>
+      <div id="countFound">0 citations</div>
     </div>
 
     <div class="center-search">
@@ -197,7 +195,7 @@ button.control-btn:hover {
     </div>
 
     <div class="right-quiz">
-      <button id="quizBtn" class="quiz-btn">Quiz</button>
+      <button id="quizBtn">Quiz</button>
     </div>
   </div>
 
@@ -223,7 +221,7 @@ button.control-btn:hover {
 </div>
 
 <script>
-// Même JS que précédemment avec mise à jour du compteur
+// JS exactement comme le tien, avec mise à jour du compteur
 const quotes = [
   {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "LuffyTokoda.mp3", scan: "Épisode 1"},
   {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "GeantsNika.mp3", scan: "Scan 1044"},
@@ -289,13 +287,8 @@ function renderQuoteByIndex(index){
     authorEl.textContent="- "+q.author;
     scanEl.textContent=q.scan||"";
 
-    if(quizMode){
-      applyFade(authorEl,true);
-      quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;
-    } else{
-      applyFade(authorEl,false);
-      quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
-    }
+    if(quizMode){ applyFade(authorEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; }
+    else{ applyFade(authorEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }
 
     quoteEl.classList.remove('fade-out');
     authorEl.classList.remove('fade-out');
@@ -311,7 +304,7 @@ function updatePoolFromTerm(term){
     pool=[];
     quotes.forEach((q,i)=>{ if(q.text.toLowerCase().includes(t)||q.author.toLowerCase().includes(t)||(q.scan && q.scan.toLowerCase().includes(t))) pool.push(i); });
   }
-  countFoundEl.textContent = pool.length+" citations"; // MAJ compteur
+  countFoundEl.textContent = pool.length+" citations";
   availablePool=pool.slice();
   poolHistory=[];
   poolHistoryIndex=-1;
@@ -330,9 +323,7 @@ function showNextInPool(){
   else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex++; renderQuoteByIndex(idx); }
 }
 
-function showPrevInPool(){
-  if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
-}
+function showPrevInPool(){ if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); } }
 
 /* ROTATION */
 function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive) startRotation();},10000); }
