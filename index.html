@@ -39,27 +39,32 @@ body {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 2rem;
+  font-size: 16px; /* réduit la taille globale */
 }
 
 .search-wrapper {
-  flex: 1;
   display: flex;
   align-items: center;
+  gap: 6px;
+  flex: 1;
   max-width: 600px;
   position: relative;
 }
 
+.count-found {
+  min-width: 60px;
+  text-align: left;
+}
+
 .search-bar {
   flex: 1;
-  display: flex;
-  justify-content: center;
   position: relative;
 }
 
 .search-bar input {
   width: 100%;
-  padding: 8px 12px;
-  font-size: 18px;
+  padding: 6px 10px;
+  font-size: 16px;
   border-radius: 10px;
   border: none;
   outline: none;
@@ -67,10 +72,10 @@ body {
 
 .search-bar .reset-search {
   position: absolute;
-  right: 2px;
+  right: 2px; /* plus proche */
   top: 50%;
   transform: translateY(-50%);
-  font-size: 20px;
+  font-size: 16px;
   cursor: pointer;
   border: none;
   background: transparent;
@@ -79,17 +84,17 @@ body {
 }
 .search-bar .reset-search:hover { color: #ff6666; }
 
-.search-counter {
-  margin-right: 8px;
-  font-size: 18px;
-  min-width: 120px;
+.scan-number {
+  font-size: 16px;
+  opacity: 1;
+  transition: opacity 0.9s ease-in-out;
+  min-width: 160px;
   text-align: left;
 }
 
-/* Quiz button */
 .quiz-btn {
-  font-size: 20px;
-  padding: 6px 12px;
+  font-size: 16px;
+  padding: 4px 10px;
   background: transparent;
   color: white;
   border: 2px solid white;
@@ -97,11 +102,6 @@ body {
   cursor: pointer;
   transition: background 0.25s, color 0.25s, opacity 0.9s ease-in-out;
   opacity: 1;
-}
-
-.quiz-btn.active {
-  background: white;
-  color: #191919;
 }
 
 /* zone citation */
@@ -140,7 +140,7 @@ body {
 .controls {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
   flex-wrap: nowrap;
   margin-top: 8px;
 }
@@ -150,7 +150,7 @@ button.control-btn {
   border: 2px solid white;
   color: white;
   font-family: 'Bangers', cursive;
-  font-size: 18px;
+  font-size: 20px; /* reste 20px */
   cursor: pointer;
   padding: 10px 22px;
   border-radius: 6px;
@@ -185,8 +185,6 @@ button.control-btn:hover {
 
 @media (max-width: 768px) {
   .main-wrap { padding: 0 12px; }
-  .search-bar input { font-size: 16px; }
-  .search-counter, .quiz-btn { font-size: 16px; }
   .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
 }
 </style>
@@ -196,13 +194,17 @@ button.control-btn:hover {
 
   <!-- TOP CONTROLS -->
   <div class="top-controls">
+    <div class="count-found" id="countFound">0 citations</div>
+
     <div class="search-wrapper">
-      <div id="searchCounter" class="search-counter">Citations : 0</div>
       <div class="search-bar">
         <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
         <button class="reset-search">✖</button>
       </div>
     </div>
+
+    <div id="scanNumber" class="scan-number"></div>
+
     <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
 
@@ -250,7 +252,7 @@ const quotes = [
 // DOM
 const quoteEl = document.getElementById('quote');
 const authorEl = document.getElementById('author');
-const scanEl = document.getElementById('searchCounter');
+const scanEl = document.getElementById('scanNumber');
 const prevBtn = document.getElementById('prevBtn');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const audioBtn = document.getElementById('audioBtn');
@@ -258,6 +260,7 @@ const nextBtn = document.getElementById('nextBtn');
 const quizBtn = document.getElementById('quizBtn');
 const searchInput = document.getElementById('searchInput');
 const resetSearchBtn = document.querySelector('.reset-search');
+const countFoundEl = document.getElementById('countFound');
 
 let currentIndex = 0;
 let rotationActive = true;
@@ -272,70 +275,120 @@ let poolHistory = [];
 let poolHistoryIndex = -1;
 let quizMode = false;
 
-/* FUNCTIONS */
+/* UTIL */
+function applyFade(el, hide) { if(!el) return; hide ? el.classList.add('fade-out') : el.classList.remove('fade-out'); }
+function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
+
+/* RENDER */
 function renderQuoteByIndex(index){
-  currentIndex=index;
-  const q=quotes[currentIndex];
-  quoteEl.textContent=q.text;
-  authorEl.textContent="- "+q.author;
-  if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
-  if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
+  stopAudio();
+  quoteEl.classList.add('fade-out');
+  authorEl.classList.add('fade-out');
+  scanEl.classList.add('fade-out');
+
+  setTimeout(()=>{
+    currentIndex=index;
+    const q=quotes[currentIndex];
+    if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
+    if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
+
+    quoteEl.textContent=q.text;
+    authorEl.textContent="- "+q.author;
+    scanEl.textContent=q.scan||"";
+
+    if(quizMode){
+      applyFade(authorEl,true);
+      applyFade(scanEl,true);
+      quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;
+    } else{
+      applyFade(authorEl,false);
+      applyFade(scanEl,false);
+      quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
+    }
+
+    quoteEl.classList.remove('fade-out');
+    authorEl.classList.remove('fade-out');
+    scanEl.classList.remove('fade-out');
+  },450);
 }
 
-function updateCounter(){ scanEl.textContent="Citations : "+pool.length; }
-
-function updatePool(term){
-  const t=(term||"").toLowerCase();
-  pool = quotes.map((q,i)=>q.text.toLowerCase().includes(t)||q.author.toLowerCase().includes(t)||(q.scan&&q.scan.toLowerCase().includes(t))?i:null).filter(i=>i!==null);
+/* POOL */
+function updatePoolFromTerm(term){
+  const t=(term||"").trim().toLowerCase();
+  if(!t){ pool=quotes.map((_,i)=>i); }
+  else{
+    pool=[];
+    quotes.forEach((q,i)=>{ if(q.text.toLowerCase().includes(t)||q.author.toLowerCase().includes(t)||(q.scan && q.scan.toLowerCase().includes(t))) pool.push(i); });
+  }
+  countFoundEl.textContent = pool.length+" citations"; // MAJ compteur
   availablePool=pool.slice();
   poolHistory=[];
   poolHistoryIndex=-1;
-  updateCounter();
 }
 
-function showNext(){
+function getNextFromPoolRandom(){
+  if(pool.length===0) return -1;
+  if(availablePool.length===0) availablePool=pool.slice();
+  const r=Math.floor(Math.random()*availablePool.length);
+  return availablePool.splice(r,1)[0];
+}
+
+function showNextInPool(){
   if(pool.length===0) return;
   if(poolHistoryIndex<poolHistory.length-1){ poolHistoryIndex++; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
-  else { 
-    const r=Math.floor(Math.random()*availablePool.length);
-    const idx=availablePool.splice(r,1)[0];
-    poolHistory.push(idx);
-    poolHistoryIndex++;
-    renderQuoteByIndex(idx);
-  }
+  else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex++; renderQuoteByIndex(idx); }
 }
 
-function showPrev(){
+function showPrevInPool(){
   if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
 }
 
 /* ROTATION */
-function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; rotationTimer=setInterval(showNext,10000); }
-function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; if(rotationTimer){clearInterval(rotationTimer); rotationTimer=null;} }
+function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive) startRotation();},10000); }
+function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer); }
+function toggleRotation(){ rotationActive?stopRotation():startRotation(); }
 
 /* AUDIO */
 function toggleAudio(){ 
-  if(audioPlaying){ audio.pause(); audioPlaying=false; if(rotationWasActiveBeforeAudio) startRotation(); return; }
-  const q=quotes[currentIndex];
-  if(!q.audio) return;
-  rotationWasActiveBeforeAudio=rotationActive; stopRotation();
-  audio=new Audio(q.audio); audioPlaying=true; audio.play();
-  audio.onended=()=>{ audioPlaying=false; if(rotationWasActiveBeforeAudio) startRotation(); }
+  if(audioPlaying){ stopAudio(); return; }
+  if(!quotes[currentIndex].audio) return;
+  rotationWasActiveBeforeAudio=rotationActive; if(rotationActive) stopRotation();
+  audio=new Audio(quotes[currentIndex].audio); audioPlaying=true; audio.play().catch(()=>{audioPlaying=false; audio=null;});
+  audio.addEventListener('ended',()=>{ audioPlaying=false; audio=null; if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; });
 }
 
 /* EVENTS */
-nextBtn.addEventListener('click',()=>{ showNext(); stopRotation(); });
-prevBtn.addEventListener('click',()=>{ showPrev(); stopRotation(); });
-playPauseBtn.addEventListener('click',()=>{ rotationActive?stopRotation():startRotation(); });
+prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
+nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
+playPauseBtn.addEventListener('click',toggleRotation);
 audioBtn.addEventListener('click',toggleAudio);
-quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; });
 
-searchInput.addEventListener('input',(e)=>{ updatePool(e.target.value); showNext(); });
-resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePool(""); showNext(); });
+quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; renderQuoteByIndex(currentIndex); });
 
-/* INIT */
-updatePool('');
-showNext();
+searchInput.addEventListener('input',(e)=>{
+  const term=e.target.value;
+  updatePoolFromTerm(term);
+  if(rotationActive) stopRotation();
+  if(pool.length===0){ quoteEl.textContent="Aucune citation trouvée pour : "+term; authorEl.textContent=""; scanEl.textContent=""; return; }
+  const first=pool[0];
+  availablePool=pool.filter(i=>i!==first);
+  poolHistory=[first]; poolHistoryIndex=0;
+  renderQuoteByIndex(first);
+});
+
+resetSearchBtn.addEventListener('click',()=>{
+  searchInput.value="";
+  updatePoolFromTerm("");
+  availablePool=pool.slice();
+  poolHistory=[]; poolHistoryIndex=-1;
+  stopRotation();
+});
+
+// INIT
+updatePoolFromTerm("");
+const firstIdx=getNextFromPoolRandom();
+poolHistory.push(firstIdx); poolHistoryIndex=0;
+renderQuoteByIndex(firstIdx);
 startRotation();
 </script>
 </body>
