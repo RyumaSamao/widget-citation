@@ -3,234 +3,254 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Player Citations One Piece</title>
+<title>Player Citations One Piece — Recherche & Quiz</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet" />
 <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-  }
-  body {
-    background: #191919;
-    color: white;
-    font-family: 'Bangers', cursive;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
+body {
+  background: #191919;
+  color: white;
+  font-family: 'Bangers', cursive;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.main-wrap {
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .quote-container {
-    max-width: 1000px;
-    text-align: center;
-    margin-bottom: 2rem;
-    padding: 0 20px;
-  }
+/* --- zone recherche + scan + quiz --- */
+.top-controls {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 2rem; /* plus d’espace sous les contrôles */
+}
 
-  .quote-text, .quote-author, .quote-info {
-    font-size: clamp(18px, 2.3vw, 26px);
-    line-height: 1.6;
-    letter-spacing: 1px;
-    user-select: none;
-    opacity: 1;
-    transition: opacity 1s ease-in-out;
-    white-space: pre-line;
-    word-wrap: break-word;
-  }
+.search-bar {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
 
-  .quote-text.long-quote {
-    font-size: clamp(14px, 2vw, 18px);
-  }
+.search-bar input {
+  width: 100%;
+  max-width: 560px;
+  padding: 8px 12px;
+  font-size: 20px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
 
-  .hiluluk {
-    white-space: normal !important;
-  }
+.search-bar .reset-search {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: white;
+  transition: color 0.3s;
+}
+.search-bar .reset-search:hover { color: #ff6666; }
 
-  .fade-out {
-    opacity: 0;
-  }
+.scan-number {
+  font-size: 20px;
+  opacity: 1;
+  transition: opacity 0.9s ease-in-out;
+  min-width: 160px;
+  text-align: left;
+}
 
-  .quote-info {
-    font-size: 20px;
-    margin-bottom: 2rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    align-items: center;
-  }
+.quiz-btn {
+  font-size: 20px;
+  padding: 6px 12px;
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s, opacity 0.9s ease-in-out;
+  opacity: 1;
+}
 
-  .quote-info button {
-    font-size: 20px;
-    padding: 0.3rem 0.8rem;
-    border: 2px solid white;
-    background: transparent;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    font-family: 'Bangers', cursive;
-    transition: background 0.3s, color 0.3s;
-  }
+.quiz-btn.active {
+  background: white;
+  color: #191919;
+}
 
-  .quote-info button:hover {
-    background: white;
-    color: #191919;
-  }
+/* zone citation */
+.quote-container {
+  width: 100%;
+  max-width: 1000px;
+  text-align: center;
+  margin-bottom: 1.5rem; /* plus d’espace sous la citation */
+  padding: 0 20px;
+}
 
-  .controls {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: nowrap;
-    margin-bottom: 1rem;
-  }
+.quote-text, .quote-author {
+  font-size: clamp(18px, 2.3vw, 26px);
+  line-height: 1.6;
+  letter-spacing: 1px;
+  user-select: none;
+  transition: opacity 0.9s ease-in-out;
+  white-space: pre-line;
+  word-wrap: break-word;
+  opacity: 1;
+}
 
-  button.control-btn {
-    background: transparent;
-    border: 2px solid white;
-    color: white;
-    font-family: 'Bangers', cursive;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 10px 30px;
-    border-radius: 6px;
-    user-select: none;
-    transition: background 0.3s, color 0.3s;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.quote-text.long-quote {
+  font-size: clamp(14px, 2vw, 18px);
+}
 
-  button.control-btn:hover {
-    background: white;
-    color: #191919;
-  }
+.hiluluk {
+  white-space: normal !important;
+}
 
-  .btn-audio {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid white;
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s, transform 0.2s;
-  }
+.fade-out {
+  opacity: 0 !important;
+}
 
-  .btn-audio:hover {
-    background: white;
-  }
+/* contrôles bas */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: nowrap;
+  margin-top: 8px;
+}
 
-  .btn-audio svg {
-    fill: white;
-    width: 28px;
-    height: 28px;
-    transition: fill 0.3s;
-  }
+button.control-btn {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 10px 22px;
+  border-radius: 6px;
+  user-select: none;
+  transition: background 0.3s, color 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .btn-audio:hover svg {
-    fill: #191919;
-  }
+button.control-btn:hover {
+  background: white;
+  color: #191919;
+}
 
-  .search-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+.btn-audio {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s, transform 0.2s;
+}
 
-  .search-container input {
-    font-family: 'Bangers', cursive;
-    font-size: 20px;
-    padding: 0.3rem 0.5rem;
-    border-radius: 5px;
-    border: 2px solid white;
-    background: transparent;
-    color: white;
-    outline: none;
-  }
+.btn-audio:hover { background: white; }
+.btn-audio svg { fill: white; width: 28px; height: 28px; transition: fill 0.3s; }
+.btn-audio:hover svg { fill: #191919; }
 
-  .search-container .reset-search {
-    font-size: 20px;
-    cursor: pointer;
-    user-select: none;
-    border: none;
-    background: transparent;
-    color: white;
-    transition: color 0.3s;
-  }
-
-  .search-container .reset-search:hover {
-    color: #ff6666;
-  }
-
-  .search-results {
-    margin-top: 0.3rem;
-    font-size: 16px;
-    text-align: center;
-  }
-
-  @media (max-width: 768px) {
-    .quote-container { max-width: 90%; }
-    .controls { flex-wrap: wrap; justify-content: center; gap: 10px; }
-    .btn-audio { width: 45px; height: 45px; }
-    .quote-info { flex-direction: column; gap: 0.5rem; font-size: 18px; }
-    .search-container input { font-size: 18px; }
-    .search-container .reset-search { font-size: 18px; }
-  }
+@media (max-width: 768px) {
+  .main-wrap { padding: 0 12px; }
+  .search-bar input { font-size: 16px; }
+  .scan-number, .quiz-btn { font-size: 16px; }
+  .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
+}
 </style>
 </head>
 <body>
+<div class="main-wrap">
 
-<div class="quote-container">
-  <div id="quote" class="quote-text"></div>
-  <div id="author" class="quote-author"></div>
-</div>
+  <!-- TOP CONTROLS -->
+  <div class="top-controls">
+    <div id="scanNumber" class="scan-number"></div>
 
-<div class="quote-info">
-  <span id="scanNumber">Scan 1</span>
-  <button id="quizBtn">Quiz</button>
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Rechercher...">
-    <button class="reset-search">✖</button>
+    <div class="search-bar">
+      <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
+      <button class="reset-search">✖</button>
+    </div>
+
+    <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
-</div>
-<div class="search-results" id="searchResults">16/16</div>
 
-<div class="controls">
-  <button id="prevBtn" class="control-btn" aria-label="Citation précédente">⏮</button>
-  <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
-  <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
-  <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
-    <svg viewBox="0 0 24 24" id="audioIcon">
-      <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
-      <rect x="14" y="8" width="2" height="8"></rect>
-      <rect x="18" y="7" width="2" height="10"></rect>
-    </svg>
-  </button>
+  <!-- CITATION -->
+  <div class="quote-container">
+    <div id="quote" class="quote-text"></div>
+    <div id="author" class="quote-author"></div>
+  </div>
+
+  <!-- BAS : navigation + audio -->
+  <div class="controls">
+    <button id="prevBtn" class="control-btn" aria-label="Citation précédente">⏮</button>
+    <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
+    <button id="nextBtn" class="control-btn" aria-label="Citation suivante">⏭</button>
+    <button id="audioBtn" class="btn-audio" aria-label="Jouer/arrêter audio" title="Jouer/arrêter audio">
+      <svg viewBox="0 0 24 24" id="audioIcon">
+        <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
+        <rect x="14" y="8" width="2" height="8"></rect>
+        <rect x="18" y="7" width="2" height="10"></rect>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <script>
 const quotes = [
-    {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "LuffyTokoda.mp3"},
-    {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "GeantsNika.mp3"},
-    {text: "Kizaru ! Nous sommes 100 fois plus forts qu'avant !!", author: "Monkey D. Luffy", audio: "Kizaru100x.mp3"},
-    {text: "Mettez les voiles !!!!", author: "Monkey D. Luffy", audio: "LuffyVoile.mp3"},
-    {text: "La passion et les rêves sont comme le temps, rien ne peut les arrêter, et il en sera ainsi\ntant qu’il y aura des hommes prêts à donner un sens au mot \"Liberté\"", author: "Gol D. Roger", audio: "dragonroger.mp3"},
-    {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: "luffynom.mp3"},
-    {text: "Vivre n'est pas un crime", author: "Franky", audio: "Frankyvivre.m4a"},
-    {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde !", author: "Gol D. Roger", audio: "Rogertresor.mp3"},
-    {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author: "Marshall D. Teach", audio: "teachdreams.mp3"},
-    {text: "Ça fait un bail, hein chapeau de paille ?", author: "Crocodile", audio: "CrocodileHisha.mp3"},
-    {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: "belmersacrifice.mp3"},
-    {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: "fujitoraaveugle.mp3"},
-    {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: "barbenoirepoings.m4a"},
-    {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "hilulukmort.m4a", hiluluk: true},
-    {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: "bbonepiece.mp3"},
-    {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a"},
+  {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "LuffyTokoda.mp3", scan: "Épisode 1"},
+  {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "GeantsNika.mp3", scan: "Scan 1044"},
+  {text: "Kizaru ! Nous sommes 100 fois plus forts qu'avant !!", author: "Monkey D. Luffy", audio: "Kizaru100x.mp3", scan: "Scan 1090"},
+  {text: "Mettez les voiles !!!!", author: "Monkey D. Luffy", audio: "LuffyVoile.mp3", scan: "Épisode 33"},
+  {text: "La passion et les rêves sont comme le temps, rien ne peut les arrêter...", author: "Gol D. Roger", audio: "dragonroger.mp3", scan: "Épisode 48"},
+  {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: "luffynom.mp3", scan: "Scan 516"},
+  {text: "Vivre n'est pas un crime", author: "Franky", audio: "Frankyvivre.m4a", scan: "Scan 434"},
+  {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde !", author: "Gol D. Roger", audio: "Rogertresor.mp3", scan: "Épisode 1"},
+  {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author: "Marshall D. Teach", audio: "teachdreams.mp3", scan: "Scan 576"},
+  {text: "Ça fait un bail, hein chapeau de paille ?", author: "Crocodile", audio: "CrocodileHisha.mp3", scan: "Épisode 151"},
+  {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: "belmersacrifice.mp3", scan: "Épisode 37"},
+  {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: "fujitoraaveugle.mp3", scan: "Scan 701"},
+  {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: "barbenoirepoings.m4a", scan: "Scan 580"},
+  {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "hilulukmort.m4a", scan: "Épisode 86", hiluluk: true},
+  {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: "bbonepiece.mp3", scan: "Épisode 485"},
+  {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a", scan: "Scan 746"},
 ];
+
+// DOM
+const quoteEl = document.getElementById('quote');
+const authorEl = document.getElementById('author');
+const scanEl = document.getElementById('scanNumber');
+const prevBtn = document.getElementById('prevBtn');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const audioBtn = document.getElementById('audioBtn');
+const nextBtn = document.getElementById('nextBtn');
+const quizBtn = document.getElementById('quizBtn');
+const searchInput = document.getElementById('searchInput');
+const resetSearchBtn = document.querySelector('.reset-search');
 
 let currentIndex = 0;
 let rotationActive = true;
@@ -239,121 +259,129 @@ let audioPlaying = false;
 let audio = null;
 let rotationWasActiveBeforeAudio = false;
 
-let filteredIndexes = quotes.map((_, i) => i);
-
-const quoteEl = document.getElementById('quote');
-const authorEl = document.getElementById('author');
-const prevBtn = document.getElementById('prevBtn');
-const playPauseBtn = document.getElementById('playPauseBtn');
-const audioBtn = document.getElementById('audioBtn');
-const nextBtn = document.getElementById('nextBtn');
-const quizBtn = document.getElementById('quizBtn');
-const scanNumber = document.getElementById('scanNumber');
-
-const searchInput = document.getElementById('searchInput');
-const resetSearchBtn = document.querySelector('.reset-search');
-const searchResults = document.getElementById('searchResults');
-
+let pool = quotes.map((_,i)=>i);
+let availablePool = pool.slice();
+let poolHistory = [];
+let poolHistoryIndex = -1;
 let quizMode = false;
 
-function stopAudio() {
-  if (audio) { audio.pause(); audio.currentTime=0; audio=null; }
-  audioPlaying=false;
-}
+/* UTIL */
+function applyFade(el, hide) { if(!el) return; hide ? el.classList.add('fade-out') : el.classList.remove('fade-out'); }
+function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
 
-function showQuote(index) {
-  if(index===null) return;
+/* RENDER */
+function renderQuoteByIndex(index){
   stopAudio();
   quoteEl.classList.add('fade-out');
   authorEl.classList.add('fade-out');
-  scanNumber.classList.add('fade-out');
-  quizBtn.classList.add('fade-out');
+  scanEl.classList.add('fade-out');
 
   setTimeout(()=>{
     currentIndex=index;
-    if(quotes[currentIndex].text.length>200) quoteEl.classList.add('long-quote');
-    else quoteEl.classList.remove('long-quote');
-    if(quotes[currentIndex].hiluluk) quoteEl.classList.add('hiluluk');
-    else quoteEl.classList.remove('hiluluk');
-    quoteEl.textContent=quotes[currentIndex].text;
-    authorEl.textContent=quizMode ? "" : "- "+quotes[currentIndex].author;
-    scanNumber.textContent=quizMode ? "" : `Scan ${currentIndex+1}`;
+    const q=quotes[currentIndex];
+    if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
+    if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
+
+    quoteEl.textContent=q.text;
+    authorEl.textContent="- "+q.author;
+    scanEl.textContent=q.scan||"";
+
+    if(quizMode){
+      applyFade(authorEl,true);
+      applyFade(scanEl,true);
+      quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;
+    } else{
+      applyFade(authorEl,false);
+      applyFade(scanEl,false);
+      quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
+    }
+
     quoteEl.classList.remove('fade-out');
     authorEl.classList.remove('fade-out');
-    scanNumber.classList.remove('fade-out');
-    quizBtn.classList.remove('fade-out');
-  },500);
+    scanEl.classList.remove('fade-out');
+  },450);
 }
 
-function showNextQuote(){ 
-  if(filteredIndexes.length===0) return;
-  const idx = filteredIndexes[Math.floor(Math.random()*filteredIndexes.length)];
-  showQuote(idx);
+/* POOL */
+function updatePoolFromTerm(term){
+  const t=(term||"").trim().toLowerCase();
+  if(!t){ pool=quotes.map((_,i)=>i); }
+  else{
+    pool=[];
+    quotes.forEach((q,i)=>{ if(q.text.toLowerCase().includes(t)||q.author.toLowerCase().includes(t)||(q.scan && q.scan.toLowerCase().includes(t))) pool.push(i); });
+  }
+  availablePool=pool.slice();
+  poolHistory=[]; poolHistoryIndex=-1;
 }
-function showPrevQuote(){ showNextQuote(); }
 
-function startRotation(){
-  rotationActive=true;
-  playPauseBtn.textContent="❚❚";
-  clearTimeout(rotationTimer);
-  rotationTimer=setTimeout(()=>{
-    showNextQuote();
-    if(rotationActive) startRotation();
-  },10000);
+function getNextFromPoolRandom(){
+  if(pool.length===0) return -1;
+  if(availablePool.length===0) availablePool=pool.slice();
+  const r=Math.floor(Math.random()*availablePool.length);
+  return availablePool.splice(r,1)[0];
 }
-function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer);}
-function toggleRotation(){ rotationActive ? stopRotation():startRotation();}
-function toggleAudio(){
-  if(audioPlaying){stopAudio(); return;}
+
+function showNextInPool(){
+  if(pool.length===0) return;
+  if(poolHistoryIndex<poolHistory.length-1){ poolHistoryIndex++; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
+  else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex++; renderQuoteByIndex(idx); }
+}
+
+function showPrevInPool(){
+  if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
+}
+
+/* ROTATION */
+function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive) startRotation();},10000); }
+function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer); }
+function toggleRotation(){ rotationActive?stopRotation():startRotation(); }
+
+/* AUDIO */
+function toggleAudio(){ 
+  if(audioPlaying){ stopAudio(); return; }
   if(!quotes[currentIndex].audio) return;
-  rotationWasActiveBeforeAudio=rotationActive;
-  if(rotationActive) stopRotation();
-  audio=new Audio(quotes[currentIndex].audio);
-  audioPlaying=true;
-  audio.play().catch(()=>{audioPlaying=false; audio=null;});
-  audio.addEventListener('ended',()=>{
-    audioPlaying=false; audio=null;
-    if(rotationWasActiveBeforeAudio) startRotation();
-    else playPauseBtn.textContent="▶";
-  });
+  rotationWasActiveBeforeAudio=rotationActive; if(rotationActive) stopRotation();
+  audio=new Audio(quotes[currentIndex].audio); audioPlaying=true; audio.play().catch(()=>{audioPlaying=false; audio=null;});
+  audio.addEventListener('ended',()=>{ audioPlaying=false; audio=null; if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; });
 }
 
-// Quiz
-quizBtn.addEventListener('click',()=>{
-  quizMode=!quizMode;
-  showQuote(currentIndex);
-});
-
-// Recherche
-function filterQuotes(){
-  const term = searchInput.value.toLowerCase();
-  filteredIndexes=[];
-  quotes.forEach((q,i)=>{
-    if(q.text.toLowerCase().includes(term)||q.author.toLowerCase().includes(term)){
-      filteredIndexes.push(i);
-    }
-  });
-  searchResults.textContent = `${filteredIndexes.length}/${quotes.length}`;
-  showNextQuote();
-}
-searchInput.addEventListener('input',filterQuotes);
-resetSearchBtn.addEventListener('click',()=>{
-  searchInput.value='';
-  filteredIndexes=quotes.map((_,i)=>i);
-  searchResults.textContent=`${filteredIndexes.length}/${quotes.length}`;
-  showNextQuote();
-});
-
-// Boutons
-prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevQuote(); });
-nextBtn.addEventListener('click',()=>{ stopRotation(); showNextQuote(); });
+/* EVENTS */
+prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
+nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
 playPauseBtn.addEventListener('click',toggleRotation);
 audioBtn.addEventListener('click',toggleAudio);
 
-// Initialisation
-filteredIndexes=quotes.map((_,i)=>i);
-searchResults.textContent=`${filteredIndexes.length}/${quotes.length}`;
-showNextQuote();
+quizBtn.addEventListener('click',()=>{
+  quizMode=!quizMode;
+  if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; }
+  else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }
+});
+
+// Recherche
+searchInput.addEventListener('input',(e)=>{
+  const term=e.target.value;
+  updatePoolFromTerm(term);
+  if(rotationActive) stopRotation();
+  if(pool.length===0){ quoteEl.textContent="Aucune citation trouvée pour : "+term; authorEl.textContent=""; scanEl.textContent=""; return; }
+  const first=pool[0];
+  availablePool=pool.filter(i=>i!==first);
+  poolHistory=[first]; poolHistoryIndex=0;
+  renderQuoteByIndex(first);
+});
+
+resetSearchBtn.addEventListener('click',()=>{
+  searchInput.value="";
+  updatePoolFromTerm("");
+  availablePool=pool.slice();
+  poolHistory=[]; poolHistoryIndex=-1;
+  stopRotation();
+});
+
+// INIT
+updatePoolFromTerm("");
+const firstIdx=getNextFromPoolRandom();
+poolHistory.push(firstIdx); poolHistoryIndex=0;
+renderQuoteByIndex(firstIdx);
 startRotation();
 </script>
 </body>
