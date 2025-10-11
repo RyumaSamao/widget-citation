@@ -167,8 +167,8 @@
   }
 
   .search-results {
-    margin-top: 0.5rem;
-    font-size: 18px;
+    margin-top: 0.3rem;
+    font-size: 16px;
     text-align: center;
   }
 
@@ -197,7 +197,7 @@
     <button class="reset-search">✖</button>
   </div>
 </div>
-<div class="search-results" id="searchResults"></div>
+<div class="search-results" id="searchResults">16/16</div>
 
 <div class="controls">
   <button id="prevBtn" class="control-btn" aria-label="Citation précédente">⏮</button>
@@ -238,8 +238,6 @@ let rotationTimer = null;
 let audioPlaying = false;
 let audio = null;
 let rotationWasActiveBeforeAudio = false;
-let history = [];
-let historyIndex = -1;
 
 let filteredIndexes = quotes.map((_, i) => i);
 
@@ -258,127 +256,105 @@ const searchResults = document.getElementById('searchResults');
 
 let quizMode = false;
 
-function getNextFilteredIndex() {
-  if (filteredIndexes.length === 0) return null;
-  const idx = filteredIndexes[Math.floor(Math.random() * filteredIndexes.length)];
-  return idx;
-}
-
 function stopAudio() {
-  if (audio) {
-    try { audio.pause(); } catch (e) {}
-    try { audio.currentTime = 0; } catch (e) {}
-    audio = null;
-  }
-  audioPlaying = false;
+  if (audio) { audio.pause(); audio.currentTime=0; audio=null; }
+  audioPlaying=false;
 }
 
 function showQuote(index) {
-  if (index === null) return;
+  if(index===null) return;
   stopAudio();
   quoteEl.classList.add('fade-out');
   authorEl.classList.add('fade-out');
   scanNumber.classList.add('fade-out');
   quizBtn.classList.add('fade-out');
 
-  setTimeout(() => {
-    currentIndex = index;
-
-    if (quotes[currentIndex].text.length > 200) quoteEl.classList.add('long-quote');
+  setTimeout(()=>{
+    currentIndex=index;
+    if(quotes[currentIndex].text.length>200) quoteEl.classList.add('long-quote');
     else quoteEl.classList.remove('long-quote');
-
-    if (quotes[currentIndex].hiluluk) quoteEl.classList.add('hiluluk');
+    if(quotes[currentIndex].hiluluk) quoteEl.classList.add('hiluluk');
     else quoteEl.classList.remove('hiluluk');
-
-    quoteEl.textContent = quotes[currentIndex].text;
-    authorEl.textContent = quizMode ? "" : "- " + quotes[currentIndex].author;
-    scanNumber.textContent = quizMode ? "" : `Scan ${currentIndex + 1}`;
-
+    quoteEl.textContent=quotes[currentIndex].text;
+    authorEl.textContent=quizMode ? "" : "- "+quotes[currentIndex].author;
+    scanNumber.textContent=quizMode ? "" : `Scan ${currentIndex+1}`;
     quoteEl.classList.remove('fade-out');
     authorEl.classList.remove('fade-out');
     scanNumber.classList.remove('fade-out');
     quizBtn.classList.remove('fade-out');
-  }, 500);
+  },500);
 }
 
-function showNextQuote() {
-  const idx = getNextFilteredIndex();
-  if (idx !== null) showQuote(idx);
+function showNextQuote(){ 
+  if(filteredIndexes.length===0) return;
+  const idx = filteredIndexes[Math.floor(Math.random()*filteredIndexes.length)];
+  showQuote(idx);
 }
+function showPrevQuote(){ showNextQuote(); }
 
-function showPrevQuote() {
-  const idx = getNextFilteredIndex();
-  if (idx !== null) showQuote(idx);
-}
-
-function startRotation() {
-  rotationActive = true;
-  playPauseBtn.textContent = "❚❚";
+function startRotation(){
+  rotationActive=true;
+  playPauseBtn.textContent="❚❚";
   clearTimeout(rotationTimer);
-  rotationTimer = setTimeout(() => {
+  rotationTimer=setTimeout(()=>{
     showNextQuote();
-    if (rotationActive) startRotation();
-  }, 10000);
+    if(rotationActive) startRotation();
+  },10000);
 }
-
-function stopRotation() {
-  rotationActive = false;
-  playPauseBtn.textContent = "▶";
-  clearTimeout(rotationTimer);
-}
-
-function toggleRotation() {
-  rotationActive ? stopRotation() : startRotation();
-}
-
-function toggleAudio() {
-  if (audioPlaying) { stopAudio(); return; }
-  if (!quotes[currentIndex].audio) return;
-  rotationWasActiveBeforeAudio = rotationActive;
-  if (rotationActive) stopRotation();
-  audio = new Audio(quotes[currentIndex].audio);
-  audioPlaying = true;
-  audio.play().catch(()=>{audioPlaying=false;audio=null;});
+function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer);}
+function toggleRotation(){ rotationActive ? stopRotation():startRotation();}
+function toggleAudio(){
+  if(audioPlaying){stopAudio(); return;}
+  if(!quotes[currentIndex].audio) return;
+  rotationWasActiveBeforeAudio=rotationActive;
+  if(rotationActive) stopRotation();
+  audio=new Audio(quotes[currentIndex].audio);
+  audioPlaying=true;
+  audio.play().catch(()=>{audioPlaying=false; audio=null;});
   audio.addEventListener('ended',()=>{
-    audioPlaying=false;audio=null;
+    audioPlaying=false; audio=null;
     if(rotationWasActiveBeforeAudio) startRotation();
     else playPauseBtn.textContent="▶";
   });
 }
 
-prevBtn.addEventListener('click', ()=>{ stopRotation(); showPrevQuote(); });
-nextBtn.addEventListener('click', ()=>{ stopRotation(); showNextQuote(); });
-playPauseBtn.addEventListener('click', toggleRotation);
-audioBtn.addEventListener('click', toggleAudio);
-
-quizBtn.addEventListener('click', ()=>{
-  quizMode = !quizMode;
+// Quiz
+quizBtn.addEventListener('click',()=>{
+  quizMode=!quizMode;
   showQuote(currentIndex);
 });
 
-function updateFilteredIndexes() {
-  const term = searchInput.value.toLowerCase().trim();
-  if (!term) {
-    filteredIndexes = quotes.map((_, i)=>i);
-  } else {
-    filteredIndexes = quotes.map((q,i)=>({q,i}))
-      .filter(obj => obj.q.text.toLowerCase().includes(term) || obj.q.author.toLowerCase().includes(term))
-      .map(obj => obj.i);
-  }
-  searchResults.textContent = `Résultats : ${filteredIndexes.length}/${quotes.length}`;
-  if(filteredIndexes.length>0) showQuote(filteredIndexes[0]);
+// Recherche
+function filterQuotes(){
+  const term = searchInput.value.toLowerCase();
+  filteredIndexes=[];
+  quotes.forEach((q,i)=>{
+    if(q.text.toLowerCase().includes(term)||q.author.toLowerCase().includes(term)){
+      filteredIndexes.push(i);
+    }
+  });
+  searchResults.textContent = `${filteredIndexes.length}/${quotes.length}`;
+  showNextQuote();
 }
-
-searchInput.addEventListener('input', updateFilteredIndexes);
-resetSearchBtn.addEventListener('click', ()=>{
-  searchInput.value = '';
-  updateFilteredIndexes();
+searchInput.addEventListener('input',filterQuotes);
+resetSearchBtn.addEventListener('click',()=>{
+  searchInput.value='';
+  filteredIndexes=quotes.map((_,i)=>i);
+  searchResults.textContent=`${filteredIndexes.length}/${quotes.length}`;
+  showNextQuote();
 });
 
+// Boutons
+prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevQuote(); });
+nextBtn.addEventListener('click',()=>{ stopRotation(); showNextQuote(); });
+playPauseBtn.addEventListener('click',toggleRotation);
+audioBtn.addEventListener('click',toggleAudio);
+
 // Initialisation
-updateFilteredIndexes();
+filteredIndexes=quotes.map((_,i)=>i);
+searchResults.textContent=`${filteredIndexes.length}/${quotes.length}`;
+showNextQuote();
 startRotation();
 </script>
-
 </body>
 </html>
