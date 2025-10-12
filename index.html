@@ -61,7 +61,7 @@ body {
 
 .search-bar .reset-search {
   position: absolute;
-  right: -10px; /* PC par défaut */
+  right: 6px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 20px;
@@ -76,9 +76,17 @@ body {
 .scan-number {
   font-size: 20px;
   opacity: 1;
-  transition: opacity 0.9s ease-in-out;
-  min-width: 80px;
+  transition: opacity 0.5s ease-in-out;
+  min-width: 160px;
   text-align: left;
+}
+
+.counter {
+  font-size: 20px;
+  color: white;
+  min-width: 80px;
+  text-align: center;
+  user-select: none;
 }
 
 .quiz-btn {
@@ -112,7 +120,7 @@ body {
   line-height: 1.6;
   letter-spacing: 1px;
   user-select: none;
-  transition: opacity 0.9s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
   white-space: pre-line;
   word-wrap: break-word;
   opacity: 1;
@@ -177,21 +185,11 @@ button.control-btn:hover {
 .btn-audio svg { fill: white; width: 28px; height: 28px; transition: fill 0.3s; }
 .btn-audio:hover svg { fill: #191919; }
 
-/* PC */
-@media (min-width: 769px) {
-  .search-bar .reset-search { right: -10px; }
-}
-
-/* MOBILE */
 @media (max-width: 768px) {
   .main-wrap { padding: 0 12px; }
   .search-bar input { font-size: 16px; }
-  .scan-number, .quiz-btn { font-size: 16px; }
+  .scan-number, .counter, .quiz-btn { font-size: 16px; }
   .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
-  /* compteur à droite et croix hors barre */
-  .top-controls { justify-content: flex-start; flex-wrap: wrap; }
-  #counter { order: 2; margin-left: auto; }
-  .search-bar .reset-search { right: 0; }
 }
 </style>
 </head>
@@ -207,7 +205,7 @@ button.control-btn:hover {
       <button class="reset-search">✖</button>
     </div>
 
-    <div id="counter" class="scan-number">0/0</div>
+    <div id="counter" class="counter">0/0</div>
 
     <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
@@ -234,7 +232,7 @@ button.control-btn:hover {
 </div>
 
 <script>
-// même script que précédemment
+// citations
 const quotes = [
   {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "LuffyTokoda.mp3", scan: "Épisode 1"},
   {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "GeantsNika.mp3", scan: "Scan 1044"},
@@ -254,9 +252,11 @@ const quotes = [
   {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a", scan: "Scan 746"},
 ];
 
+// DOM
 const quoteEl = document.getElementById('quote');
 const authorEl = document.getElementById('author');
 const scanEl = document.getElementById('scanNumber');
+const counterEl = document.getElementById('counter');
 const prevBtn = document.getElementById('prevBtn');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const audioBtn = document.getElementById('audioBtn');
@@ -264,7 +264,6 @@ const nextBtn = document.getElementById('nextBtn');
 const quizBtn = document.getElementById('quizBtn');
 const searchInput = document.getElementById('searchInput');
 const resetSearchBtn = document.querySelector('.reset-search');
-const counterEl = document.getElementById('counter');
 
 let currentIndex = 0;
 let rotationActive = true;
@@ -279,54 +278,52 @@ let poolHistory = [];
 let poolHistoryIndex = -1;
 let quizMode = false;
 
-function applyFade(el, hide) { if(!el) return; hide ? el.classList.add('fade-out') : el.classList.remove('fade-out'); }
-function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
+/* UTIL */
+function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0}catch{} audio=null;} audioPlaying=false; }
+function applyFade(el, hide){ if(!el) return; el.style.transition="opacity 0.5s"; el.style.opacity = hide ? 0 : 1; }
 
+/* RENDER */
 function renderQuoteByIndex(index){
   stopAudio();
-  if(pool.length === 0){
-    quoteEl.textContent="";
-    authorEl.textContent="";
-    scanEl.textContent="";
-  }
-
-  quoteEl.classList.add('fade-out');
-  authorEl.classList.add('fade-out');
-  scanEl.classList.add('fade-out');
+  applyFade(quoteEl,true);
+  applyFade(authorEl,true);
+  applyFade(scanEl,true);
 
   setTimeout(()=>{
-    currentIndex=index;
-    const q=quotes[currentIndex];
-    if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
-    if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
+    currentIndex = index;
+    const q = quotes[currentIndex];
 
-    quoteEl.textContent=q.text;
-    authorEl.textContent="- "+q.author;
-    scanEl.textContent=q.scan||"";
+    quoteEl.textContent = q.text;
+    authorEl.textContent = "- "+q.author;
+    scanEl.textContent = q.scan||"";
+
+    if(q.text.length > 200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
+    if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
 
     if(quizMode){
       applyFade(authorEl,true);
       applyFade(scanEl,true);
       quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;
-    } else{
+    } else {
       applyFade(authorEl,false);
       applyFade(scanEl,false);
       quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
     }
 
-    quoteEl.classList.remove('fade-out');
-    authorEl.classList.remove('fade-out');
-    scanEl.classList.remove('fade-out');
-  },450);
+    applyFade(quoteEl,false);
+  },200);
+
   updateCounter();
 }
 
+/* COUNTER */
 function updateCounter(){
   const total = quotes.length;
-  const filtered = pool.length;
-  counterEl.textContent = `${filtered}/${total}`;
+  const current = pool.length > 0 ? poolHistory.length : 0;
+  counterEl.textContent = current+"/"+total;
 }
 
+/* POOL */
 function updatePoolFromTerm(term){
   const t=(term||"").trim().toLowerCase();
   if(!t){ pool=quotes.map((_,i)=>i); }
@@ -357,10 +354,12 @@ function showPrevInPool(){
   if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
 }
 
+/* ROTATION */
 function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive) startRotation();},10000); }
 function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer); }
 function toggleRotation(){ rotationActive?stopRotation():startRotation(); }
 
+/* AUDIO */
 function toggleAudio(){ 
   if(audioPlaying){ stopAudio(); return; }
   if(!quotes[currentIndex].audio) return;
@@ -369,6 +368,7 @@ function toggleAudio(){
   audio.addEventListener('ended',()=>{ audioPlaying=false; audio=null; if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; });
 }
 
+/* EVENTS */
 prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
 nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
 playPauseBtn.addEventListener('click',toggleRotation);
@@ -376,15 +376,27 @@ audioBtn.addEventListener('click',toggleAudio);
 
 quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; } else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }});
 
-searchInput.addEventListener('input',(e)=>{ const term=e.target.value; updatePoolFromTerm(term); if(rotationActive) stopRotation(); if(pool.length===0){ quoteEl.textContent=""; authorEl.textContent=""; scanEl.textContent=""; return; } const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first); });
+// Recherche
+searchInput.addEventListener('input',(e)=>{
+  const term=e.target.value;
+  updatePoolFromTerm(term);
+  if(rotationActive) stopRotation();
+  if(pool.length===0){
+    quoteEl.textContent="Aucune citation trouvée pour : "+term;
+    authorEl.textContent="";
+    scanEl.textContent="";
+    return;
+  }
+  const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first);
+});
 
-resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; stopRotation(); });
+resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; renderQuoteByIndex(pool[0]); });
 
-updatePoolFromTerm("");
-const firstIdx=getNextFromPoolRandom();
-poolHistory.push(firstIdx); poolHistoryIndex=0;
-renderQuoteByIndex(firstIdx);
-startRotation();
+document.addEventListener('DOMContentLoaded',()=>{
+  updatePoolFromTerm("");
+  renderQuoteByIndex(pool[0]);
+  startRotation();
+});
 </script>
 </body>
 </html>
