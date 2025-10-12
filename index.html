@@ -9,19 +9,20 @@
 html, body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
   height: 100%;
-}
-body {
   background: #191919;
   color: white;
   font-family: 'Bangers', cursive;
+}
+
+body {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
+
 .main-wrap {
   width: 100%;
   max-width: 1000px;
@@ -45,30 +46,33 @@ body {
 .search-bar {
   flex: 1;
   display: flex;
-  align-items: center;
+  justify-content: center;
   position: relative;
-  max-width: 560px;
 }
-
-.search-bar .reset-search {
-  font-size: 20px;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  color: white;
-  transition: color 0.3s;
-  margin-right: 8px; /* espace entre la croix et l'input */
-}
-.search-bar .reset-search:hover { color: #ff6666; }
 
 .search-bar input {
-  flex: 1;
+  width: 100%;
+  max-width: 560px;
   padding: 8px 12px;
   font-size: 20px;
   border-radius: 10px;
   border: none;
   outline: none;
 }
+
+.search-bar .reset-search {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: white;
+  transition: color 0.3s;
+}
+.search-bar .reset-search:hover { color: #ff6666; }
 
 .scan-number {
   font-size: 20px;
@@ -132,7 +136,7 @@ body {
   display: flex;
   align-items: center;
   gap: 15px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   margin-top: 8px;
 }
 
@@ -174,10 +178,13 @@ button.control-btn:hover {
 .btn-audio svg { fill: white; width: 28px; height: 28px; transition: fill 0.3s; }
 .btn-audio:hover svg { fill: #191919; }
 
+/* --- Media Queries pour adaptatif --- */
 @media (max-width: 768px) {
   .main-wrap { padding: 0 12px; }
+  .top-controls { flex-direction: column; gap: 8px; }
   .search-bar input { font-size: 16px; }
   .scan-number, .quiz-btn { font-size: 16px; }
+  .controls { flex-direction: column; gap: 8px; }
   .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
 }
 </style>
@@ -190,8 +197,8 @@ button.control-btn:hover {
     <div id="scanNumber" class="scan-number"></div>
 
     <div class="search-bar">
-      <button class="reset-search">✖</button>
       <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
+      <button class="reset-search">✖</button>
     </div>
 
     <button id="quizBtn" class="quiz-btn">Quiz</button>
@@ -238,6 +245,7 @@ const quotes = [
   {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a", scan: "Scan 746"},
 ];
 
+// DOM
 const quoteEl = document.getElementById('quote');
 const authorEl = document.getElementById('author');
 const scanEl = document.getElementById('scanNumber');
@@ -262,9 +270,11 @@ let poolHistory = [];
 let poolHistoryIndex = -1;
 let quizMode = false;
 
+/* UTIL */
 function applyFade(el, hide) { if(!el) return; hide ? el.classList.add('fade-out') : el.classList.remove('fade-out'); }
 function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
 
+/* RENDER */
 function renderQuoteByIndex(index){
   stopAudio();
   quoteEl.classList.add('fade-out');
@@ -297,6 +307,7 @@ function renderQuoteByIndex(index){
   },450);
 }
 
+/* POOL */
 function updatePoolFromTerm(term){
   const t=(term||"").trim().toLowerCase();
   if(!t){ pool=quotes.map((_,i)=>i); }
@@ -326,10 +337,12 @@ function showPrevInPool(){
   if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
 }
 
+/* ROTATION */
 function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive) startRotation();},10000); }
 function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer); }
 function toggleRotation(){ rotationActive?stopRotation():startRotation(); }
 
+/* AUDIO */
 function toggleAudio(){ 
   if(audioPlaying){ stopAudio(); return; }
   if(!quotes[currentIndex].audio) return;
@@ -338,6 +351,7 @@ function toggleAudio(){
   audio.addEventListener('ended',()=>{ audioPlaying=false; audio=null; if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; });
 }
 
+/* EVENTS */
 prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
 nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
 playPauseBtn.addEventListener('click',toggleRotation);
@@ -345,10 +359,12 @@ audioBtn.addEventListener('click',toggleAudio);
 
 quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; } else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }});
 
+// Recherche
 searchInput.addEventListener('input',(e)=>{ const term=e.target.value; updatePoolFromTerm(term); if(rotationActive) stopRotation(); if(pool.length===0){ quoteEl.textContent="Aucune citation trouvée pour : "+term; authorEl.textContent=""; scanEl.textContent=""; return; } const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first); });
 
 resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; stopRotation(); });
 
+// INIT
 updatePoolFromTerm("");
 const firstIdx=getNextFromPoolRandom();
 poolHistory.push(firstIdx); poolHistoryIndex=0;
