@@ -58,6 +58,7 @@ body {
 .search-bar {
   display: flex;
   justify-content: flex-start;
+  position: relative;
 }
 
 .search-bar input {
@@ -191,11 +192,25 @@ button.control-btn:hover {
 
   .search-bar input { font-size: 16px; padding: 6px 8px; max-width: 150px; }
 
-  .reset-search { font-size: 16px; }
+  .reset-search { font-size: 16px; margin-left: 4px; }
 
   .quiz-btn { font-size: 16px; padding: 4px 6px; }
 
   .quote-text, .quote-author { font-size: clamp(18px, 2.3vw, 26px); }
+}
+
+/* CROIX PC COLLÉE À DROITE DE LA BARRE */
+@media (min-width: 769px) {
+  .search-bar {
+    flex: 1;
+  }
+  .reset-search {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0;
+  }
 }
 </style>
 </head>
@@ -208,8 +223,8 @@ button.control-btn:hover {
       <div id="scanNumber" class="scan-number"></div>
       <div class="search-bar">
         <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
+        <button class="reset-search">✖</button>
       </div>
-      <button class="reset-search">✖</button>
     </div>
     <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
@@ -309,7 +324,6 @@ function renderQuoteByIndex(index){
   },450);
 }
 
-// ==== POOL & EVENTS ====
 function updatePoolFromTerm(term){
   const t=(term||"").trim().toLowerCase();
   if(!t){ pool=quotes.map((_,i)=>i); } 
@@ -331,8 +345,11 @@ prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
 nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
 playPauseBtn.addEventListener('click',toggleRotation);
 audioBtn.addEventListener('click',toggleAudio);
-quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; } else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; } });
+
+quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; } else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }});
+
 searchInput.addEventListener('input',(e)=>{ const term=e.target.value; updatePoolFromTerm(term); if(rotationActive) stopRotation(); if(pool.length===0){ quoteEl.textContent="Aucune citation trouvée pour : "+term; authorEl.textContent=""; scanEl.textContent=""; return; } const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first); });
+
 resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; stopRotation(); });
 
 updatePoolFromTerm("");
