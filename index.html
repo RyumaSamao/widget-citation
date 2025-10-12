@@ -42,16 +42,27 @@ body {
   margin-bottom: 2rem;
 }
 
-.search-bar {
-  flex: 1;
+.search-scan-quiz {
   display: flex;
-  justify-content: flex-start; /* barre collée à gauche */
-  position: relative;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.scan-number {
+  font-size: 20px;
+  min-width: 80px;
+  text-align: left;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: flex-start;
 }
 
 .search-bar input {
   width: 100%;
-  max-width: 560px;
+  max-width: 300px;
   padding: 8px 12px;
   font-size: 20px;
   border-radius: 10px;
@@ -66,17 +77,9 @@ body {
   background: transparent;
   color: white;
   transition: color 0.3s;
-  margin-left: 8px; /* séparée de la barre */
+  margin-left: 8px;
 }
 .reset-search:hover { color: #ff6666; }
-
-.scan-number {
-  font-size: 20px;
-  opacity: 1;
-  transition: opacity 0.9s ease-in-out;
-  min-width: 160px;
-  text-align: left;
-}
 
 .quiz-btn {
   font-size: 20px;
@@ -146,10 +149,10 @@ button.control-btn {
   padding: 10px 36px;
   border-radius: 6px;
   user-select: none;
-  transition: background 0.3s, color 0.3s;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: background 0.3s, color 0.3s;
 }
 
 button.control-btn:hover {
@@ -177,8 +180,21 @@ button.control-btn:hover {
 /* ADAPTATION MOBILE */
 @media (max-width: 768px) {
   .main-wrap { padding: 0 12px; }
-  .search-bar input { font-size: 16px; padding: 6px 8px; max-width: 200px; }
-  .scan-number, .quiz-btn { font-size: 16px; padding: 4px 8px; }
+
+  .search-scan-quiz {
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .scan-number { font-size: 16px; min-width: 60px; }
+
+  .search-bar input { font-size: 16px; padding: 6px 8px; max-width: 150px; }
+
+  .reset-search { font-size: 16px; }
+
+  .quiz-btn { font-size: 16px; padding: 4px 6px; }
+
   .quote-text, .quote-author { font-size: clamp(18px, 2.3vw, 26px); }
 }
 </style>
@@ -188,13 +204,13 @@ button.control-btn:hover {
 
   <!-- TOP CONTROLS -->
   <div class="top-controls">
-    <div id="scanNumber" class="scan-number"></div>
-
-    <div class="search-bar">
-      <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
+    <div class="search-scan-quiz">
+      <div id="scanNumber" class="scan-number"></div>
+      <div class="search-bar">
+        <input id="searchInput" type="text" placeholder="Rechercher une citation / auteur / scan..." />
+      </div>
+      <button class="reset-search">✖</button>
     </div>
-    <button class="reset-search">✖</button>
-
     <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
 
@@ -319,7 +335,6 @@ quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; if(quizMode){ applyFa
 searchInput.addEventListener('input',(e)=>{ const term=e.target.value; updatePoolFromTerm(term); if(rotationActive) stopRotation(); if(pool.length===0){ quoteEl.textContent="Aucune citation trouvée pour : "+term; authorEl.textContent=""; scanEl.textContent=""; return; } const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first); });
 resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; stopRotation(); });
 
-// ==== INIT ====
 updatePoolFromTerm("");
 const firstIdx=getNextFromPoolRandom();
 poolHistory.push(firstIdx); poolHistoryIndex=0;
