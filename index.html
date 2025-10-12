@@ -39,7 +39,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 2rem; 
+  margin-bottom: 2rem;
 }
 
 .search-bar {
@@ -61,7 +61,7 @@ body {
 
 .search-bar .reset-search {
   position: absolute;
-  right: -35px; /* croix à droite de la barre */
+  right: -35px; /* par défaut mobile */
   top: 50%;
   transform: translateY(-50%);
   font-size: 20px;
@@ -73,18 +73,19 @@ body {
 }
 .search-bar .reset-search:hover { color: #ff6666; }
 
+/* Sur PC : rapprocher la croix */
+@media (min-width: 769px) {
+  .search-bar .reset-search {
+    right: -10px;
+  }
+}
+
 .scan-number {
   font-size: 20px;
   opacity: 1;
   transition: opacity 0.9s ease-in-out;
-  min-width: 60px;
-  text-align: left;
-}
-
-.quote-counter {
-  font-size: 20px;
   min-width: 80px;
-  text-align: center;
+  text-align: left;
 }
 
 .quiz-btn {
@@ -109,7 +110,7 @@ body {
   width: 100%;
   max-width: 1000px;
   text-align: center;
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
   padding: 0 20px;
 }
 
@@ -152,7 +153,7 @@ button.control-btn {
   font-family: 'Bangers', cursive;
   font-size: 18px;
   cursor: pointer;
-  padding: 10px 36px; 
+  padding: 10px 36px;
   border-radius: 6px;
   user-select: none;
   transition: background 0.3s, color 0.3s;
@@ -186,10 +187,8 @@ button.control-btn:hover {
 @media (max-width: 768px) {
   .main-wrap { padding: 0 12px; }
   .search-bar input { font-size: 16px; }
-  .scan-number, .quote-counter, .quiz-btn { font-size: 16px; }
+  .scan-number, .quiz-btn { font-size: 16px; }
   .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
-  .search-bar input { max-width: 100%; } 
-  .search-bar .reset-search { right: -35px; } 
 }
 </style>
 </head>
@@ -205,7 +204,8 @@ button.control-btn:hover {
       <button class="reset-search">✖</button>
     </div>
 
-    <div id="quoteCounter" class="quote-counter"></div>
+    <div id="counter" class="scan-number">0/0</div>
+
     <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
 
@@ -254,7 +254,6 @@ const quotes = [
 const quoteEl = document.getElementById('quote');
 const authorEl = document.getElementById('author');
 const scanEl = document.getElementById('scanNumber');
-const quoteCounterEl = document.getElementById('quoteCounter');
 const prevBtn = document.getElementById('prevBtn');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const audioBtn = document.getElementById('audioBtn');
@@ -262,6 +261,7 @@ const nextBtn = document.getElementById('nextBtn');
 const quizBtn = document.getElementById('quizBtn');
 const searchInput = document.getElementById('searchInput');
 const resetSearchBtn = document.querySelector('.reset-search');
+const counterEl = document.getElementById('counter');
 
 let currentIndex = 0;
 let rotationActive = true;
@@ -280,16 +280,15 @@ let quizMode = false;
 function applyFade(el, hide) { if(!el) return; hide ? el.classList.add('fade-out') : el.classList.remove('fade-out'); }
 function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
 
-/* COMPTEUR */
-function updateQuoteCounter(){
-  const total = quotes.length;
-  const found = pool.length;
-  quoteCounterEl.textContent = `${found} / ${total}`;
-}
-
 /* RENDER */
 function renderQuoteByIndex(index){
   stopAudio();
+  if(pool.length === 0){
+    quoteEl.textContent="";
+    authorEl.textContent="";
+    scanEl.textContent="";
+  }
+
   quoteEl.classList.add('fade-out');
   authorEl.classList.add('fade-out');
   scanEl.classList.add('fade-out');
@@ -300,15 +299,9 @@ function renderQuoteByIndex(index){
     if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
     if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
 
-    if(pool.length === 0){
-      quoteEl.textContent = "";
-      authorEl.textContent = "";
-      scanEl.textContent = "";
-    } else {
-      quoteEl.textContent=q.text;
-      authorEl.textContent="- "+q.author;
-      scanEl.textContent=q.scan||"";
-    }
+    quoteEl.textContent=q.text;
+    authorEl.textContent="- "+q.author;
+    scanEl.textContent=q.scan||"";
 
     if(quizMode){
       applyFade(authorEl,true);
@@ -324,6 +317,14 @@ function renderQuoteByIndex(index){
     authorEl.classList.remove('fade-out');
     scanEl.classList.remove('fade-out');
   },450);
+  updateCounter();
+}
+
+/* COUNTER */
+function updateCounter(){
+  const total = quotes.length;
+  const filtered = pool.length;
+  counterEl.textContent = `${filtered}/${total}`;
 }
 
 /* POOL */
@@ -337,7 +338,7 @@ function updatePoolFromTerm(term){
   availablePool=pool.slice();
   poolHistory=[];
   poolHistoryIndex=-1;
-  updateQuoteCounter();
+  updateCounter();
 }
 
 function getNextFromPoolRandom(){
@@ -380,27 +381,9 @@ audioBtn.addEventListener('click',toggleAudio);
 quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; } else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }});
 
 // Recherche
-searchInput.addEventListener('input',(e)=>{
-  const term=e.target.value;
-  updatePoolFromTerm(term);
-  if(rotationActive) stopRotation();
-  if(pool.length===0){ renderQuoteByIndex(0); return; } 
-  const first=pool[0];
-  availablePool=pool.filter(i=>i!==first);
-  poolHistory=[first];
-  poolHistoryIndex=0;
-  renderQuoteByIndex(first);
-});
+searchInput.addEventListener('input',(e)=>{ const term=e.target.value; updatePoolFromTerm(term); if(rotationActive) stopRotation(); if(pool.length===0){ quoteEl.textContent=""; authorEl.textContent=""; scanEl.textContent=""; return; } const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first); });
 
-resetSearchBtn.addEventListener('click',()=>{
-  searchInput.value="";
-  updatePoolFromTerm("");
-  availablePool=pool.slice();
-  poolHistory=[];
-  poolHistoryIndex=-1;
-  stopRotation();
-  renderQuoteByIndex(getNextFromPoolRandom());
-});
+resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; stopRotation(); });
 
 // INIT
 updatePoolFromTerm("");
