@@ -20,7 +20,6 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 .main-wrap {
   width: 100%;
@@ -81,6 +80,12 @@ body {
   text-align: left;
 }
 
+#counter {
+  font-size: 20px;
+  min-width: 60px;
+  text-align: center;
+}
+
 .quiz-btn {
   font-size: 20px;
   padding: 6px 12px;
@@ -92,7 +97,6 @@ body {
   transition: background 0.25s, color 0.25s, opacity 0.9s ease-in-out;
   opacity: 1;
 }
-
 .quiz-btn.active {
   background: white;
   color: #191919;
@@ -154,7 +158,6 @@ button.control-btn {
   justify-content: center;
   align-items: center;
 }
-
 button.control-btn:hover {
   background: white;
   color: #191919;
@@ -172,14 +175,13 @@ button.control-btn:hover {
   align-items: center;
   transition: background-color 0.3s, transform 0.2s;
 }
-
 .btn-audio:hover { background: white; }
 .btn-audio svg { fill: white; width: 28px; height: 28px; transition: fill 0.3s; }
 .btn-audio:hover svg { fill: #191919; }
 
 /* PC */
 @media (min-width: 769px) {
-  .search-bar .reset-search { right: -10px; }
+  .search-bar .reset-search { right: -10px; display: block; }
 }
 
 /* MOBILE */
@@ -188,11 +190,9 @@ button.control-btn:hover {
   .search-bar input { font-size: 16px; }
   .scan-number, .quiz-btn { font-size: 16px; }
   .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
-
-  /* compteur à droite et croix invisible sur mobile */
   .top-controls { justify-content: flex-start; flex-wrap: wrap; }
   #counter { order: 2; margin-left: auto; }
-  .search-bar .reset-search { display: none; }
+  .search-bar .reset-search { display: none; } /* croix disparait sur mobile */
 }
 </style>
 </head>
@@ -208,7 +208,7 @@ button.control-btn:hover {
       <button class="reset-search">✖</button>
     </div>
 
-    <div id="counter" class="scan-number">0/0</div>
+    <div id="counter">0/0</div>
 
     <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
@@ -279,8 +279,16 @@ let poolHistory = [];
 let poolHistoryIndex = -1;
 let quizMode = false;
 
-function applyFade(el, hide) { if(!el) return; hide ? el.classList.add('fade-out') : el.classList.remove('fade-out'); }
-function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
+function applyFade(el, hide) {
+  if(!el) return;
+  if(hide) el.style.opacity = 0;
+  else el.style.opacity = 1;
+}
+
+function stopAudio() { 
+  if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} 
+  audioPlaying=false; 
+}
 
 function renderQuoteByIndex(index){
   stopAudio();
@@ -290,9 +298,9 @@ function renderQuoteByIndex(index){
     scanEl.textContent="";
   }
 
-  quoteEl.classList.add('fade-out');
-  authorEl.classList.add('fade-out');
-  scanEl.classList.add('fade-out');
+  applyFade(quoteEl,true);
+  applyFade(authorEl,true);
+  applyFade(scanEl,true);
 
   setTimeout(()=>{
     currentIndex=index;
@@ -314,10 +322,8 @@ function renderQuoteByIndex(index){
       quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
     }
 
-    quoteEl.classList.remove('fade-out');
-    authorEl.classList.remove('fade-out');
-    scanEl.classList.remove('fade-out');
-  },450);
+    applyFade(quoteEl,false);
+  },900);
   updateCounter();
 }
 
@@ -357,16 +363,32 @@ function showPrevInPool(){
   if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
 }
 
-function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive) startRotation();},10000); }
+function startRotation(){ 
+  rotationActive=true; 
+  playPauseBtn.textContent="❚❚"; 
+  clearTimeout(rotationTimer); 
+  rotationTimer=setTimeout(()=>{
+    showNextInPool(); 
+    if(rotationActive) startRotation();
+  },10000); 
+}
+
 function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer); }
+
 function toggleRotation(){ rotationActive?stopRotation():startRotation(); }
 
 function toggleAudio(){ 
   if(audioPlaying){ stopAudio(); return; }
   if(!quotes[currentIndex].audio) return;
-  rotationWasActiveBeforeAudio=rotationActive; if(rotationActive) stopRotation();
-  audio=new Audio(quotes[currentIndex].audio); audioPlaying=true; audio.play().catch(()=>{audioPlaying=false; audio=null;});
-  audio.addEventListener('ended',()=>{ audioPlaying=false; audio=null; if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; });
+  rotationWasActiveBeforeAudio=rotationActive; 
+  if(rotationActive) stopRotation();
+  audio=new Audio(quotes[currentIndex].audio); 
+  audioPlaying=true; 
+  audio.play().catch(()=>{audioPlaying=false; audio=null;});
+  audio.addEventListener('ended',()=>{
+    audioPlaying=false; audio=null; 
+    if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; 
+  });
 }
 
 prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
@@ -374,11 +396,44 @@ nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
 playPauseBtn.addEventListener('click',toggleRotation);
 audioBtn.addEventListener('click',toggleAudio);
 
-quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; } else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }});
+quizBtn.addEventListener('click',()=>{
+  quizMode=!quizMode; 
+  if(quizMode){ 
+    applyFade(authorEl,true); 
+    applyFade(scanEl,true); 
+    quizBtn.classList.add('active'); 
+    quizBtn.style.opacity=0.7; 
+  } else{ 
+    applyFade(authorEl,false); 
+    applyFade(scanEl,false); 
+    quizBtn.classList.remove('active'); 
+    quizBtn.style.opacity=1; 
+  }
+});
 
-searchInput.addEventListener('input',(e)=>{ const term=e.target.value; updatePoolFromTerm(term); if(rotationActive) stopRotation(); if(pool.length===0){ quoteEl.textContent=""; authorEl.textContent=""; scanEl.textContent=""; return; } const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first); });
+searchInput.addEventListener('input',(e)=>{
+  const term=e.target.value; 
+  updatePoolFromTerm(term); 
+  if(rotationActive) stopRotation(); 
+  if(pool.length===0){ 
+    quoteEl.textContent=""; authorEl.textContent=""; scanEl.textContent=""; 
+    return; 
+  } 
+  const first=pool[0]; 
+  availablePool=pool.filter(i=>i!==first); 
+  poolHistory=[first]; 
+  poolHistoryIndex=0; 
+  renderQuoteByIndex(first); 
+});
 
-resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; stopRotation(); });
+resetSearchBtn.addEventListener('click',()=>{
+  searchInput.value=""; 
+  updatePoolFromTerm(""); 
+  availablePool=pool.slice(); 
+  poolHistory=[]; 
+  poolHistoryIndex=-1; 
+  stopRotation(); 
+});
 
 updatePoolFromTerm("");
 const firstIdx=getNextFromPoolRandom();
