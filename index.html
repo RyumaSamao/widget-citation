@@ -20,6 +20,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 .main-wrap {
   width: 100%;
@@ -38,7 +39,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 2rem;
+  margin-bottom: 2rem; 
 }
 
 .search-bar {
@@ -60,7 +61,7 @@ body {
 
 .search-bar .reset-search {
   position: absolute;
-  right: 6px;
+  right: -35px; /* croix à droite de la barre */
   top: 50%;
   transform: translateY(-50%);
   font-size: 20px;
@@ -76,8 +77,14 @@ body {
   font-size: 20px;
   opacity: 1;
   transition: opacity 0.9s ease-in-out;
-  min-width: 160px;
+  min-width: 60px;
   text-align: left;
+}
+
+.quote-counter {
+  font-size: 20px;
+  min-width: 80px;
+  text-align: center;
 }
 
 .quiz-btn {
@@ -102,7 +109,7 @@ body {
   width: 100%;
   max-width: 1000px;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem; 
   padding: 0 20px;
 }
 
@@ -145,7 +152,7 @@ button.control-btn {
   font-family: 'Bangers', cursive;
   font-size: 18px;
   cursor: pointer;
-  padding: 10px 36px;
+  padding: 10px 36px; 
   border-radius: 6px;
   user-select: none;
   transition: background 0.3s, color 0.3s;
@@ -176,27 +183,20 @@ button.control-btn:hover {
 .btn-audio svg { fill: white; width: 28px; height: 28px; transition: fill 0.3s; }
 .btn-audio:hover svg { fill: #191919; }
 
-/* MOBILE */
 @media (max-width: 768px) {
   .main-wrap { padding: 0 12px; }
-  .top-controls { flex-direction: row; justify-content: flex-start; }
-  .search-bar { flex: 1; margin-left: 10px; }
-  .search-bar input { font-size: 16px; max-width: 200px; }
-  .scan-number, .quiz-btn { font-size: 16px; }
+  .search-bar input { font-size: 16px; }
+  .scan-number, .quote-counter, .quiz-btn { font-size: 16px; }
   .quote-text, .quote-author { font-size: clamp(16px, 3.5vw, 22px); }
-}
-
-/* PC */
-@media (min-width: 769px) {
-  .search-bar input { max-width: 560px; }
-  .search-bar { justify-content: center; }
-  .search-bar .reset-search { right: 6px; top: 50%; transform: translateY(-50%); }
+  .search-bar input { max-width: 100%; } 
+  .search-bar .reset-search { right: -35px; } 
 }
 </style>
 </head>
 <body>
 <div class="main-wrap">
 
+  <!-- TOP CONTROLS -->
   <div class="top-controls">
     <div id="scanNumber" class="scan-number"></div>
 
@@ -205,14 +205,17 @@ button.control-btn:hover {
       <button class="reset-search">✖</button>
     </div>
 
+    <div id="quoteCounter" class="quote-counter"></div>
     <button id="quizBtn" class="quiz-btn">Quiz</button>
   </div>
 
+  <!-- CITATION -->
   <div class="quote-container">
     <div id="quote" class="quote-text"></div>
     <div id="author" class="quote-author"></div>
   </div>
 
+  <!-- BAS : navigation + audio -->
   <div class="controls">
     <button id="prevBtn" class="control-btn" aria-label="Citation précédente">⏮</button>
     <button id="playPauseBtn" class="control-btn" aria-label="Pause la rotation">❚❚</button>
@@ -247,10 +250,11 @@ const quotes = [
   {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a", scan: "Scan 746"},
 ];
 
-// JS identique au code précédent
+// DOM
 const quoteEl = document.getElementById('quote');
 const authorEl = document.getElementById('author');
 const scanEl = document.getElementById('scanNumber');
+const quoteCounterEl = document.getElementById('quoteCounter');
 const prevBtn = document.getElementById('prevBtn');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const audioBtn = document.getElementById('audioBtn');
@@ -265,51 +269,100 @@ let rotationTimer = null;
 let audioPlaying = false;
 let audio = null;
 let rotationWasActiveBeforeAudio = false;
+
 let pool = quotes.map((_,i)=>i);
 let availablePool = pool.slice();
 let poolHistory = [];
 let poolHistoryIndex = -1;
 let quizMode = false;
 
+/* UTIL */
 function applyFade(el, hide) { if(!el) return; hide ? el.classList.add('fade-out') : el.classList.remove('fade-out'); }
 function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
 
+/* COMPTEUR */
+function updateQuoteCounter(){
+  const total = quotes.length;
+  const found = pool.length;
+  quoteCounterEl.textContent = `${found} / ${total}`;
+}
+
+/* RENDER */
 function renderQuoteByIndex(index){
   stopAudio();
   quoteEl.classList.add('fade-out');
   authorEl.classList.add('fade-out');
   scanEl.classList.add('fade-out');
+
   setTimeout(()=>{
     currentIndex=index;
     const q=quotes[currentIndex];
     if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
     if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
-    quoteEl.textContent=q.text;
-    authorEl.textContent="- "+q.author;
-    scanEl.textContent=q.scan||"";
-    if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; } 
-    else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }
-    quoteEl.classList.remove('fade-out'); authorEl.classList.remove('fade-out'); scanEl.classList.remove('fade-out');
+
+    if(pool.length === 0){
+      quoteEl.textContent = "";
+      authorEl.textContent = "";
+      scanEl.textContent = "";
+    } else {
+      quoteEl.textContent=q.text;
+      authorEl.textContent="- "+q.author;
+      scanEl.textContent=q.scan||"";
+    }
+
+    if(quizMode){
+      applyFade(authorEl,true);
+      applyFade(scanEl,true);
+      quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;
+    } else{
+      applyFade(authorEl,false);
+      applyFade(scanEl,false);
+      quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
+    }
+
+    quoteEl.classList.remove('fade-out');
+    authorEl.classList.remove('fade-out');
+    scanEl.classList.remove('fade-out');
   },450);
 }
 
+/* POOL */
 function updatePoolFromTerm(term){
   const t=(term||"").trim().toLowerCase();
-  if(!t){ pool=quotes.map((_,i)=>i); } else{
+  if(!t){ pool=quotes.map((_,i)=>i); }
+  else{
     pool=[];
     quotes.forEach((q,i)=>{ if(q.text.toLowerCase().includes(t)||q.author.toLowerCase().includes(t)||(q.scan && q.scan.toLowerCase().includes(t))) pool.push(i); });
   }
-  availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1;
+  availablePool=pool.slice();
+  poolHistory=[];
+  poolHistoryIndex=-1;
+  updateQuoteCounter();
 }
 
-function getNextFromPoolRandom(){ if(pool.length===0) return -1; if(availablePool.length===0) availablePool=pool.slice(); const r=Math.floor(Math.random()*availablePool.length); return availablePool.splice(r,1)[0]; }
-function showNextInPool(){ if(pool.length===0) return; if(poolHistoryIndex<poolHistory.length-1){ poolHistoryIndex++; renderQuoteByIndex(poolHistory[poolHistoryIndex]); } else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex++; renderQuoteByIndex(idx); } }
-function showPrevInPool(){ if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); } }
+function getNextFromPoolRandom(){
+  if(pool.length===0) return -1;
+  if(availablePool.length===0) availablePool=pool.slice();
+  const r=Math.floor(Math.random()*availablePool.length);
+  return availablePool.splice(r,1)[0];
+}
 
+function showNextInPool(){
+  if(pool.length===0) return;
+  if(poolHistoryIndex<poolHistory.length-1){ poolHistoryIndex++; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
+  else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex++; renderQuoteByIndex(idx); }
+}
+
+function showPrevInPool(){
+  if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
+}
+
+/* ROTATION */
 function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive) startRotation();},10000); }
 function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer); }
 function toggleRotation(){ rotationActive?stopRotation():startRotation(); }
 
+/* AUDIO */
 function toggleAudio(){ 
   if(audioPlaying){ stopAudio(); return; }
   if(!quotes[currentIndex].audio) return;
@@ -318,15 +371,38 @@ function toggleAudio(){
   audio.addEventListener('ended',()=>{ audioPlaying=false; audio=null; if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; });
 }
 
+/* EVENTS */
 prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
 nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
 playPauseBtn.addEventListener('click',toggleRotation);
 audioBtn.addEventListener('click',toggleAudio);
+
 quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; if(quizMode){ applyFade(authorEl,true); applyFade(scanEl,true); quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; } else{ applyFade(authorEl,false); applyFade(scanEl,false); quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }});
 
-searchInput.addEventListener('input',(e)=>{ const term=e.target.value; updatePoolFromTerm(term); if(rotationActive) stopRotation(); if(pool.length===0){ quoteEl.textContent="Aucune citation trouvée pour : "+term; authorEl.textContent=""; scanEl.textContent=""; return; } const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first); });
-resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; stopRotation(); });
+// Recherche
+searchInput.addEventListener('input',(e)=>{
+  const term=e.target.value;
+  updatePoolFromTerm(term);
+  if(rotationActive) stopRotation();
+  if(pool.length===0){ renderQuoteByIndex(0); return; } 
+  const first=pool[0];
+  availablePool=pool.filter(i=>i!==first);
+  poolHistory=[first];
+  poolHistoryIndex=0;
+  renderQuoteByIndex(first);
+});
 
+resetSearchBtn.addEventListener('click',()=>{
+  searchInput.value="";
+  updatePoolFromTerm("");
+  availablePool=pool.slice();
+  poolHistory=[];
+  poolHistoryIndex=-1;
+  stopRotation();
+  renderQuoteByIndex(getNextFromPoolRandom());
+});
+
+// INIT
 updatePoolFromTerm("");
 const firstIdx=getNextFromPoolRandom();
 poolHistory.push(firstIdx); poolHistoryIndex=0;
