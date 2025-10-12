@@ -20,7 +20,6 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 .main-wrap {
   width: 100%;
@@ -61,7 +60,7 @@ body {
 
 .search-bar .reset-search {
   position: absolute;
-  right: -10px; /* PC par défaut */
+  right: -10px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 20px;
@@ -75,8 +74,6 @@ body {
 
 .scan-number {
   font-size: 20px;
-  opacity: 1;
-  transition: opacity 0.9s ease-in-out;
   min-width: 80px;
   text-align: left;
 }
@@ -90,7 +87,6 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.25s, color 0.25s, opacity 0.9s ease-in-out;
-  opacity: 1;
 }
 
 .quiz-btn.active {
@@ -112,10 +108,10 @@ body {
   line-height: 1.6;
   letter-spacing: 1px;
   user-select: none;
-  transition: opacity 0.9s ease-in-out;
   white-space: pre-line;
   word-wrap: break-word;
   opacity: 1;
+  transition: opacity 0.9s ease-in-out;
 }
 
 .quote-text.long-quote {
@@ -126,8 +122,8 @@ body {
   white-space: normal !important;
 }
 
-.fade-out {
-  opacity: 0 !important;
+.fade {
+  opacity: 0;
 }
 
 /* contrôles bas */
@@ -135,7 +131,6 @@ body {
   display: flex;
   align-items: center;
   gap: 15px;
-  flex-wrap: nowrap;
   margin-top: 8px;
 }
 
@@ -149,10 +144,10 @@ button.control-btn {
   padding: 10px 36px;
   border-radius: 6px;
   user-select: none;
-  transition: background 0.3s, color 0.3s;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: background 0.3s, color 0.3s;
 }
 
 button.control-btn:hover {
@@ -233,23 +228,24 @@ button.control-btn:hover {
 </div>
 
 <script>
+// --- citations ---
 const quotes = [
-  {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "LuffyTokoda.mp3", scan: "Épisode 1"},
-  {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "GeantsNika.mp3", scan: "Scan 1044"},
-  {text: "Kizaru ! Nous sommes 100 fois plus forts qu'avant !!", author: "Monkey D. Luffy", audio: "Kizaru100x.mp3", scan: "Scan 1090"},
-  {text: "Mettez les voiles !!!!", author: "Monkey D. Luffy", audio: "LuffyVoile.mp3", scan: "Épisode 33"},
-  {text: "La passion et les rêves sont comme le temps, rien ne peut les arrêter...", author: "Gol D. Roger", audio: "dragonroger.mp3", scan: "Épisode 48"},
-  {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: "luffynom.mp3", scan: "Scan 516"},
-  {text: "Vivre n'est pas un crime", author: "Franky", audio: "Frankyvivre.m4a", scan: "Scan 434"},
-  {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde !", author: "Gol D. Roger", audio: "Rogertresor.mp3", scan: "Épisode 1"},
-  {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author: "Marshall D. Teach", audio: "teachdreams.mp3", scan: "Scan 576"},
-  {text: "Ça fait un bail, hein chapeau de paille ?", author: "Crocodile", audio: "CrocodileHisha.mp3", scan: "Épisode 151"},
-  {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: "belmersacrifice.mp3", scan: "Épisode 37"},
-  {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: "fujitoraaveugle.mp3", scan: "Scan 701"},
-  {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: "barbenoirepoings.m4a", scan: "Scan 580"},
-  {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "hilulukmort.m4a", scan: "Épisode 86", hiluluk: true},
-  {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: "bbonepiece.mp3", scan: "Épisode 485"},
-  {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "fujitoracredibilite.m4a", scan: "Scan 746"},
+  {text:"Kaizoku-Ō ni naru otoko da !!!", author:"Monkey D. Luffy", audio:"LuffyTokoda.mp3", scan:"Épisode 1"},
+  {text:"Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author:"Dorry / Broggy", audio:"GeantsNika.mp3", scan:"Scan 1044"},
+  {text:"Kizaru ! Nous sommes 100 fois plus forts qu'avant !!", author:"Monkey D. Luffy", audio:"Kizaru100x.mp3", scan:"Scan 1090"},
+  {text:"Mettez les voiles !!!!", author:"Monkey D. Luffy", audio:"LuffyVoile.mp3", scan:"Épisode 33"},
+  {text:"La passion et les rêves sont comme le temps, rien ne peut les arrêter...", author:"Gol D. Roger", audio:"dragonroger.mp3", scan:"Épisode 48"},
+  {text:"Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author:"Monkey D. Luffy", audio:"luffynom.mp3", scan:"Scan 516"},
+  {text:"Vivre n'est pas un crime", author:"Franky", audio:"Frankyvivre.m4a", scan:"Scan 434"},
+  {text:"Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde !", author:"Gol D. Roger", audio:"Rogertresor.mp3", scan:"Épisode 1"},
+  {text:"L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author:"Marshall D. Teach", audio:"teachdreams.mp3", scan:"Scan 576"},
+  {text:"Ça fait un bail, hein chapeau de paille ?", author:"Crocodile", audio:"CrocodileHisha.mp3", scan:"Épisode 151"},
+  {text:"Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author:"Belmer", audio:"belmersacrifice.mp3", scan:"Épisode 37"},
+  {text:"Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author:"Fujitora", audio:"fujitoraaveugle.mp3", scan:"Scan 701"},
+  {text:"Il y a des batailles qu'on ne gagne pas avec les poings", author:"Marshall D. Teach", audio:"barbenoirepoings.m4a", scan:"Scan 580"},
+  {text:`Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author:"Dr Hiluluk", audio:"hilulukmort.m4a", scan:"Épisode 86", hiluluk:true},
+  {text:"Le One Piece EXISTE !!!", author:"Edward Newgate", audio:"bbonepiece.mp3", scan:"Épisode 485"},
+  {text:"Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author:"Fujitora", audio:"fujitoracredibilite.m4a", scan:"Scan 746"},
 ];
 
 const quoteEl = document.getElementById('quote');
@@ -277,64 +273,61 @@ let poolHistory = [];
 let poolHistoryIndex = -1;
 let quizMode = false;
 
-function stopAudio() { if(audio){ try{audio.pause();}catch{} try{audio.currentTime=0;}catch{} audio=null;} audioPlaying=false; }
-
-function fadeOutIn(el, newContent) {
-  if(!el) return;
-  el.style.transition = "opacity 0.9s ease-in-out";
+// --- fade long et symétrique ---
+function fadeOutIn(el, callback){
+  el.style.transition = 'opacity 0.9s ease-in-out';
   el.style.opacity = 0;
-  el.addEventListener('transitionend', function handler() {
-    el.removeEventListener('transitionend', handler);
-    el.textContent = newContent;
+  setTimeout(()=>{
+    callback();
     el.style.opacity = 1;
-  });
+  }, 900);
 }
 
+// --- fonctions principales ---
+function stopAudio(){ if(audio){try{audio.pause();}catch{} try{audio.currentTime=0}catch{} audio=null;} audioPlaying=false; }
+
 function renderQuoteByIndex(index){
-  stopAudio();
-  if(pool.length === 0){
-    quoteEl.textContent="";
-    authorEl.textContent="";
-    scanEl.textContent="";
-  }
+  if(pool.length===0){ quoteEl.textContent=""; authorEl.textContent=""; scanEl.textContent=""; return; }
+  const q = quotes[index];
+  currentIndex = index;
 
-  currentIndex=index;
-  const q=quotes[currentIndex];
-  if(q.text.length>200) quoteEl.classList.add('long-quote'); else quoteEl.classList.remove('long-quote');
-  if(q.hiluluk) quoteEl.classList.add('hiluluk'); else quoteEl.classList.remove('hiluluk');
+  const updateContent = ()=>{
+    quoteEl.classList.toggle('long-quote', q.text.length>200);
+    quoteEl.classList.toggle('hiluluk', q.hiluluk);
+    quoteEl.textContent = q.text;
+    authorEl.textContent = "- " + q.author;
+    scanEl.textContent = q.scan || "";
 
-  fadeOutIn(quoteEl, q.text);
-  fadeOutIn(authorEl, "- " + q.author);
-  fadeOutIn(scanEl, q.scan||"");
+    if(quizMode){
+      authorEl.style.opacity=0;
+      scanEl.style.opacity=0;
+      quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;
+    } else{
+      authorEl.style.opacity=1;
+      scanEl.style.opacity=1;
+      quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
+    }
+    updateCounter();
+  };
 
-  if(quizMode){
-    authorEl.style.opacity = 0;
-    scanEl.style.opacity = 0;
-    quizBtn.classList.add('active'); quizBtn.style.opacity=0.7;
-  } else {
-    authorEl.style.opacity = 1;
-    scanEl.style.opacity = 1;
-    quizBtn.classList.remove('active'); quizBtn.style.opacity=1;
-  }
-
-  updateCounter();
+  fadeOutIn(quoteEl, updateContent);
+  fadeOutIn(authorEl, ()=>{});
+  fadeOutIn(scanEl, ()=>{});
 }
 
 function updateCounter(){
-  const total = quotes.length;
-  const filtered = pool.length;
-  counterEl.textContent = `${filtered}/${total}`;
+  counterEl.textContent = `${pool.length}/${quotes.length}`;
 }
 
 function updatePoolFromTerm(term){
-  const t=(term||"").trim().toLowerCase();
+  const t = (term||"").trim().toLowerCase();
   if(!t){ pool=quotes.map((_,i)=>i); }
   else{
     pool=[];
     quotes.forEach((q,i)=>{ if(q.text.toLowerCase().includes(t)||q.author.toLowerCase().includes(t)||(q.scan && q.scan.toLowerCase().includes(t))) pool.push(i); });
   }
-  availablePool=pool.slice();
-  poolHistory=[];
+  availablePool = pool.slice();
+  poolHistory = [];
   poolHistoryIndex=-1;
   updateCounter();
 }
@@ -342,47 +335,50 @@ function updatePoolFromTerm(term){
 function getNextFromPoolRandom(){
   if(pool.length===0) return -1;
   if(availablePool.length===0) availablePool=pool.slice();
-  const r=Math.floor(Math.random()*availablePool.length);
+  const r = Math.floor(Math.random()*availablePool.length);
   return availablePool.splice(r,1)[0];
 }
 
 function showNextInPool(){
   if(pool.length===0) return;
-  if(poolHistoryIndex<poolHistory.length-1){ poolHistoryIndex++; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
-  else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex++; renderQuoteByIndex(idx); }
+  if(poolHistoryIndex < poolHistory.length-1){ poolHistoryIndex++; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
+  else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex=poolHistory.length-1; renderQuoteByIndex(idx); }
 }
 
-function showPrevInPool(){
+// --- events ---
+nextBtn.addEventListener('click',()=>{ showNextInPool(); });
+prevBtn.addEventListener('click',()=>{
   if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
+});
+
+playPauseBtn.addEventListener('click',()=>{
+  rotationActive=!rotationActive;
+  playPauseBtn.textContent = rotationActive ? "❚❚" : "▶";
+  if(rotationActive) startRotation();
+  else stopRotation();
+});
+
+quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; renderQuoteByIndex(currentIndex); });
+
+searchInput.addEventListener('input',(e)=>{ updatePoolFromTerm(e.target.value); renderQuoteByIndex(currentIndex); });
+resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); renderQuoteByIndex(currentIndex); });
+
+audioBtn.addEventListener('click',()=>{
+  const q = quotes[currentIndex];
+  if(!q.audio) return;
+  if(audioPlaying){ stopAudio(); } 
+  else { audio = new Audio(q.audio); audio.play(); audioPlaying=true; }
+});
+
+// --- rotation auto ---
+function startRotation(){
+  if(rotationTimer) clearInterval(rotationTimer);
+  rotationTimer=setInterval(()=>{ showNextInPool(); }, 7000);
 }
+function stopRotation(){ if(rotationTimer){ clearInterval(rotationTimer); rotationTimer=null; } }
 
-function startRotation(){ rotationActive=true; playPauseBtn.textContent="❚❚"; clearTimeout(rotationTimer); rotationTimer=setTimeout(()=>{showNextInPool(); if(rotationActive) startRotation();},10000); }
-function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer); }
-function toggleRotation(){ rotationActive?stopRotation():startRotation(); }
-
-function toggleAudio(){ 
-  if(audioPlaying){ stopAudio(); return; }
-  if(!quotes[currentIndex].audio) return;
-  rotationWasActiveBeforeAudio=rotationActive; if(rotationActive) stopRotation();
-  audio=new Audio(quotes[currentIndex].audio); audioPlaying=true; audio.play().catch(()=>{audioPlaying=false; audio=null;});
-  audio.addEventListener('ended',()=>{ audioPlaying=false; audio=null; if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; });
-}
-
-prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
-nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
-playPauseBtn.addEventListener('click',toggleRotation);
-audioBtn.addEventListener('click',toggleAudio);
-
-quizBtn.addEventListener('click',()=>{ quizMode=!quizMode; if(quizMode){ authorEl.style.opacity = 0; scanEl.style.opacity = 0; quizBtn.classList.add('active'); quizBtn.style.opacity=0.7; } else{ authorEl.style.opacity = 1; scanEl.style.opacity = 1; quizBtn.classList.remove('active'); quizBtn.style.opacity=1; }});
-
-searchInput.addEventListener('input',(e)=>{ const term=e.target.value; updatePoolFromTerm(term); if(rotationActive) stopRotation(); if(pool.length===0){ quoteEl.textContent=""; authorEl.textContent=""; scanEl.textContent=""; return; } const first=pool[0]; availablePool=pool.filter(i=>i!==first); poolHistory=[first]; poolHistoryIndex=0; renderQuoteByIndex(first); });
-
-resetSearchBtn.addEventListener('click',()=>{ searchInput.value=""; updatePoolFromTerm(""); availablePool=pool.slice(); poolHistory=[]; poolHistoryIndex=-1; stopRotation(); });
-
-updatePoolFromTerm("");
-const firstIdx=getNextFromPoolRandom();
-poolHistory.push(firstIdx); poolHistoryIndex=0;
-renderQuoteByIndex(firstIdx);
+// --- init ---
+updatePoolFromTerm(""); renderQuoteByIndex(currentIndex);
 startRotation();
 </script>
 </body>
