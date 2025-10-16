@@ -22,7 +22,7 @@ html, body {
   width: 90%;
   max-width: 700px;
   background: rgba(0,0,0,0.6);
-  padding: 20px;
+  padding: 25px 20px;
   border-radius: 12px;
   text-align: center;
   position: relative;
@@ -40,55 +40,58 @@ html, body {
 
 .title {
   font-size: clamp(24px,4vw,36px);
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-audio {
-  display: none;
-}
+audio { display: none; }
 
 .controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 18px;
+  margin-bottom: 15px;
 }
 
 button.control-btn {
   background: rgba(255,255,255,0.1);
   border: 2px solid white;
   color: white;
-  font-size: 18px;
-  padding: 8px 14px;
-  border-radius: 8px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   cursor: pointer;
-  transition: background 0.3s, color 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
 }
 button.control-btn:hover {
   background: white;
   color: #191919;
+  transform: scale(1.1);
 }
 
 .progress-container {
   width: 100%;
   background: rgba(255,255,255,0.2);
-  height: 10px;
-  border-radius: 5px;
+  height: 12px;
+  border-radius: 6px;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .progress-bar {
   width: 0%;
   height: 100%;
   background: #fff;
-  border-radius: 5px;
+  border-radius: 6px;
 }
 
 .timer {
   font-size: 16px;
   margin-bottom: 10px;
 }
+svg { width: 24px; height: 24px; fill: currentColor; }
 </style>
 </head>
 <body>
@@ -99,11 +102,22 @@ button.control-btn:hover {
   <div class="title" id="openingTitle">Opening Name</div>
   
   <div class="controls">
-    <button id="prevOpening" class="control-btn">⏮️</button>
-    <button id="back10" class="control-btn">«10s</button>
-    <button id="playPause" class="control-btn">▶️</button>
-    <button id="forward10" class="control-btn">10s»</button>
-    <button id="nextOpening" class="control-btn">⏭️</button>
+    <button id="prevOpening" class="control-btn" title="Opening précédent">
+      <svg viewBox="0 0 24 24"><polygon points="16,6 8,12 16,18"/></svg>
+    </button>
+    <button id="back10" class="control-btn" title="Reculer 10 secondes">
+      <svg viewBox="0 0 24 24"><polygon points="14,6 6,12 14,18"/><text x="16" y="16" font-size="10" fill="currentColor">10</text></svg>
+    </button>
+    <button id="playPause" class="control-btn" title="Play / Pause">
+      <svg id="playIcon" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>
+      <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+    </button>
+    <button id="forward10" class="control-btn" title="Avancer 10 secondes">
+      <svg viewBox="0 0 24 24"><polygon points="10,6 18,12 10,18"/><text x="2" y="16" font-size="10" fill="currentColor">10</text></svg>
+    </button>
+    <button id="nextOpening" class="control-btn" title="Opening suivant">
+      <svg viewBox="0 0 24 24"><polygon points="8,6 16,12 8,18"/></svg>
+    </button>
   </div>
   
   <div class="progress-container" id="progressContainer">
@@ -116,7 +130,6 @@ button.control-btn:hover {
 </div>
 
 <script>
-// Exemple de playlist
 const openings = [
   {name:"We Are!", file:"audios/WeAre.mp3", image:"images/WeAre.jpg"},
   {name:"Believe", file:"audios/Believe.mp3", image:"images/Believe.jpg"},
@@ -135,6 +148,8 @@ const progressContainer = document.getElementById('progressContainer');
 const timerEl = document.getElementById('timer');
 const titleEl = document.getElementById('openingTitle');
 const bgImg = document.getElementById('bgImg');
+const playIcon = document.getElementById('playIcon');
+const pauseIcon = document.getElementById('pauseIcon');
 
 function loadOpening(index){
   const op = openings[index];
@@ -147,10 +162,12 @@ function loadOpening(index){
 function togglePlay(){
   if(audio.paused){
     audio.play();
-    playPauseBtn.textContent = "❚❚";
+    playIcon.style.display="none";
+    pauseIcon.style.display="block";
   } else{
     audio.pause();
-    playPauseBtn.textContent = "▶️";
+    playIcon.style.display="block";
+    pauseIcon.style.display="none";
   }
 }
 
@@ -180,14 +197,16 @@ prevOpeningBtn.addEventListener('click', ()=>{
   currentIndex = (currentIndex-1+openings.length)%openings.length;
   loadOpening(currentIndex);
   audio.play();
-  playPauseBtn.textContent = "❚❚";
+  playIcon.style.display="none";
+  pauseIcon.style.display="block";
 });
 
 nextOpeningBtn.addEventListener('click', ()=>{
   currentIndex = (currentIndex+1)%openings.length;
   loadOpening(currentIndex);
   audio.play();
-  playPauseBtn.textContent = "❚❚";
+  playIcon.style.display="none";
+  pauseIcon.style.display="block";
 });
 
 playPauseBtn.addEventListener('click', togglePlay);
