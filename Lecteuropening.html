@@ -2,113 +2,164 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Lecteur Audio</title>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lecteur Opening</title>
 <style>
-body {
-  background: #191919;
-  color: white;
-  font-family: 'Bangers', cursive;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
-}
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: white;
+  }
 
-.audio-player {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #222;
-  padding: 10px 15px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 600px;
-}
+  .player {
+    background: rgba(0,0,0,0.6);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-.audio-player input[type=range] {
-  flex: 1;
-}
+  .controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
 
-button {
-  background: transparent;
-  border: 2px solid white;
-  border-radius: 6px;
-  color: white;
-  font-family: 'Bangers', cursive;
-  cursor: pointer;
-  padding: 6px 12px;
-  font-size: 18px;
-  transition: background 0.3s, color 0.3s;
-}
+  button {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background: white;
+    color: #191919;
+    font-weight: bold;
+  }
 
-button:hover {
-  background: white;
-  color: #191919;
-}
+  .progress-container {
+    width: 100%;
+    height: 10px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .progress {
+    height: 100%;
+    width: 0%;
+    background: #ffcc00;
+    border-radius: 5px;
+  }
+
+  .timer {
+    text-align: right;
+    font-size: 14px;
+  }
 </style>
 </head>
 <body>
 
-<h2>Mini Lecteur Audio</h2>
+<div class="player">
+  <div class="controls">
+    <button id="prev10">« 10s</button>
+    <button id="playPause">▶</button>
+    <button id="next10">10s »</button>
+    <button id="prevTrack">⏮</button>
+    <button id="nextTrack">⏭</button>
+  </div>
 
-<div class="audio-player">
-  <button id="playBtn">▶️</button>
-  <span id="currentTime">0:00</span>
-  <input type="range" id="progressBar" value="0" min="0" max="100">
-  <span id="duration">0:00</span>
-  <input type="range" id="volumeBar" min="0" max="1" step="0.01" value="1">
+  <div class="progress-container" id="progressContainer">
+    <div class="progress" id="progress"></div>
+  </div>
+  <div class="timer" id="timer">0:00 / 0:00</div>
 </div>
 
 <script>
-const playBtn = document.getElementById('playBtn');
-const progressBar = document.getElementById('progressBar');
-const volumeBar = document.getElementById('volumeBar');
-const currentTimeEl = document.getElementById('currentTime');
-const durationEl = document.getElementById('duration');
+const tracks = [
+  {title: "Opening 1", src: "audios/opening1.mp3", image: "images/opening1.jpg"},
+  {title: "Opening 2", src: "audios/opening2.mp3", image: "images/opening2.jpg"},
+  {title: "Opening 3", src: "audios/opening3.mp3", image: "images/opening3.jpg"}
+];
 
-let audio = new Audio("ton_audio.mp3"); // <-- mets ton fichier audio ici
-audio.volume = 1;
+let currentTrack = 0;
+let audio = new Audio(tracks[currentTrack].src);
+let playing = false;
 
-// Mettre à jour la barre et le temps
-audio.addEventListener('timeupdate', () => {
-  const progress = (audio.currentTime / audio.duration) * 100;
-  progressBar.value = progress || 0;
-  currentTimeEl.textContent = formatTime(audio.currentTime);
-  durationEl.textContent = formatTime(audio.duration);
-});
+const playPauseBtn = document.getElementById('playPause');
+const prev10Btn = document.getElementById('prev10');
+const next10Btn = document.getElementById('next10');
+const prevTrackBtn = document.getElementById('prevTrack');
+const nextTrackBtn = document.getElementById('nextTrack');
+const progress = document.getElementById('progress');
+const progressContainer = document.getElementById('progressContainer');
+const timerEl = document.getElementById('timer');
 
-// Play / Pause
-playBtn.addEventListener('click', () => {
-  if(audio.paused){
-    audio.play();
-    playBtn.textContent = "⏸";
-  } else {
-    audio.pause();
-    playBtn.textContent = "▶️";
-  }
-});
-
-// Chercher dans la barre
-progressBar.addEventListener('input', () => {
-  audio.currentTime = (progressBar.value / 100) * audio.duration;
-});
-
-// Volume
-volumeBar.addEventListener('input', () => {
-  audio.volume = volumeBar.value;
-});
-
-// Formater le temps
-function formatTime(sec){
-  if(!sec) return "0:00";
-  const minutes = Math.floor(sec/60);
-  const seconds = Math.floor(sec%60);
-  return `${minutes}:${seconds<10?'0':''}${seconds}`;
+function loadTrack(index){
+  audio.src = tracks[index].src;
+  document.body.style.backgroundImage = `url(${tracks[index].image})`;
+  audio.currentTime = 0;
+  updateProgress();
 }
+
+function togglePlay(){
+  if(playing){
+    audio.pause();
+  } else {
+    audio.play();
+  }
+}
+
+audio.addEventListener('play', ()=>{
+  playing = true;
+  playPauseBtn.textContent = "❚❚";
+});
+
+audio.addEventListener('pause', ()=>{
+  playing = false;
+  playPauseBtn.textContent = "▶";
+});
+
+audio.addEventListener('timeupdate', updateProgress);
+
+function updateProgress(){
+  const percent = (audio.currentTime / audio.duration) * 100 || 0;
+  progress.style.width = percent + "%";
+  timerEl.textContent = formatTime(audio.currentTime) + " / " + formatTime(audio.duration);
+}
+
+function formatTime(sec){
+  if(isNaN(sec)) return "0:00";
+  const m = Math.floor(sec/60);
+  const s = Math.floor(sec%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+// boutons
+playPauseBtn.addEventListener('click', togglePlay);
+prev10Btn.addEventListener('click', ()=>{ audio.currentTime = Math.max(0, audio.currentTime - 10); });
+next10Btn.addEventListener('click', ()=>{ audio.currentTime = Math.min(audio.duration, audio.currentTime + 10); });
+prevTrackBtn.addEventListener('click', ()=>{ currentTrack = (currentTrack-1+tracks.length)%tracks.length; loadTrack(currentTrack); if(playing) audio.play(); });
+nextTrackBtn.addEventListener('click', ()=>{ currentTrack = (currentTrack+1)%tracks.length; loadTrack(currentTrack); if(playing) audio.play(); });
+
+// barre de progression clickable
+progressContainer.addEventListener('click', (e)=>{
+  const width = progressContainer.clientWidth;
+  const clickX = e.offsetX;
+  const newTime = (clickX / width) * audio.duration;
+  audio.currentTime = newTime;
+});
+
+// init
+loadTrack(currentTrack);
 </script>
 
 </body>
