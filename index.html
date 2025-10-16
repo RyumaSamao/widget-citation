@@ -236,56 +236,31 @@ button.control-btn:hover {
 
 <script>
 const quotes = [
-  {text: "Blesser les autres ! T'as raison, vivre c'est risquer de blesser les autres !\nTa mort blessera... tous ceux qui t'aiment ! Écoute bien, Kuma.\nTu es un héros... Pour Bonney ! Pour tout le monde !", author: "Vegapunk", audio: "audios-citations/
-Kumahero.mp3", scan: "Épisode 1136"},
-  {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "audios-citations/
-LuffyTokoda.mp3", scan: "Épisode 1015"},
-  {text: "Ace... Ace... Où est AAAAce ??!!!!!", author: "Monkey D. Luffy", audio: "audios-citations/
-LuffyRage.mp3", scan: "Épisode 491"},
-  {text: "Mes nakamas. Il me reste mes nakamas ! Zoro ! Nami ! Usopp ! Sanji ! Chopper ! Robin ! Franky ! Brook ! J'ai des compagnons !! Je veux les revoir vite. Je veux les revoir !!!", author: "Monkey D. Luffy", audio: "audios-citations/
-nakamas.mp3", scan: "Épisode 505"},
-  {text: "Vous n'avez tracé aucun appel. Vous n'avez absolument rien entendu. Le Royaume de Lulusia ? Il n'y a... Aucun pays de ce nom-là", author: "Shepherd Ju Peter", audio: "audios-citations/
-Lulusia.mp3", scan: "Épisode 1089"},
-  {text: "C'est amusant, Papa ! Moi aussi, je veux voir Nika ! Don-do-to-to Don-do-to-to !\nIl viendra en souriant et en dansant sur ce rythme !", author: "Bonney / Kuma", audio: "audios-citations/
-dondototo.mp3", scan: "Épisode 1140"},
-  {text: "Heu... Allo ? Un-deux un-deux . Le monde ! Le monde entier doit m'écouter !", author: "Vegapunk", audio: "audios-citations/
-Vegasekai.mp3", scan: "Épisode 1142"},
-  {text: "Je suis le Dr. Vegapunk. Humble génie scientifique.\nLe message que je m'apprête à transmettre risque de vous choquer,\nmais il s'agit là... de la verité cachée de notre monde !", author: "Vegapunk", audio: "audios-citations/
-Vegamessage.mp3", scan: "Épisode 1142"},
-  {text: "Merci... d'avoir sauvé Bonney. Peux-tu lui transmettre un message\nquand tu la verras ? Souhaite-lui un joyeux... dixième anniversaire", author: "Bartholomew Kuma", audio: "audios-citations/
-KumaMerci.mp3", scan: "Épisode 1136"},
-  {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "audios-citations/
-GeantsNika.mp3", scan: "Épisode 1141"},
-  {text: "Kizaru ! Nous sommes 100 fois plus forts qu'avant !!", author: "Monkey D. Luffy", audio: "audios-citations/
-Kizaru100x.mp3", scan: "Épisode 1125"},
-  {text: "Mettez les voiles !!!!", author: "Monkey D. Luffy", audio: "audios-citations/
-LuffyVoile.mp3", scan: "Épisode 522"},
-  {text: "La passion et les rêves sont comme le temps, rien ne peut les arrêter...", author: "Gol D. Roger", audio: "audios-citations/
-dragonroger.mp3", scan: "Épisode 53"},
-  {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: "audios-citations/
-luffynom.mp3", scan: "Épisode 17"},
-  {text: "Vivre n'est pas un crime", author: "Franky", audio: "audios-citations/
-Frankyvivre.m4a", scan: "Épisode 263"},
-  {text: "SUUUUUUUUUUPEEEEEER", author: "Franky", audio: "audios-citations/
-Supeeer.mp3", scan: "Épisode 528"},
-  {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde !", author: "Gol D. Roger", audio: "audios-citations/
-Rogertresor.mp3", scan: "Épisode 1"},
-  {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author: "Marshall D. Teach", audio: "audios-citations/
-teachdreams.mp3", scan: "Épisode 147"},
-  {text: "Ça fait un bail, hein chapeau de paille ?", author: "Crocodile", audio: "audios-citations/
-CrocodileHisha.mp3", scan: "Épisode 442"},
-  {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: "audios-citations/
-belmersacrifice.mp3", scan: "Épisode 36"},
-  {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: "audios-citations/
-fujitoraaveugle.mp3", scan: "Épisode 631"},
-  {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: "audios-citations/
-barbenoirepoings.m4a", scan: "Épisode 147"},
-  {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "audios-citations/
-hilulukmort.m4a", scan: "Épisode 86", hiluluk: true},
-  {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: "audios-citations/
-bbonepiece.mp3", scan: "Épisode 485"},
-  {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "audios-citations/
-fujitoracredibilite.m4a", scan: "Épisode 736"},
+  {text: "Blesser les autres ! T'as raison, vivre c'est risquer de blesser les autres !\nTa mort blessera... tous ceux qui t'aiment ! Écoute bien, Kuma.\nTu es un héros... Pour Bonney ! Pour tout le monde !", author: "Vegapunk", audio: "audios-citations/Kumahero.mp3", scan: "Épisode 1136"},
+  {text: "Kaizoku-Ō ni naru otoko da !!!", author: "Monkey D. Luffy", audio: "audios-citations/LuffyTokoda.mp3", scan: "Épisode 1015"},
+  {text: "Ace... Ace... Où est AAAAce ??!!!!!", author: "Monkey D. Luffy", audio: "audios-citations/LuffyRage.mp3", scan: "Épisode 491"},
+  {text: "Mes nakamas. Il me reste mes nakamas ! Zoro ! Nami ! Usopp ! Sanji ! Chopper ! Robin ! Franky ! Brook ! J'ai des compagnons !! Je veux les revoir vite. Je veux les revoir !!!", author: "Monkey D. Luffy", audio: "audios-citations/nakamas.mp3", scan: "Épisode 505"},
+  {text: "Vous n'avez tracé aucun appel. Vous n'avez absolument rien entendu. Le Royaume de Lulusia ? Il n'y a... Aucun pays de ce nom-là", author: "Shepherd Ju Peter", audio: "audios-citations/Lulusia.mp3", scan: "Épisode 1089"},
+  {text: "C'est amusant, Papa ! Moi aussi, je veux voir Nika ! Don-do-to-to Don-do-to-to !\nIl viendra en souriant et en dansant sur ce rythme !", author: "Bonney / Kuma", audio: "audios-citations/dondototo.mp3", scan: "Épisode 1140"},
+  {text: "Heu... Allo ? Un-deux un-deux . Le monde ! Le monde entier doit m'écouter !", author: "Vegapunk", audio: "audios-citations/Vegasekai.mp3", scan: "Épisode 1142"},
+  {text: "Je suis le Dr. Vegapunk. Humble génie scientifique.\nLe message que je m'apprête à transmettre risque de vous choquer,\nmais il s'agit là... de la verité cachée de notre monde !", author: "Vegapunk", audio: "audios-citations/Vegamessage.mp3", scan: "Épisode 1142"},
+  {text: "Merci... d'avoir sauvé Bonney. Peux-tu lui transmettre un message\nquand tu la verras ? Souhaite-lui un joyeux... dixième anniversaire", author: "Bartholomew Kuma", audio: "audios-citations/KumaMerci.mp3", scan: "Épisode 1136"},
+  {text: "Nous sommes pour là pour toi, Mugiwara !\nDieu du Soleil !", author: "Dorry / Broggy", audio: "audios-citations/GeantsNika.mp3", scan: "Épisode 1141"},
+  {text: "Kizaru ! Nous sommes 100 fois plus forts qu'avant !!", author: "Monkey D. Luffy", audio: "audios-citations/Kizaru100x.mp3", scan: "Épisode 1125"},
+  {text: "Mettez les voiles !!!!", author: "Monkey D. Luffy", audio: "audios-citations/LuffyVoile.mp3", scan: "Épisode 522"},
+  {text: "La passion et les rêves sont comme le temps, rien ne peut les arrêter...", author: "Gol D. Roger", audio: "audios-citations/dragonroger.mp3", scan: "Épisode 53"},
+  {text: "Un pirate doit être fier de son nom. Tâchez de vous souvenir du mien", author: "Monkey D. Luffy", audio: "audios-citations/luffynom.mp3", scan: "Épisode 17"},
+  {text: "Vivre n'est pas un crime", author: "Franky", audio: "audios-citations/Frankyvivre.m4a", scan: "Épisode 263"},
+  {text: "SUUUUUUUUUUPEEEEEER", author: "Franky", audio: "audios-citations/Supeeer.mp3", scan: "Épisode 528"},
+  {text: "Mon trésor ? Je vous le laisse si vous voulez ! Trouvez-le !\nJe l'ai laissé quelque part en ce monde !", author: "Gol D. Roger", audio: "audios-citations/Rogertresor.mp3", scan: "Épisode 1"},
+  {text: "L'aire où les pirates pouvaient rêver est révolue selon eux ?! Ben Voyons ! Les Hommes ne cesseront jamais d'avoir des rêves !!", author: "Marshall D. Teach", audio: "audios-citations/teachdreams.mp3", scan: "Épisode 147"},
+  {text: "Ça fait un bail, hein chapeau de paille ?", author: "Crocodile", audio: "audios-citations/CrocodileHisha.mp3", scan: "Épisode 442"},
+  {text: "Ne vous souciez ni du regard, ni de ce que disent les autres ! Et soyez assez fortes pour pouvoir rire au nez de ceux qui vous critiquent", author: "Belmer", audio: "audios-citations/belmersacrifice.mp3", scan: "Épisode 36"},
+  {text: "Ne pas voir la pourriture de ce monde est un plaisir uniquement connu des aveugles", author: "Fujitora", audio: "audios-citations/fujitoraaveugle.mp3", scan: "Épisode 631"},
+  {text: "Il y a des batailles qu'on ne gagne pas avec les poings", author: "Marshall D. Teach", audio: "audios-citations/barbenoirepoings.m4a", scan: "Épisode 147"},
+  {text: `Quand croyez-vous qu’un homme meurt ?\nQuand il se prend une balle en plein cœur ? Non !\nQuand il est atteint d’une maladie incurable ? Non !\nQuand il a avalé une soupe de champignons vénéneux ? NON !\n… Un homme meurt lorsque son souvenir tombe dans l’oubli !`, author: "Dr Hiluluk", audio: "audios-citations/hilulukmort.m4a", scan: "Épisode 86", hiluluk: true},
+  {text: "Le One Piece EXISTE !!!", author: "Edward Newgate", audio: "audios-citations/bbonepiece.mp3", scan: "Épisode 485"},
+  {text: "Si nous perdons notre crédibilité en admettant nos erreurs,\nalors nous n'en avions pas en premier lieu", author: "Fujitora", audio: "audios-citations/fujitoracredibilite.m4a", scan: "Épisode 736"},
 ];
 
 const quoteEl = document.getElementById('quote');
