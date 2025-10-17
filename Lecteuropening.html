@@ -10,7 +10,7 @@
       font-family: Arial, sans-serif;
       background-color: #000;
       color: #fff;
-      overflow: hidden;
+      overflow-y: auto;
     }
 
     .player-background {
@@ -27,10 +27,7 @@
     }
 
     .player-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      margin: 20px auto;
       background: rgba(0, 0, 0, 0.8);
       padding: 20px;
       border-radius: 20px;
@@ -98,7 +95,7 @@
       margin-top: 8px;
     }
 
-    /* Nouveau style pour liste et recherche */
+    /* Liste et recherche améliorée */
     .search-container {
       margin: 15px 0;
     }
@@ -111,241 +108,252 @@
       font-size: 16px;
     }
 
-    .list-container {
-      display: flex;
-      gap: 15px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .list-container button {
-      background: #222;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 15px;
+    .anime-item {
+      text-align: left;
+      margin: 5px 0;
+      border-radius: 10px;
+      background: #111;
       cursor: pointer;
+      padding: 8px 12px;
       transition: background 0.3s;
     }
 
-    .list-container button:hover {
-      background: #444;
+    .anime-item:hover {
+      background: #333;
     }
 
-    .list-container button.active {
+    .anime-item.active {
       background: #00b4d8;
       color: #000;
+    }
+
+    .openings-list {
+      display: none;
+      margin-left: 15px;
+      margin-top: 5px;
+    }
+
+    .opening-btn {
+      display: block;
+      background: #222;
+      border: none;
+      padding: 6px 12px;
+      margin: 3px 0;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: background 0.3s;
+    }
+
+    .opening-btn:hover {
+      background: #444;
     }
   </style>
 </head>
 <body>
 
-  <div class="player-background"></div>
+<div class="player-background"></div>
 
-  <div class="player-container">
-    <div class="title" id="title">Titre de l'opening</div>
+<div class="player-container">
+  <div class="title" id="title">Titre de l'opening</div>
 
-    <div class="search-container">
-      <input type="text" id="search" placeholder="Rechercher anime ou opening...">
-    </div>
-
-    <div class="list-container" id="anime-list">
-      <!-- Boutons anime ici -->
-    </div>
-
-    <div class="list-container" id="opening-list">
-      <!-- Boutons openings ici -->
-    </div>
-
-    <div class="controls">
-      <button class="control-btn" id="prev-track" title="Opening précédent">
-        <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
-      </button>
-
-      <button class="control-btn" id="rewind" title="-10 secondes">
-        <svg viewBox="0 0 24 24"><path d="M12 5v2c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.14-7-7h-2c0 4.97 4.03 9 9 9s9-4.03 9-9-4.03-9-9-9zm-1 8V8l-5 5 5 5v-4h6v-2h-6z"/></svg>
-      </button>
-
-      <button class="control-btn" id="play-pause" title="Lecture / Pause">
-        <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-      </button>
-
-      <button class="control-btn" id="forward" title="+10 secondes">
-        <svg viewBox="0 0 24 24"><path d="M12 5v2c-3.86 0-7 3.14-7 7s3.14 7 7 7 7-3.14 7-7h2c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9zm1 8v5l5-5-5-5v4H7v2h6z"/></svg>
-      </button>
-
-      <button class="control-btn" id="next-track" title="Opening suivant">
-        <svg viewBox="0 0 24 24"><path d="M16 4v16h2V4h-2zM5 4v16l9.5-8L5 4z"/></svg>
-      </button>
-    </div>
-
-    <div class="progress-container" id="progress-container">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
-
-    <div class="time">
-      <span id="current-time">0:00</span>
-      <span id="duration">0:00</span>
-    </div>
-
-    <audio id="audio"></audio>
+  <div class="search-container">
+    <input type="text" id="search" placeholder="Rechercher anime ou opening...">
   </div>
 
-  <script>
-    const audio = document.getElementById('audio');
-    const playPauseBtn = document.getElementById('play-pause');
-    const playIcon = document.getElementById('play-icon');
-    const pauseIcon = document.getElementById('pause-icon');
+  <div id="anime-list">
+    <!-- Anime et openings seront générés ici -->
+  </div>
 
-    const progressContainer = document.getElementById('progress-container');
-    const progressBar = document.getElementById('progress-bar');
-    const currentTimeEl = document.getElementById('current-time');
-    const durationEl = document.getElementById('duration');
-    const titleEl = document.getElementById('title');
-    const backgroundEl = document.querySelector('.player-background');
+  <div class="controls">
+    <button class="control-btn" id="prev-track" title="Opening précédent">
+      <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
+    </button>
 
-    const prevTrackBtn = document.getElementById('prev-track');
-    const nextTrackBtn = document.getElementById('next-track');
-    const rewindBtn = document.getElementById('rewind');
-    const forwardBtn = document.getElementById('forward');
+    <button class="control-btn" id="rewind" title="-10 secondes">
+      <svg viewBox="0 0 24 24"><path d="M12 5v2c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.14-7-7h-2c0 4.97 4.03 9 9 9s9-4.03 9-9-4.03-9-9-9zm-1 8V8l-5 5 5 5v-4h6v-2h-6z"/></svg>
+    </button>
 
-    const animeListContainer = document.getElementById('anime-list');
-    const openingListContainer = document.getElementById('opening-list');
-    const searchInput = document.getElementById('search');
+    <button class="control-btn" id="play-pause" title="Lecture / Pause">
+      <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
 
-    let isPlaying = false;
-    let currentTrack = 0;
-    let currentAnime = null;
+    <button class="control-btn" id="forward" title="+10 secondes">
+      <svg viewBox="0 0 24 24"><path d="M12 5v2c-3.86 0-7 3.14-7 7s3.14 7 7 7 7-3.14 7-7h2c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9zm1 8v5l5-5-5-5v4H7v2h6z"/></svg>
+    </button>
 
-    // Liste complète d'openings
-    const openings = [
-      { anime: "One Piece", title: "We Are", audio: "Opening/WeAre.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
-      { anime: "Naruto", title: "Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
-      { anime: "Naruto", title: "Opening 2", audio: "audio-citation/naruto2.mp3", image: "assets/images/naruto2.jpg" },
-      { anime: "Bleach", title: "Opening 1", audio: "audio-citation/bleach1.mp3", image: "assets/images/bleach1.jpg" },
-    ];
+    <button class="control-btn" id="next-track" title="Opening suivant">
+      <svg viewBox="0 0 24 24"><path d="M16 4v16h2V4h-2zM5 4v16l9.5-8L5 4z"/></svg>
+    </button>
+  </div>
 
-    // Créer liste d'animes uniques
-    const animes = [...new Set(openings.map(o => o.anime))];
+  <div class="progress-container" id="progress-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
 
-    function createAnimeButtons() {
-      animeListContainer.innerHTML = '';
-      animes.forEach(anime => {
-        const btn = document.createElement('button');
-        btn.textContent = anime;
-        btn.addEventListener('click', () => {
-          currentAnime = anime;
-          highlightAnimeButton(btn);
-          createOpeningButtons(anime);
-        });
-        animeListContainer.appendChild(btn);
+  <div class="time">
+    <span id="current-time">0:00</span>
+    <span id="duration">0:00</span>
+  </div>
+
+  <audio id="audio"></audio>
+</div>
+
+<script>
+const audio = document.getElementById('audio');
+const playPauseBtn = document.getElementById('play-pause');
+const playIcon = document.getElementById('play-icon');
+const pauseIcon = document.getElementById('pause-icon');
+
+const progressContainer = document.getElementById('progress-container');
+const progressBar = document.getElementById('progress-bar');
+const currentTimeEl = document.getElementById('current-time');
+const durationEl = document.getElementById('duration');
+const titleEl = document.getElementById('title');
+const backgroundEl = document.querySelector('.player-background');
+
+const prevTrackBtn = document.getElementById('prev-track');
+const nextTrackBtn = document.getElementById('next-track');
+const rewindBtn = document.getElementById('rewind');
+const forwardBtn = document.getElementById('forward');
+
+const animeListContainer = document.getElementById('anime-list');
+const searchInput = document.getElementById('search');
+
+let isPlaying = false;
+let currentTrack = 0;
+
+// Ta liste complète d'openings
+const openings = [
+  { anime: "One Piece", title: "We Are", audio: "Opening/WeAre.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
+  { anime: "Naruto", title: "Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
+  { anime: "Naruto", title: "Opening 2", audio: "audio-citation/naruto2.mp3", image: "assets/images/naruto2.jpg" },
+  { anime: "Bleach", title: "Opening 1", audio: "audio-citation/bleach1.mp3", image: "assets/images/bleach1.jpg" },
+];
+
+// Crée la liste anime avec openings repliables
+function createAnimeList() {
+  const animeGroups = {};
+  openings.forEach(o => {
+    if (!animeGroups[o.anime]) animeGroups[o.anime] = [];
+    animeGroups[o.anime].push(o);
+  });
+
+  animeListContainer.innerHTML = '';
+
+  for (const anime in animeGroups) {
+    const animeDiv = document.createElement('div');
+    animeDiv.className = 'anime-item';
+    animeDiv.textContent = anime;
+
+    const openingsDiv = document.createElement('div');
+    openingsDiv.className = 'openings-list';
+
+    animeGroups[anime].forEach(o => {
+      const btn = document.createElement('button');
+      btn.className = 'opening-btn';
+      btn.textContent = o.title;
+      btn.addEventListener('click', () => {
+        currentTrack = openings.indexOf(o);
+        loadTrack(currentTrack);
+        playTrack();
       });
-    }
-
-    function highlightAnimeButton(activeBtn) {
-      animeListContainer.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-      activeBtn.classList.add('active');
-    }
-
-    function createOpeningButtons(anime) {
-      openingListContainer.innerHTML = '';
-      const filtered = openings.filter(o => o.anime === anime);
-      filtered.forEach((o, index) => {
-        const btn = document.createElement('button');
-        btn.textContent = o.title;
-        btn.addEventListener('click', () => {
-          currentTrack = openings.indexOf(o);
-          loadTrack(currentTrack);
-          playTrack();
-        });
-        openingListContainer.appendChild(btn);
-      });
-    }
-
-    function filterList() {
-      const query = searchInput.value.toLowerCase();
-      animeListContainer.querySelectorAll('button').forEach(btn => {
-        btn.style.display = btn.textContent.toLowerCase().includes(query) ? '' : 'none';
-      });
-      openingListContainer.querySelectorAll('button').forEach(btn => {
-        btn.style.display = btn.textContent.toLowerCase().includes(query) ? '' : 'none';
-      });
-    }
-
-    searchInput.addEventListener('input', filterList);
-
-    function loadTrack(index) {
-      const track = openings[index];
-      audio.src = track.audio;
-      titleEl.textContent = `${track.anime} - ${track.title}`;
-      backgroundEl.style.backgroundImage = `url('${track.image}')`;
-    }
-
-    function playTrack() {
-      audio.play();
-      isPlaying = true;
-      playIcon.style.display = 'none';
-      pauseIcon.style.display = 'block';
-    }
-
-    function pauseTrack() {
-      audio.pause();
-      isPlaying = false;
-      playIcon.style.display = 'block';
-      pauseIcon.style.display = 'none';
-    }
-
-    playPauseBtn.addEventListener('click', () => {
-      isPlaying ? pauseTrack() : playTrack();
+      openingsDiv.appendChild(btn);
     });
 
-    prevTrackBtn.addEventListener('click', () => {
-      currentTrack = (currentTrack - 1 + openings.length) % openings.length;
-      loadTrack(currentTrack);
-      playTrack();
+    animeDiv.addEventListener('click', () => {
+      openingsDiv.style.display = openingsDiv.style.display === 'block' ? 'none' : 'block';
     });
 
-    nextTrackBtn.addEventListener('click', () => {
-      currentTrack = (currentTrack + 1) % openings.length;
-      loadTrack(currentTrack);
-      playTrack();
-    });
+    animeListContainer.appendChild(animeDiv);
+    animeListContainer.appendChild(openingsDiv);
+  }
+}
 
-    rewindBtn.addEventListener('click', () => {
-      audio.currentTime = Math.max(0, audio.currentTime - 10);
-    });
+function filterList() {
+  const query = searchInput.value.toLowerCase();
+  animeListContainer.querySelectorAll('.anime-item').forEach((animeDiv, idx) => {
+    const animeName = animeDiv.textContent.toLowerCase();
+    const openingsDiv = animeDiv.nextSibling;
+    const openingsButtons = openingsDiv.querySelectorAll('.opening-btn');
 
-    forwardBtn.addEventListener('click', () => {
-      audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
-    });
+    let animeMatch = animeName.includes(query);
+    let anyOpeningMatch = false;
 
-    audio.addEventListener('timeupdate', () => {
-      const progress = (audio.currentTime / audio.duration) * 100;
-      progressBar.style.width = `${progress}%`;
-
-      const currentMinutes = Math.floor(audio.currentTime / 60);
-      const currentSeconds = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
-      currentTimeEl.textContent = `${currentMinutes}:${currentSeconds}`;
-
-      const durationMinutes = Math.floor(audio.duration / 60);
-      const durationSeconds = Math.floor(audio.duration % 60).toString().padStart(2, '0');
-      if (!isNaN(durationMinutes)) {
-        durationEl.textContent = `${durationMinutes}:${durationSeconds}`;
+    openingsButtons.forEach(btn => {
+      if (btn.textContent.toLowerCase().includes(query)) {
+        btn.style.display = '';
+        anyOpeningMatch = true;
+      } else {
+        btn.style.display = 'none';
       }
     });
 
-    progressContainer.addEventListener('click', (e) => {
-      const width = progressContainer.clientWidth;
-      const clickX = e.offsetX;
-      const duration = audio.duration;
-      audio.currentTime = (clickX / width) * duration;
-    });
+    animeDiv.style.display = animeMatch || anyOpeningMatch ? '' : 'none';
+    openingsDiv.style.display = anyOpeningMatch || animeMatch ? 'block' : 'none';
+  });
+}
 
-    // Initialisation
-    createAnimeButtons();
-    if (openings.length > 0) loadTrack(0);
+searchInput.addEventListener('input', filterList);
 
-  </script>
+function loadTrack(index) {
+  const track = openings[index];
+  audio.src = track.audio;
+  titleEl.textContent = `${track.anime} - ${track.title}`;
+  backgroundEl.style.backgroundImage = `url('${track.image}')`;
+}
+
+function playTrack() {
+  audio.play();
+  isPlaying = true;
+  playIcon.style.display = 'none';
+  pauseIcon.style.display = 'block';
+}
+
+function pauseTrack() {
+  audio.pause();
+  isPlaying = false;
+  playIcon.style.display = 'block';
+  pauseIcon.style.display = 'none';
+}
+
+playPauseBtn.addEventListener('click', () => isPlaying ? pauseTrack() : playTrack());
+prevTrackBtn.addEventListener('click', () => {
+  currentTrack = (currentTrack - 1 + openings.length) % openings.length;
+  loadTrack(currentTrack);
+  playTrack();
+});
+nextTrackBtn.addEventListener('click', () => {
+  currentTrack = (currentTrack + 1) % openings.length;
+  loadTrack(currentTrack);
+  playTrack();
+});
+rewindBtn.addEventListener('click', () => audio.currentTime = Math.max(0, audio.currentTime - 10));
+forwardBtn.addEventListener('click', () => audio.currentTime = Math.min(audio.duration, audio.currentTime + 10));
+
+audio.addEventListener('timeupdate', () => {
+  const progress = (audio.currentTime / audio.duration) * 100;
+  progressBar.style.width = `${progress}%`;
+
+  const currentMinutes = Math.floor(audio.currentTime / 60);
+  const currentSeconds = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
+  currentTimeEl.textContent = `${currentMinutes}:${currentSeconds}`;
+
+  const durationMinutes = Math.floor(audio.duration / 60);
+  const durationSeconds = Math.floor(audio.duration % 60).toString().padStart(2, '0');
+  if (!isNaN(durationMinutes)) durationEl.textContent = `${durationMinutes}:${durationSeconds}`;
+});
+
+progressContainer.addEventListener('click', (e) => {
+  const width = progressContainer.clientWidth;
+  audio.currentTime = (e.offsetX / width) * audio.duration;
+});
+
+// Initialisation
+createAnimeList();
+if (openings.length > 0) loadTrack(0);
+</script>
 </body>
 </html>
