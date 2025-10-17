@@ -63,11 +63,16 @@
       align-items: center;
       cursor: pointer;
       transition: background 0.3s;
-      font-size: 22px; /* pour << et >> */
     }
 
     .control-btn:hover {
       background: #444;
+    }
+
+    .control-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
     }
 
     .progress-container {
@@ -108,9 +113,9 @@
       </button>
 
       <!-- Reculer 10s -->
-<button class="control-btn" id="rewind" title="-10 secondes">
-  <<  
-    </button> 
+      <button class="control-btn" id="rewind" title="-10 secondes">
+        <<  
+      </button>
 
       <!-- Play / Pause -->
       <button class="control-btn" id="play-pause" title="Lecture / Pause">
@@ -118,10 +123,10 @@
         <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
       </button>
 
-     <!-- Avancer 10s -->
-<button class="control-btn" id="forward" title="+10 secondes">
-  >>  
-</button>
+      <!-- Avancer 10s -->
+      <button class="control-btn" id="forward" title="+10 secondes">
+        >>  
+      </button>
 
       <!-- Bouton suivant -->
       <button class="control-btn" id="next-track" title="Opening suivant">
