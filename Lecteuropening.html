@@ -1,247 +1,198 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lecteur d'Openings</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #000;
-      color: #fff;
-      overflow: hidden;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lecteur d'Openings</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: #fff;
+    overflow: hidden;
+  }
 
-    .player-background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      filter: brightness(0.4) blur(8px);
-      z-index: -1;
-      transition: background-image 0.5s ease-in-out;
-    }
+  .player-background {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.4) blur(8px);
+    z-index: -1;
+    transition: background-image 0.5s ease-in-out;
+  }
 
-    .player-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.7);
-      padding: 25px;
-      border-radius: 20px;
-      width: 80%;
-      max-width: 650px;
-      text-align: center;
-    }
+  .player-container {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 20px;
+    width: 80%;
+    max-width: 650px;
+    text-align: center;
+  }
 
-    .title {
-      margin-bottom: 15px;
-      font-size: 22px;
-    }
+  .title {
+    margin-bottom: 15px;
+    font-size: 22px;
+  }
 
-    .controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      margin-top: 10px;
-    }
+  .controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+  }
 
-    .control-btn {
-      background: #222;
-      border: none;
-      color: white;
-      padding: 14px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+  .control-btn {
+    background: #222;
+    border: none;
+    color: white;
+    width: 60px; height: 60px;
+    border-radius: 50%; /* TOUS les boutons ronds */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 14px; /* texte petit pour 10s */
+    font-weight: bold;
+  }
 
-    .control-btn:hover {
-      background: #444;
-    }
+  .control-btn:hover {
+    background: #444;
+  }
 
-    .control-btn svg {
-      width: 22px;
-      height: 22px;
-      fill: white;
-    }
+  .progress-container {
+    width: 100%;
+    height: 6px;
+    background: #444;
+    margin-top: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
 
-    .progress-container {
-      width: 100%;
-      height: 6px;
-      background: #444;
-      margin-top: 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #00b4d8;
+    border-radius: 5px;
+  }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #00b4d8;
-      border-radius: 5px;
-    }
-
-    .time {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      margin-top: 8px;
-    }
-  </style>
+  .time {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+</style>
 </head>
 <body>
 
-  <div class="player-background"></div>
+<div class="player-background"></div>
 
-  <div class="player-container">
-    <div class="title" id="title">Titre de l'opening</div>
+<div class="player-container">
+  <div class="title" id="title">Titre de l'opening</div>
 
-    <div class="controls">
-      <!-- Bouton précédent -->
-      <button class="control-btn" id="prev-track" title="Opening précédent">
-        <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
-      </button>
-
-      <!-- Reculer 10s -->
-<button class="control-btn" id="rewind" title="-10 secondes">
-  << 10
-</button>
-
-<!-- Play / Pause -->
-<button class="control-btn" id="play-pause" title="Lecture / Pause">
-  <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-  <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-</button>
-
-<!-- Avancer 10s -->
-<button class="control-btn" id="forward" title="+10 secondes">
-  10 >>
-</button>
-
-      <!-- Bouton suivant -->
-      <button class="control-btn" id="next-track" title="Opening suivant">
-        <svg viewBox="0 0 24 24"><path d="M16 4v16h2V4h-2zM5 4v16l9.5-8L5 4z"/></svg>
-      </button>
-    </div>
-
-    <div class="progress-container" id="progress-container">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
-
-    <div class="time">
-      <span id="current-time">0:00</span>
-      <span id="duration">0:00</span>
-    </div>
-
-    <audio id="audio"></audio>
+  <div class="controls">
+    <button class="control-btn" id="prev-track" title="Opening précédent">⏮</button>
+    <button class="control-btn" id="rewind" title="-10 secondes">« 10</button>
+    <button class="control-btn" id="play-pause" title="Lecture / Pause">▶️</button>
+    <button class="control-btn" id="forward" title="+10 secondes">10 »</button>
+    <button class="control-btn" id="next-track" title="Opening suivant">⏭</button>
   </div>
 
-  <script>
-    const audio = document.getElementById('audio');
-    const playPauseBtn = document.getElementById('play-pause');
-    const playIcon = document.getElementById('play-icon');
-    const pauseIcon = document.getElementById('pause-icon');
+  <div class="progress-container" id="progress-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
 
-    const progressContainer = document.getElementById('progress-container');
-    const progressBar = document.getElementById('progress-bar');
-    const currentTimeEl = document.getElementById('current-time');
-    const durationEl = document.getElementById('duration');
-    const titleEl = document.getElementById('title');
-    const backgroundEl = document.querySelector('.player-background');
+  <div class="time">
+    <span id="current-time">0:00</span>
+    <span id="duration">0:00</span>
+  </div>
 
-    const prevTrackBtn = document.getElementById('prev-track');
-    const nextTrackBtn = document.getElementById('next-track');
-    const rewindBtn = document.getElementById('rewind');
-    const forwardBtn = document.getElementById('forward');
+  <audio id="audio"></audio>
+</div>
 
-    let isPlaying = false;
-    let currentTrack = 0;
+<script>
+const audio = document.getElementById('audio');
+const playPauseBtn = document.getElementById('play-pause');
+const progressContainer = document.getElementById('progress-container');
+const progressBar = document.getElementById('progress-bar');
+const currentTimeEl = document.getElementById('current-time');
+const durationEl = document.getElementById('duration');
+const titleEl = document.getElementById('title');
+const backgroundEl = document.querySelector('.player-background');
 
-    // 📝 MODIFIE ICI TES OPENINGS 🎧
-    const openings = [
-      { title: "One Piece - We Are", audio: "Opening/WeAre.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
-      { title: "Naruto - Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
-    ];
+const prevTrackBtn = document.getElementById('prev-track');
+const nextTrackBtn = document.getElementById('next-track');
+const rewindBtn = document.getElementById('rewind');
+const forwardBtn = document.getElementById('forward');
 
-    function loadTrack(index) {
-      const track = openings[index];
-      audio.src = track.audio;
-      titleEl.textContent = track.title;
-      backgroundEl.style.backgroundImage = `url('${track.image}')`;
-    }
+let isPlaying = false;
+let currentTrack = 0;
 
-    function playTrack() {
-      audio.play();
-      isPlaying = true;
-      playIcon.style.display = 'none';
-      pauseIcon.style.display = 'block';
-    }
+// 📝 MODIFIE ICI TES OPENINGS 🎧
+const openings = [
+  { title: "One Piece - We Are", audio: "Opening/WeAre.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
+  { title: "Naruto - Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
+];
 
-    function pauseTrack() {
-      audio.pause();
-      isPlaying = false;
-      playIcon.style.display = 'block';
-      pauseIcon.style.display = 'none';
-    }
+function loadTrack(index) {
+  const track = openings[index];
+  audio.src = track.audio;
+  titleEl.textContent = track.title;
+  backgroundEl.style.backgroundImage = `url('${track.image}')`;
+}
 
-    playPauseBtn.addEventListener('click', () => {
-      isPlaying ? pauseTrack() : playTrack();
-    });
+function playTrack() { audio.play(); isPlaying=true; playPauseBtn.textContent='⏸'; }
+function pauseTrack() { audio.pause(); isPlaying=false; playPauseBtn.textContent='▶️'; }
 
-    prevTrackBtn.addEventListener('click', () => {
-      currentTrack = (currentTrack - 1 + openings.length) % openings.length;
-      loadTrack(currentTrack);
-      playTrack();
-    });
+playPauseBtn.addEventListener('click', ()=>isPlaying?pauseTrack():playTrack());
 
-    nextTrackBtn.addEventListener('click', () => {
-      currentTrack = (currentTrack + 1) % openings.length;
-      loadTrack(currentTrack);
-      playTrack();
-    });
+prevTrackBtn.addEventListener('click', ()=>{
+  currentTrack=(currentTrack-1+openings.length)%openings.length;
+  loadTrack(currentTrack);
+  playTrack();
+});
 
-    rewindBtn.addEventListener('click', () => {
-      audio.currentTime = Math.max(0, audio.currentTime - 10);
-    });
+nextTrackBtn.addEventListener('click', ()=>{
+  currentTrack=(currentTrack+1)%openings.length;
+  loadTrack(currentTrack);
+  playTrack();
+});
 
-    forwardBtn.addEventListener('click', () => {
-      audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
-    });
+rewindBtn.addEventListener('click', ()=>{ audio.currentTime=Math.max(0,audio.currentTime-10); });
+forwardBtn.addEventListener('click', ()=>{ audio.currentTime=Math.min(audio.duration,audio.currentTime+10); });
 
-    audio.addEventListener('timeupdate', () => {
-      const progress = (audio.currentTime / audio.duration) * 100;
-      progressBar.style.width = `${progress}%`;
+audio.addEventListener('timeupdate', ()=>{
+  const progress=(audio.currentTime/audio.duration)*100;
+  progressBar.style.width=`${progress}%`;
 
-      const currentMinutes = Math.floor(audio.currentTime / 60);
-      const currentSeconds = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
-      currentTimeEl.textContent = `${currentMinutes}:${currentSeconds}`;
+  const curMin=Math.floor(audio.currentTime/60);
+  const curSec=Math.floor(audio.currentTime%60).toString().padStart(2,'0');
+  currentTimeEl.textContent=`${curMin}:${curSec}`;
 
-      const durationMinutes = Math.floor(audio.duration / 60);
-      const durationSeconds = Math.floor(audio.duration % 60).toString().padStart(2, '0');
-      if (!isNaN(durationMinutes)) {
-        durationEl.textContent = `${durationMinutes}:${durationSeconds}`;
-      }
-    });
+  const durMin=Math.floor(audio.duration/60);
+  const durSec=Math.floor(audio.duration%60).toString().padStart(2,'0');
+  if(!isNaN(durMin)) durationEl.textContent=`${durMin}:${durSec}`;
+});
 
-    progressContainer.addEventListener('click', (e) => {
-      const width = progressContainer.clientWidth;
-      const clickX = e.offsetX;
-      const duration = audio.duration;
-      audio.currentTime = (clickX / width) * duration;
-    });
+progressContainer.addEventListener('click', (e)=>{
+  const width=progressContainer.clientWidth;
+  const clickX=e.offsetX;
+  const duration=audio.duration;
+  audio.currentTime=(clickX/width)*duration;
+});
 
-    // Chargement initial
-    loadTrack(currentTrack);
-  </script>
+// Chargement initial
+loadTrack(currentTrack);
+</script>
+
 </body>
 </html>
