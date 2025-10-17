@@ -77,7 +77,7 @@ body {
   margin-top: 20px;
   border-radius: 5px;
   cursor: pointer;
-  display: none;
+  display: block; /* toujours visible */
 }
 .progress-bar {
   height: 100%;
@@ -104,6 +104,9 @@ body {
   padding: 10px;
   cursor: pointer;
   z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* centrer logo */
   transition: 0.3s;
 }
 .menu-btn:hover { background: #444; }
@@ -123,7 +126,7 @@ body {
   box-shadow: 0 0 15px rgba(0,0,0,0.6);
 }
 
-.menu-popup input, .menu-popup select, .menu-popup button {
+.menu-popup select, .menu-popup button {
   width: 100%;
   margin: 5px 0;
   padding: 8px;
@@ -134,8 +137,7 @@ body {
   color: #fff;
   transition: 0.2s;
 }
-.menu-popup input::placeholder { color: #aaa; }
-.menu-popup input:focus, .menu-popup select:focus { outline: none; background: #333; }
+.menu-popup select:focus { outline: none; background: #333; }
 .menu-popup button { background: #00b4d8; color: #000; font-weight: bold; cursor: pointer; }
 .menu-popup button:hover { background: #0093b9; }
 </style>
@@ -154,7 +156,6 @@ body {
 
   <!-- Menu loupe -->
   <div class="menu-popup" id="menu-popup">
-    <input type="text" id="search" placeholder="Chercher anime ou opening...">
     <select id="anime-select">
       <option value="">Choisir un anime</option>
     </select>
@@ -218,12 +219,10 @@ const menuPopup = document.getElementById('menu-popup');
 const animeSelect = document.getElementById('anime-select');
 const openingSelect = document.getElementById('opening-select');
 const playSelectedBtn = document.getElementById('play-selected');
-const searchInput = document.getElementById('search');
 
 let isPlaying = false;
 let currentTrack = 0;
 
-// Liste des openings avec image de fond
 const openings = [
   { anime: "One Piece", title: "We Are", audio: "Opening/WeAre.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
   { anime: "Naruto", title: "Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
@@ -231,51 +230,44 @@ const openings = [
   { anime: "Bleach", title: "Opening 1", audio: "audio-citation/bleach1.mp3", image: "assets/images/bleach1.jpg" },
 ];
 
-// Remplir dropdown anime
+// remplir anime select
 const animeSet = [...new Set(openings.map(o => o.anime))];
 animeSet.forEach(a=>{
-  const opt = document.createElement('option'); opt.value=a; opt.textContent=a;
+  const opt=document.createElement('option'); opt.value=a; opt.textContent=a;
   animeSelect.appendChild(opt);
 });
 
-// Mise à jour dropdown openings selon anime
+// remplir opening select
 function updateOpeningsDropdown(anime){
-  openingSelect.innerHTML = '<option value="">Choisir l\'opening</option>';
-  openings.filter(o=>o.anime.includes(anime)).forEach((o,i)=>{
-    const opt = document.createElement('option');
-    opt.value = openings.indexOf(o);
-    opt.textContent = o.title;
+  openingSelect.innerHTML='<option value="">Choisir l\'opening</option>';
+  openings.filter(o=>o.anime===anime).forEach(o=>{
+    const opt=document.createElement('option');
+    opt.value=openings.indexOf(o);
+    opt.textContent=o.title;
     openingSelect.appendChild(opt);
   });
 }
 animeSelect.addEventListener('change', ()=>updateOpeningsDropdown(animeSelect.value));
 
-// Recherche en direct
-searchInput.addEventListener('input', ()=>{
-  const val = searchInput.value.toLowerCase();
-  updateOpeningsDropdown(val);
-});
-
-// Bouton jouer sélection
+// jouer track sélectionné
 playSelectedBtn.addEventListener('click', ()=>{
-  const index = parseInt(openingSelect.value);
+  const index=parseInt(openingSelect.value);
   if(!isNaN(index)){
-    currentTrack = index;
+    currentTrack=index;
     loadTrack(currentTrack);
     playTrack();
-    progressContainer.style.display='block';
     menuPopup.style.display='none';
   }
 });
 
-// Afficher / cacher menu
+// toggle menu
 menuBtn.addEventListener('click', ()=>menuPopup.style.display = menuPopup.style.display==='block'?'none':'block');
 
 function loadTrack(i){
-  const t = openings[i];
-  audio.src = t.audio;
-  titleEl.textContent = `${t.anime} - ${t.title}`;
-  if(t.image) backgroundEl.style.backgroundImage = `url('${t.image}')`;
+  const t=openings[i];
+  audio.src=t.audio;
+  titleEl.textContent=`${t.anime} - ${t.title}`;
+  if(t.image) backgroundEl.style.backgroundImage=`url('${t.image}')`;
 }
 
 function playTrack(){ audio.play(); isPlaying=true; playIcon.style.display='none'; pauseIcon.style.display='block'; }
@@ -288,24 +280,23 @@ rewindBtn.addEventListener('click', ()=>audio.currentTime=Math.max(0,audio.curre
 forwardBtn.addEventListener('click', ()=>audio.currentTime=Math.min(audio.duration,audio.currentTime+10));
 
 audio.addEventListener('timeupdate', ()=>{
-  const progress = (audio.currentTime/audio.duration)*100;
-  progressBar.style.width = progress+'%';
-  const currentMinutes = Math.floor(audio.currentTime/60);
-  const currentSeconds = Math.floor(audio.currentTime%60).toString().padStart(2,'0');
-  currentTimeEl.textContent = `${currentMinutes}:${currentSeconds}`;
-  const durationMinutes = Math.floor(audio.duration/60);
-  const durationSeconds = Math.floor(audio.duration%60).toString().padStart(2,'0');
-  if(!isNaN(durationMinutes)) durationEl.textContent = `${durationMinutes}:${durationSeconds}`;
+  const progress=(audio.currentTime/audio.duration)*100;
+  progressBar.style.width=progress+'%';
+  const m=Math.floor(audio.currentTime/60);
+  const s=Math.floor(audio.currentTime%60).toString().padStart(2,'0');
+  currentTimeEl.textContent=`${m}:${s}`;
+  const dm=Math.floor(audio.duration/60);
+  const ds=Math.floor(audio.duration%60).toString().padStart(2,'0');
+  if(!isNaN(dm)) durationEl.textContent=`${dm}:${ds}`;
 });
 
 progressContainer.addEventListener('click', (e)=>{
-  const width = progressContainer.clientWidth;
-  const clickX = e.offsetX;
-  const duration = audio.duration;
-  audio.currentTime = (clickX/width)*duration;
+  const width=progressContainer.clientWidth;
+  const clickX=e.offsetX;
+  audio.currentTime=(clickX/width)*audio.duration;
 });
 
-// Chargement initial
+// init
 loadTrack(currentTrack);
 </script>
 </body>
