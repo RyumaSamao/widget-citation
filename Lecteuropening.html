@@ -63,16 +63,11 @@
       align-items: center;
       cursor: pointer;
       transition: background 0.3s;
+      font-size: 22px; /* pour << et >> */
     }
 
     .control-btn:hover {
       background: #444;
-    }
-
-    .control-btn svg {
-      width: 22px;
-      height: 22px;
-      fill: white;
     }
 
     .progress-container {
@@ -112,22 +107,21 @@
         <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
       </button>
 
-<!-- Reculer 10s -->
-<button class="control-btn" id="rewind" title="-10 secondes">
-  &lt;&lt;
-</button>
+      <!-- Reculer 10s -->
+      <button class="control-btn" id="rewind" title="-10 secondes">
+        &lt;&lt;
+      </button>
 
       <!-- Play / Pause -->
       <button class="control-btn" id="play-pause" title="Lecture / Pause">
         <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
       </button>
-      
-<!-- Avancer 10s -->
-<button class="control-btn" id="forward" title="+10 secondes">
-  &gt;&gt;
-</button>
 
+      <!-- Avancer 10s -->
+      <button class="control-btn" id="forward" title="+10 secondes">
+        &gt;&gt;
+      </button>
 
       <!-- Bouton suivant -->
       <button class="control-btn" id="next-track" title="Opening suivant">
@@ -168,7 +162,6 @@
     let isPlaying = false;
     let currentTrack = 0;
 
-    // 📝 MODIFIE ICI TES OPENINGS 🎧
     const openings = [
       { title: "One Piece - Opening 1", audio: "audio-citation/onepiece.mp3", image: "assets/images/onepiece.jpg" },
       { title: "Naruto - Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
@@ -241,7 +234,6 @@
       audio.currentTime = (clickX / width) * duration;
     });
 
-    // Chargement initial
     loadTrack(currentTrack);
   </script>
 </body>
