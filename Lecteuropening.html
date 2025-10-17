@@ -1,231 +1,232 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Lecteur Opening One Piece</title>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet" />
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: 'Bangers', cursive;
-  background: #191919;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lecteur d'Openings</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-.background-img {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-  opacity: 0.25;
-  transition: opacity 0.5s;
-}
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      color: white;
+    }
 
-.player-wrap {
-  width: 95%;
-  max-width: 950px;
-  background: rgba(0,0,0,0.65);
-  padding: 35px 25px;
-  border-radius: 16px;
-  text-align: center;
-  position: relative;
-}
+    /* 🌌 Image de fond */
+    .player-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: brightness(0.4) blur(8px);
+      z-index: -1;
+    }
 
-.title {
-  font-size: clamp(28px, 4vw, 40px);
-  margin-bottom: 25px;
-}
+    /* 🧍 Container principal */
+    .player-container {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-audio { display: none; }
+    .title {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
 
-.controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 25px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
+    /* 🎧 Barre de progression */
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+    }
 
-button.control-btn {
-  background: rgba(255,255,255,0.1);
-  border: 2px solid white;
-  color: white;
-  min-width: 60px;
-  height: 50px;
-  padding: 0 10px;
-  border-radius: 12px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  font-size: 15px;
-  transition: background 0.3s, color 0.3s, transform 0.2s;
-}
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: white;
+      border-radius: 10px;
+      transition: width 0.1s linear;
+    }
 
-button.control-btn:hover {
-  background: white;
-  color: #191919;
-  transform: scale(1.08);
-}
+    /* 🕓 Timer */
+    .time {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
 
-.progress-container {
-  width: 100%;
-  background: rgba(255,255,255,0.2);
-  height: 14px;
-  border-radius: 7px;
-  cursor: pointer;
-  margin-bottom: 15px;
-}
+    /* ⏯️ Boutons */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
 
-.progress-bar {
-  width: 0%;
-  height: 100%;
-  background: #fff;
-  border-radius: 7px;
-}
+    .control-btn {
+      background: white;
+      color: black;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
 
-.timer {
-  font-size: 18px;
-}
+    .control-btn:hover {
+      transform: scale(1.1);
+    }
 
-svg {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-}
-</style>
+    audio {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <div class="player-background"></div>
 
-<img class="background-img" id="bgImg" src="" alt="Opening Background">
+  <div class="player-container">
+    <div class="title" id="opening-title">Titre de l'Opening</div>
 
-<div class="player-wrap">
-  <div class="title" id="openingTitle">Opening Name</div>
+    <div class="progress-container" id="progress-container">
+      <div class="progress" id="progress"></div>
+    </div>
+    <div class="time">
+      <span id="current-time">0:00</span>
+      <span id="duration">0:00</span>
+    </div>
 
-  <div class="controls">
-    <button id="prevOpening" class="control-btn" title="Opening précédent">
-      <svg viewBox="0 0 24 24"><polygon points="16,6 8,12 16,18"/></svg>
-    </button>
-    <button id="back10" class="control-btn" title="Reculer 10 secondes">
-      <svg viewBox="0 0 24 24"><polygon points="14,6 6,12 14,18"/></svg>
-      <span>10s</span>
-    </button>
-    <button id="playPause" class="control-btn" title="Play / Pause">
-      <svg id="playIcon" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>
-      <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-    </button>
-    <button id="forward10" class="control-btn" title="Avancer 10 secondes">
-      <span>10s</span>
-      <svg viewBox="0 0 24 24"><polygon points="10,6 18,12 10,18"/></svg>
-    </button>
-    <button id="nextOpening" class="control-btn" title="Opening suivant">
-      <svg viewBox="0 0 24 24"><polygon points="8,6 16,12 8,18"/></svg>
-    </button>
+    <div class="controls">
+      <button class="control-btn" id="prev-opening">⏮</button>
+      <button class="control-btn" id="back-10">⏪</button>
+      <button class="control-btn" id="play-pause">▶</button>
+      <button class="control-btn" id="forward-10">⏩</button>
+      <button class="control-btn" id="next-opening">⏭</button>
+    </div>
+
+    <audio id="audio-player"></audio>
   </div>
 
-  <div class="progress-container" id="progressContainer">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
+  <script>
+    const openings = [
+      { title: "One Piece - OP1", audio: "onepiece.mp3", image: "onepiece.jpg" },
+      { title: "Naruto - OP1", audio: "naruto.mp3", image: "naruto.jpg" },
+    ];
 
-  <div class="timer" id="timer">0:00 / 0:00</div>
+    let currentIndex = 0;
 
-  <audio id="audioPlayer"></audio>
-</div>
+    const audio = document.getElementById('audio-player');
+    const background = document.querySelector('.player-background');
+    const title = document.getElementById('opening-title');
+    const playPauseBtn = document.getElementById('play-pause');
+    const progressContainer = document.getElementById('progress-container');
+    const progress = document.getElementById('progress');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
 
-<script>
-const openings = [
-  {name:"We Are!", file:"audios/WeAre.mp3", image:"images/WeAre.jpg"},
-  {name:"Believe", file:"audios/Believe.mp3", image:"images/Believe.jpg"},
-  {name:"Hikari e", file:"audios/Hikarie.mp3", image:"images/Hikarie.jpg"}
-];
+    const prevOpeningBtn = document.getElementById('prev-opening');
+    const nextOpeningBtn = document.getElementById('next-opening');
+    const back10Btn = document.getElementById('back-10');
+    const forward10Btn = document.getElementById('forward-10');
 
-let currentIndex = 0;
-const audio = document.getElementById('audioPlayer');
-const playPauseBtn = document.getElementById('playPause');
-const back10Btn = document.getElementById('back10');
-const forward10Btn = document.getElementById('forward10');
-const prevOpeningBtn = document.getElementById('prevOpening');
-const nextOpeningBtn = document.getElementById('nextOpening');
-const progressBar = document.getElementById('progressBar');
-const progressContainer = document.getElementById('progressContainer');
-const timerEl = document.getElementById('timer');
-const titleEl = document.getElementById('openingTitle');
-const bgImg = document.getElementById('bgImg');
-const playIcon = document.getElementById('playIcon');
-const pauseIcon = document.getElementById('pauseIcon');
+    function loadOpening(index) {
+      const opening = openings[index];
+      title.textContent = opening.title;
+      background.style.backgroundImage = `url('assets/images/${opening.image}')`;
+      audio.src = `assets/audio/${opening.audio}`;
+      audio.load();
+    }
 
-function loadOpening(index){
-  const op = openings[index];
-  audio.src = op.file;
-  titleEl.textContent = op.name;
-  bgImg.src = op.image;
-  progressBar.style.width = "0%";
-}
+    function playAudio() {
+      audio.play();
+      playPauseBtn.textContent = '⏸';
+    }
 
-function togglePlay(){
-  if(audio.paused){
-    audio.play();
-    playIcon.style.display="none";
-    pauseIcon.style.display="block";
-  } else{
-    audio.pause();
-    playIcon.style.display="block";
-    pauseIcon.style.display="none";
-  }
-}
+    function pauseAudio() {
+      audio.pause();
+      playPauseBtn.textContent = '▶';
+    }
 
-function formatTime(seconds){
-  const m = Math.floor(seconds/60);
-  const s = Math.floor(seconds%60);
-  return `${m}:${s<10?'0'+s:s}`;
-}
+    playPauseBtn.addEventListener('click', () => {
+      audio.paused ? playAudio() : pauseAudio();
+    });
 
-audio.addEventListener('timeupdate', ()=>{
-  const progress = (audio.currentTime/audio.duration)*100;
-  progressBar.style.width = progress + "%";
-  timerEl.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
-});
+    // Boutons avant/arrière opening
+    prevOpeningBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + openings.length) % openings.length;
+      loadOpening(currentIndex);
+      playAudio();
+    });
 
-progressContainer.addEventListener('click',(e)=>{
-  const rect = progressContainer.getBoundingClientRect();
-  const clickX = e.clientX - rect.left;
-  const width = rect.width;
-  audio.currentTime = (clickX/width)*audio.duration;
-});
+    nextOpeningBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % openings.length;
+      loadOpening(currentIndex);
+      playAudio();
+    });
 
-back10Btn.addEventListener('click', ()=>{ audio.currentTime = Math.max(0,audio.currentTime-10); });
-forward10Btn.addEventListener('click', ()=>{ audio.currentTime = Math.min(audio.duration,audio.currentTime+10); });
+    // Boutons -10s / +10s
+    back10Btn.addEventListener('click', () => {
+      audio.currentTime = Math.max(audio.currentTime - 10, 0);
+    });
 
-prevOpeningBtn.addEventListener('click', ()=>{
-  currentIndex = (currentIndex-1+openings.length)%openings.length;
-  loadOpening(currentIndex);
-  audio.play();
-  playIcon.style.display="none";
-  pauseIcon.style.display="block";
-});
+    forward10Btn.addEventListener('click', () => {
+      audio.currentTime = Math.min(audio.currentTime + 10, audio.duration);
+    });
 
-nextOpeningBtn.addEventListener('click', ()=>{
-  currentIndex = (currentIndex+1)%openings.length;
-  loadOpening(currentIndex);
-  audio.play();
-  playIcon.style.display="none";
-  pauseIcon.style.display="block";
-});
+    // Barre de progression
+    audio.addEventListener('timeupdate', () => {
+      const percent = (audio.currentTime / audio.duration) * 100;
+      progress.style.width = `${percent}%`;
 
-playPauseBtn.addEventListener('click', togglePlay);
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationEl.textContent = formatTime(audio.duration);
+    });
 
-loadOpening(currentIndex);
-</script>
+    progressContainer.addEventListener('click', (e) => {
+      const width = progressContainer.clientWidth;
+      const clickX = e.offsetX;
+      const duration = audio.duration;
+      audio.currentTime = (clickX / width) * duration;
+    });
 
+    function formatTime(time) {
+      if (isNaN(time)) return "0:00";
+      const minutes = Math.floor(time / 60);
+      const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+      return `${minutes}:${seconds}`;
+    }
+
+    // Charger le premier opening au démarrage
+    loadOpening(currentIndex);
+  </script>
 </body>
 </html>
