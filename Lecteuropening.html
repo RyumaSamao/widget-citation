@@ -1,306 +1,312 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lecteur d'Openings</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #000;
-      color: #fff;
-      overflow: hidden;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lecteur d'Openings</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #000;
+  color: #fff;
+  overflow: hidden;
+}
 
-    .player-background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      filter: brightness(0.4) blur(8px);
-      z-index: -1;
-      transition: background-image 0.5s ease-in-out;
-    }
+.player-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.4) blur(8px);
+  z-index: -1;
+  transition: background-image 0.5s ease-in-out;
+}
 
-    .player-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.7);
-      padding: 25px;
-      border-radius: 20px;
-      width: 80%;
-      max-width: 650px;
-      text-align: center;
-    }
+.player-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.8);
+  padding: 25px;
+  border-radius: 20px;
+  width: 80%;
+  max-width: 650px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(0,0,0,0.7);
+  backdrop-filter: blur(5px);
+}
 
-    .title {
-      margin-bottom: 15px;
-      font-size: 22px;
-    }
+.title {
+  margin-bottom: 15px;
+  font-size: 22px;
+  font-weight: bold;
+}
 
-    .controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      margin-top: 10px;
-    }
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
 
-    .control-btn {
-      background: #222;
-      border: none;
-      color: white;
-      padding: 14px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+.control-btn {
+  background: #222;
+  border: none;
+  color: white;
+  padding: 14px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.control-btn:hover { background: #444; }
+.control-btn svg { width: 22px; height: 22px; fill: white; }
 
-    .control-btn:hover {
-      background: #444;
-    }
+.progress-container {
+  width: 100%;
+  height: 6px;
+  background: #444;
+  margin-top: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: none;
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #00b4d8;
+  border-radius: 5px;
+}
 
-    .control-btn svg {
-      width: 22px;
-      height: 22px;
-      fill: white;
-    }
+.time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-top: 8px;
+}
 
-    .progress-container {
-      width: 100%;
-      height: 6px;
-      background: #444;
-      margin-top: 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      display: none; /* cachée par défaut, apparaîtra via menu */
-    }
+/* Menu loupe */
+.menu-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #222;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+  transition: 0.3s;
+}
+.menu-btn:hover { background: #444; }
+.menu-btn svg { width: 20px; height: 20px; fill: white; }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #00b4d8;
-      border-radius: 5px;
-    }
+.menu-popup {
+  position: absolute;
+  top: 60px;
+  right: 15px;
+  background: rgba(30,30,30,0.95);
+  padding: 15px;
+  border-radius: 15px;
+  width: 250px;
+  z-index: 11;
+  display: none;
+  text-align: left;
+  box-shadow: 0 0 15px rgba(0,0,0,0.6);
+}
 
-    .time {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      margin-top: 8px;
-    }
-
-    /* Nouveau menu flottant loupe */
-    .menu-btn {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: #222;
-      border: none;
-      border-radius: 50%;
-      padding: 10px;
-      cursor: pointer;
-      z-index: 10;
-    }
-    .menu-btn:hover { background: #444; }
-    .menu-btn svg { width: 20px; height: 20px; fill: white; }
-
-    .menu-popup {
-      position: absolute;
-      top: 60px;
-      right: 15px;
-      background: rgba(20,20,20,0.95);
-      padding: 15px;
-      border-radius: 15px;
-      width: 250px;
-      z-index: 11;
-      display: none;
-      text-align: left;
-    }
-    .menu-popup input, .menu-popup select, .menu-popup button {
-      width: 100%;
-      margin: 5px 0;
-      padding: 8px;
-      border-radius: 10px;
-      border: none;
-      font-size: 14px;
-    }
-  </style>
+.menu-popup input, .menu-popup select, .menu-popup button {
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  background: #222;
+  color: #fff;
+  transition: 0.2s;
+}
+.menu-popup input::placeholder { color: #aaa; }
+.menu-popup input:focus, .menu-popup select:focus { outline: none; background: #333; }
+.menu-popup button { background: #00b4d8; color: #000; font-weight: bold; cursor: pointer; }
+.menu-popup button:hover { background: #0093b9; }
+</style>
 </head>
 <body>
 
-  <div class="player-background"></div>
+<div class="player-background" id="player-background"></div>
 
-  <div class="player-container">
-    <div class="title" id="title">Titre de l'opening</div>
+<div class="player-container">
+  <div class="title" id="title">Titre de l'opening</div>
 
-    <!-- Bouton loupe -->
-    <button class="menu-btn" id="menu-btn" title="Choisir Opening">
-      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.518 6.518 0 001.48-5.34C15.24 5.59 12.66 3 9.5 3S3.76 5.59 3.76 8.76 6.34 14.5 9.5 14.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 13C7.01 13 5 10.99 5 8.5S7.01 4 9.5 4 14 6.01 14 8.5 11.99 13 9.5 13z"/></svg>
-    </button>
+  <!-- Bouton loupe -->
+  <button class="menu-btn" id="menu-btn" title="Choisir Opening">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.518 6.518 0 001.48-5.34C15.24 5.59 12.66 3 9.5 3S3.76 5.59 3.76 8.76 6.34 14.5 9.5 14.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 13C7.01 13 5 10.99 5 8.5S7.01 4 9.5 4 14 6.01 14 8.5 11.99 13 9.5 13z"/></svg>
+  </button>
 
-    <!-- Menu loupe -->
-    <div class="menu-popup" id="menu-popup">
-      <input type="text" id="search" placeholder="Chercher anime ou opening...">
-      <select id="anime-select">
-        <option value="">Choisir un anime</option>
-      </select>
-      <select id="opening-select">
-        <option value="">Choisir l'opening</option>
-      </select>
-      <button id="play-selected">Jouer</button>
-    </div>
-
-    <div class="controls">
-      <button class="control-btn" id="prev-track" title="Opening précédent">
-        <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
-      </button>
-      <button class="control-btn" id="rewind" title="-10 secondes">
-        <svg viewBox="0 0 24 24"><path d="M12 5v2c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.14-7-7h-2c0 4.97 4.03 9 9 9s9-4.03 9-9-4.03-9-9-9zm-1 8V8l-5 5 5 5v-4h6v-2h-6z"/></svg>
-      </button>
-      <button class="control-btn" id="play-pause" title="Lecture / Pause">
-        <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-      </button>
-      <button class="control-btn" id="forward" title="+10 secondes">
-        <svg viewBox="0 0 24 24"><path d="M12 5v2c-3.86 0-7 3.14-7 7s3.14 7 7 7 7-3.14 7-7h2c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9zm1 8v5l5-5-5-5v4H7v2h6z"/></svg>
-      </button>
-      <button class="control-btn" id="next-track" title="Opening suivant">
-        <svg viewBox="0 0 24 24"><path d="M16 4v16h2V4h-2zM5 4v16l9.5-8L5 4z"/></svg>
-      </button>
-    </div>
-
-    <div class="progress-container" id="progress-container">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
-
-    <div class="time">
-      <span id="current-time">0:00</span>
-      <span id="duration">0:00</span>
-    </div>
-
-    <audio id="audio"></audio>
+  <!-- Menu loupe -->
+  <div class="menu-popup" id="menu-popup">
+    <input type="text" id="search" placeholder="Chercher anime ou opening...">
+    <select id="anime-select">
+      <option value="">Choisir un anime</option>
+    </select>
+    <select id="opening-select">
+      <option value="">Choisir l'opening</option>
+    </select>
+    <button id="play-selected">Jouer</button>
   </div>
 
-  <script>
-    const audio = document.getElementById('audio');
-    const playPauseBtn = document.getElementById('play-pause');
-    const playIcon = document.getElementById('play-icon');
-    const pauseIcon = document.getElementById('pause-icon');
+  <div class="controls">
+    <button class="control-btn" id="prev-track" title="Opening précédent">
+      <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
+    </button>
+    <button class="control-btn" id="rewind" title="-10 secondes">
+      <svg viewBox="0 0 24 24"><path d="M12 5v2c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.14-7-7h-2c0 4.97 4.03 9 9 9s9-4.03 9-9-4.03-9-9-9zm-1 8V8l-5 5 5 5v-4h6v-2h-6z"/></svg>
+    </button>
+    <button class="control-btn" id="play-pause" title="Lecture / Pause">
+      <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+    <button class="control-btn" id="forward" title="+10 secondes">
+      <svg viewBox="0 0 24 24"><path d="M12 5v2c-3.86 0-7 3.14-7 7s3.14 7 7 7 7-3.14 7-7h2c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9zm1 8v5l5-5-5-5v4H7v2h6z"/></svg>
+    </button>
+    <button class="control-btn" id="next-track" title="Opening suivant">
+      <svg viewBox="0 0 24 24"><path d="M16 4v16h2V4h-2zM5 4v16l9.5-8L5 4z"/></svg>
+    </button>
+  </div>
 
-    const progressContainer = document.getElementById('progress-container');
-    const progressBar = document.getElementById('progress-bar');
-    const currentTimeEl = document.getElementById('current-time');
-    const durationEl = document.getElementById('duration');
-    const titleEl = document.getElementById('title');
+  <div class="progress-container" id="progress-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
 
-    const prevTrackBtn = document.getElementById('prev-track');
-    const nextTrackBtn = document.getElementById('next-track');
-    const rewindBtn = document.getElementById('rewind');
-    const forwardBtn = document.getElementById('forward');
+  <div class="time">
+    <span id="current-time">0:00</span>
+    <span id="duration">0:00</span>
+  </div>
 
-    const menuBtn = document.getElementById('menu-btn');
-    const menuPopup = document.getElementById('menu-popup');
-    const animeSelect = document.getElementById('anime-select');
-    const openingSelect = document.getElementById('opening-select');
-    const playSelectedBtn = document.getElementById('play-selected');
-    const searchInput = document.getElementById('search');
+  <audio id="audio"></audio>
+</div>
 
-    let isPlaying = false;
-    let currentTrack = 0;
+<script>
+const audio = document.getElementById('audio');
+const playPauseBtn = document.getElementById('play-pause');
+const playIcon = document.getElementById('play-icon');
+const pauseIcon = document.getElementById('pause-icon');
 
-    // Données openings
-    const openings = [
-      { anime: "One Piece", title: "We Are", audio: "Opening/WeAre.mp3" },
-      { anime: "Naruto", title: "Opening 1", audio: "audio-citation/naruto.mp3" },
-      { anime: "Naruto", title: "Opening 2", audio: "audio-citation/naruto2.mp3" },
-      { anime: "Bleach", title: "Opening 1", audio: "audio-citation/bleach1.mp3" },
-    ];
+const progressContainer = document.getElementById('progress-container');
+const progressBar = document.getElementById('progress-bar');
+const currentTimeEl = document.getElementById('current-time');
+const durationEl = document.getElementById('duration');
+const titleEl = document.getElementById('title');
+const backgroundEl = document.getElementById('player-background');
 
-    // Remplir dropdown anime
-    const animeSet = [...new Set(openings.map(o => o.anime))];
-    animeSet.forEach(a=>{
-      const opt = document.createElement('option'); opt.value=a; opt.textContent=a;
-      animeSelect.appendChild(opt);
-    });
+const prevTrackBtn = document.getElementById('prev-track');
+const nextTrackBtn = document.getElementById('next-track');
+const rewindBtn = document.getElementById('rewind');
+const forwardBtn = document.getElementById('forward');
 
-    // Mettre à jour openings selon anime
-    animeSelect.addEventListener('change', ()=>{
-      const anime = animeSelect.value;
-      openingSelect.innerHTML = '<option value="">Choisir l\'opening</option>';
-      openings.filter(o=>o.anime===anime).forEach((o,i)=>{
-        const opt = document.createElement('option');
-        opt.value = openings.indexOf(o);
-        opt.textContent = o.title;
-        openingSelect.appendChild(opt);
-      });
-    });
+const menuBtn = document.getElementById('menu-btn');
+const menuPopup = document.getElementById('menu-popup');
+const animeSelect = document.getElementById('anime-select');
+const openingSelect = document.getElementById('opening-select');
+const playSelectedBtn = document.getElementById('play-selected');
+const searchInput = document.getElementById('search');
 
-    // Bouton jouer sélection
-    playSelectedBtn.addEventListener('click', ()=>{
-      const index = parseInt(openingSelect.value);
-      if(!isNaN(index)){
-        currentTrack = index;
-        loadTrack(currentTrack);
-        playTrack();
-        progressContainer.style.display='block';
-        menuPopup.style.display='none';
-      }
-    });
+let isPlaying = false;
+let currentTrack = 0;
 
-    // Afficher / cacher menu
-    menuBtn.addEventListener('click', ()=>menuPopup.style.display = menuPopup.style.display==='block'?'none':'block');
+// Liste des openings avec image de fond
+const openings = [
+  { anime: "One Piece", title: "We Are", audio: "Opening/WeAre.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
+  { anime: "Naruto", title: "Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
+  { anime: "Naruto", title: "Opening 2", audio: "audio-citation/naruto2.mp3", image: "assets/images/naruto2.jpg" },
+  { anime: "Bleach", title: "Opening 1", audio: "audio-citation/bleach1.mp3", image: "assets/images/bleach1.jpg" },
+];
 
-    function loadTrack(i){
-      const t = openings[i];
-      audio.src = t.audio;
-      titleEl.textContent = `${t.anime} - ${t.title}`;
-    }
+// Remplir dropdown anime
+const animeSet = [...new Set(openings.map(o => o.anime))];
+animeSet.forEach(a=>{
+  const opt = document.createElement('option'); opt.value=a; opt.textContent=a;
+  animeSelect.appendChild(opt);
+});
 
-    function playTrack(){
-      audio.play(); isPlaying=true;
-      playIcon.style.display='none'; pauseIcon.style.display='block';
-    }
-    function pauseTrack(){
-      audio.pause(); isPlaying=false;
-      playIcon.style.display='block'; pauseIcon.style.display='none';
-    }
+// Mise à jour dropdown openings selon anime
+function updateOpeningsDropdown(anime){
+  openingSelect.innerHTML = '<option value="">Choisir l\'opening</option>';
+  openings.filter(o=>o.anime.includes(anime)).forEach((o,i)=>{
+    const opt = document.createElement('option');
+    opt.value = openings.indexOf(o);
+    opt.textContent = o.title;
+    openingSelect.appendChild(opt);
+  });
+}
+animeSelect.addEventListener('change', ()=>updateOpeningsDropdown(animeSelect.value));
 
-    playPauseBtn.addEventListener('click', ()=>isPlaying?pauseTrack():playTrack());
-    prevTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack-1+openings.length)%openings.length; loadTrack(currentTrack); playTrack();});
-    nextTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack+1)%openings.length; loadTrack(currentTrack); playTrack();});
-    rewindBtn.addEventListener('click', ()=>audio.currentTime=Math.max(0,audio.currentTime-10));
-    forwardBtn.addEventListener('click', ()=>audio.currentTime=Math.min(audio.duration,audio.currentTime+10));
+// Recherche en direct
+searchInput.addEventListener('input', ()=>{
+  const val = searchInput.value.toLowerCase();
+  updateOpeningsDropdown(val);
+});
 
-    audio.addEventListener('timeupdate', ()=>{
-      const progress = (audio.currentTime/audio.duration)*100;
-      progressBar.style.width = progress+'%';
-      const currentMinutes = Math.floor(audio.currentTime/60);
-      const currentSeconds = Math.floor(audio.currentTime%60).toString().padStart(2,'0');
-      currentTimeEl.textContent = `${currentMinutes}:${currentSeconds}`;
-      const durationMinutes = Math.floor(audio.duration/60);
-      const durationSeconds = Math.floor(audio.duration%60).toString().padStart(2,'0');
-      if(!isNaN(durationMinutes)) durationEl.textContent = `${durationMinutes}:${durationSeconds}`;
-    });
-
-    progressContainer.addEventListener('click', (e)=>{
-      const width = progressContainer.clientWidth;
-      const clickX = e.offsetX;
-      const duration = audio.duration;
-      audio.currentTime = (clickX/width)*duration;
-    });
-
-    // Initialiser premier track
+// Bouton jouer sélection
+playSelectedBtn.addEventListener('click', ()=>{
+  const index = parseInt(openingSelect.value);
+  if(!isNaN(index)){
+    currentTrack = index;
     loadTrack(currentTrack);
-  </script>
+    playTrack();
+    progressContainer.style.display='block';
+    menuPopup.style.display='none';
+  }
+});
+
+// Afficher / cacher menu
+menuBtn.addEventListener('click', ()=>menuPopup.style.display = menuPopup.style.display==='block'?'none':'block');
+
+function loadTrack(i){
+  const t = openings[i];
+  audio.src = t.audio;
+  titleEl.textContent = `${t.anime} - ${t.title}`;
+  if(t.image) backgroundEl.style.backgroundImage = `url('${t.image}')`;
+}
+
+function playTrack(){ audio.play(); isPlaying=true; playIcon.style.display='none'; pauseIcon.style.display='block'; }
+function pauseTrack(){ audio.pause(); isPlaying=false; playIcon.style.display='block'; pauseIcon.style.display='none'; }
+
+playPauseBtn.addEventListener('click', ()=>isPlaying?pauseTrack():playTrack());
+prevTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack-1+openings.length)%openings.length; loadTrack(currentTrack); playTrack();});
+nextTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack+1)%openings.length; loadTrack(currentTrack); playTrack();});
+rewindBtn.addEventListener('click', ()=>audio.currentTime=Math.max(0,audio.currentTime-10));
+forwardBtn.addEventListener('click', ()=>audio.currentTime=Math.min(audio.duration,audio.currentTime+10));
+
+audio.addEventListener('timeupdate', ()=>{
+  const progress = (audio.currentTime/audio.duration)*100;
+  progressBar.style.width = progress+'%';
+  const currentMinutes = Math.floor(audio.currentTime/60);
+  const currentSeconds = Math.floor(audio.currentTime%60).toString().padStart(2,'0');
+  currentTimeEl.textContent = `${currentMinutes}:${currentSeconds}`;
+  const durationMinutes = Math.floor(audio.duration/60);
+  const durationSeconds = Math.floor(audio.duration%60).toString().padStart(2,'0');
+  if(!isNaN(durationMinutes)) durationEl.textContent = `${durationMinutes}:${durationSeconds}`;
+});
+
+progressContainer.addEventListener('click', (e)=>{
+  const width = progressContainer.clientWidth;
+  const clickX = e.offsetX;
+  const duration = audio.duration;
+  audio.currentTime = (clickX/width)*duration;
+});
+
+// Chargement initial
+loadTrack(currentTrack);
+</script>
 </body>
 </html>
