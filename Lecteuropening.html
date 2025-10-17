@@ -112,32 +112,27 @@
         <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
       </button>
 
-  <!-- Reculer 10s -->
+ <!-- Reculer 10s -->
 <button class="control-btn" id="rewind" title="-10 secondes">
-  <div style="display:flex; align-items:center; justify-content:center; gap:2px;">
-    <svg width="12" height="12" viewBox="0 0 24 24">
-      <polygon points="15,6 9,12 15,18" fill="white"/>
-    </svg>
-    <span style="font-size:10px; font-weight:bold;">10</span>
-  </div>
+  <svg viewBox="0 0 24 24">
+    <polygon points="15,6 9,12 15,18" fill="white"/>
+  </svg>
+  <span style="position:absolute; font-size:10px; font-weight:bold;">10</span>
 </button>
-
-<!-- Avancer 10s -->
-<button class="control-btn" id="forward" title="+10 secondes">
-  <div style="display:flex; align-items:center; justify-content:center; gap:2px;">
-    <span style="font-size:10px; font-weight:bold;">10</span>
-    <svg width="12" height="12" viewBox="0 0 24 24">
-      <polygon points="9,6 15,12 9,18" fill="white"/>
-    </svg>
-  </div>
-</button>
-
 
       <!-- Play / Pause -->
       <button class="control-btn" id="play-pause" title="Lecture / Pause">
         <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
       </button>
+      
+<!-- Avancer 10s -->
+<button class="control-btn" id="forward" title="+10 secondes">
+  <svg viewBox="0 0 24 24">
+    <polygon points="9,6 15,12 9,18" fill="white"/>
+  </svg>
+  <span style="position:absolute; font-size:10px; font-weight:bold;">10</span>
+</button>
 
       <!-- Bouton suivant -->
       <button class="control-btn" id="next-track" title="Opening suivant">
