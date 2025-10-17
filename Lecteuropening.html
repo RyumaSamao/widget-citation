@@ -5,194 +5,131 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Lecteur d'Openings</title>
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #000;
-    color: #fff;
-  }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.player-container {
+  background: rgba(0,0,0,0.8);
+  padding: 25px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 650px;
+  text-align: center;
+  position: relative;
+}
+.title {
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+.control-btn {
+  background: #222;
+  border: none;
+  color: white;
+  padding: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.control-btn:hover { background: #444; }
+.control-btn svg { width: 22px; height: 22px; fill: white; }
 
-  .player-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    filter: brightness(0.4) blur(8px);
-    z-index: -1;
-    transition: background-image 0.5s ease-in-out;
-  }
+.progress-container {
+  width: 100%;
+  height: 6px;
+  background: #444;
+  margin-top: 20px;
+  border-radius: 5px;
+  display: none; /* cachée par défaut */
+  cursor: pointer;
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #00b4d8;
+  border-radius: 5px;
+}
 
-  .player-container {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.8);
-    padding: 15px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 700px;
-    text-align: center;
-  }
+.time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-top: 8px;
+}
 
-  .title {
-    margin-bottom: 10px;
-    font-size: 20px;
-  }
-
-  .controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-top: 10px;
-  }
-
-  .control-btn {
-    background: #222;
-    border: none;
-    color: white;
-    padding: 12px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-
-  .control-btn:hover {
-    background: #444;
-  }
-
-  .control-btn svg {
-    width: 20px;
-    height: 20px;
-    fill: white;
-  }
-
-  .progress-container {
-    width: 100%;
-    height: 6px;
-    background: #444;
-    margin-top: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .progress-bar {
-    height: 100%;
-    width: 0%;
-    background: #00b4d8;
-    border-radius: 5px;
-  }
-
-  .time {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    margin-top: 5px;
-  }
-
-  /* Menu anime + openings */
-  .menu-container {
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 700px;
-    background: rgba(0,0,0,0.85);
-    border-radius: 15px;
-    padding: 10px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .search-container input {
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: 10px;
-    border: none;
-    font-size: 14px;
-    margin-bottom: 8px;
-  }
-
-  .anime-item {
-    cursor: pointer;
-    background: #111;
-    margin: 3px 0;
-    padding: 8px 10px;
-    border-radius: 10px;
-    transition: 0.3s;
-  }
-
-  .anime-item:hover {
-    background: #333;
-  }
-
-  .anime-item.active {
-    background: #00b4d8;
-    color: #000;
-  }
-
-  .openings-list {
-    display: none;
-    margin-left: 10px;
-    margin-top: 3px;
-  }
-
-  .opening-btn {
-    display: block;
-    background: #222;
-    border: none;
-    padding: 5px 8px;
-    margin: 2px 0;
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: left;
-    width: 100%;
-    font-size: 13px;
-    transition: 0.3s;
-  }
-
-  .opening-btn:hover {
-    background: #444;
-  }
+.menu-popup {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #111;
+  padding: 15px;
+  border-radius: 15px;
+  display: none;
+  width: 220px;
+  z-index: 10;
+}
+.menu-popup select, .menu-popup button {
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+}
+.menu-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #222;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+}
+.menu-btn:hover { background: #444; }
+.menu-btn svg { width: 20px; height: 20px; fill: white; }
 </style>
 </head>
 <body>
 
-<div class="player-background"></div>
-
-<div class="menu-container">
-  <div class="search-container">
-    <input type="text" id="search" placeholder="Rechercher anime ou opening...">
-  </div>
-  <div id="anime-list"></div>
-</div>
-
 <div class="player-container">
   <div class="title" id="title">Titre de l'opening</div>
+
+  <!-- Bouton loupe -->
+  <button class="menu-btn" id="menu-btn" title="Choisir Opening">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.518 6.518 0 001.48-5.34C15.24 5.59 12.66 3 9.5 3S3.76 5.59 3.76 8.76 6.34 14.5 9.5 14.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 13C7.01 13 5 10.99 5 8.5S7.01 4 9.5 4 14 6.01 14 8.5 11.99 13 9.5 13z"/></svg>
+  </button>
+
+  <div class="menu-popup" id="menu-popup">
+    <select id="anime-select">
+      <option value="">Choisir un anime</option>
+    </select>
+    <select id="opening-select">
+      <option value="">Choisir l'opening</option>
+    </select>
+    <button id="play-selected">Jouer</button>
+  </div>
 
   <div class="controls">
     <button class="control-btn" id="prev-track" title="Opening précédent">
       <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
     </button>
-
-    <button class="control-btn" id="rewind" title="-10 secondes">
-      <svg viewBox="0 0 24 24"><path d="M12 5v2c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.14-7-7h-2c0 4.97 4.03 9 9 9s9-4.03 9-9-4.03-9-9-9zm-1 8V8l-5 5 5 5v-4h6v-2h-6z"/></svg>
-    </button>
-
     <button class="control-btn" id="play-pause" title="Lecture / Pause">
       <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
     </button>
-
-    <button class="control-btn" id="forward" title="+10 secondes">
-      <svg viewBox="0 0 24 24"><path d="M12 5v2c-3.86 0-7 3.14-7 7s3.14 7 7 7 7-3.14 7-7h2c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9zm1 8v5l5-5-5-5v4H7v2h6z"/></svg>
-    </button>
-
     <button class="control-btn" id="next-track" title="Opening suivant">
       <svg viewBox="0 0 24 24"><path d="M16 4v16h2V4h-2zM5 4v16l9.5-8L5 4z"/></svg>
     </button>
@@ -215,104 +152,77 @@ const audio = document.getElementById('audio');
 const playPauseBtn = document.getElementById('play-pause');
 const playIcon = document.getElementById('play-icon');
 const pauseIcon = document.getElementById('pause-icon');
-
 const progressContainer = document.getElementById('progress-container');
 const progressBar = document.getElementById('progress-bar');
 const currentTimeEl = document.getElementById('current-time');
 const durationEl = document.getElementById('duration');
 const titleEl = document.getElementById('title');
-const backgroundEl = document.querySelector('.player-background');
 
 const prevTrackBtn = document.getElementById('prev-track');
 const nextTrackBtn = document.getElementById('next-track');
-const rewindBtn = document.getElementById('rewind');
-const forwardBtn = document.getElementById('forward');
 
-const animeListContainer = document.getElementById('anime-list');
-const searchInput = document.getElementById('search');
+const menuBtn = document.getElementById('menu-btn');
+const menuPopup = document.getElementById('menu-popup');
+const animeSelect = document.getElementById('anime-select');
+const openingSelect = document.getElementById('opening-select');
+const playSelectedBtn = document.getElementById('play-selected');
 
 let isPlaying = false;
 let currentTrack = 0;
 
-// Exemple de grandes données
+// Liste des openings
 const openings = [
-  { anime: "One Piece", title: "We Are", audio: "Opening/WeAre.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
-  { anime: "Naruto", title: "Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
-  { anime: "Naruto", title: "Opening 2", audio: "audio-citation/naruto2.mp3", image: "assets/images/naruto2.jpg" },
-  { anime: "Bleach", title: "Opening 1", audio: "audio-citation/bleach1.mp3", image: "assets/images/bleach1.jpg" },
+  { anime: "One Piece", title: "We Are", audio: "Opening/WeAre.mp3" },
+  { anime: "Naruto", title: "Opening 1", audio: "audio-citation/naruto.mp3" },
+  { anime: "Naruto", title: "Opening 2", audio: "audio-citation/naruto2.mp3" },
+  { anime: "Bleach", title: "Opening 1", audio: "audio-citation/bleach1.mp3" },
 ];
 
-// Génère menu collapsible
-function createAnimeMenu() {
-  const groups = {};
-  openings.forEach(o => {
-    if (!groups[o.anime]) groups[o.anime] = [];
-    groups[o.anime].push(o);
-  });
+// Remplir dropdown anime
+const animeSet = [...new Set(openings.map(o => o.anime))];
+animeSet.forEach(a=>{
+  const opt = document.createElement('option'); opt.value=a; opt.textContent=a;
+  animeSelect.appendChild(opt);
+});
 
-  animeListContainer.innerHTML = '';
-
-  for (const anime in groups) {
-    const animeDiv = document.createElement('div');
-    animeDiv.className = 'anime-item';
-    animeDiv.textContent = anime;
-
-    const openingsDiv = document.createElement('div');
-    openingsDiv.className = 'openings-list';
-
-    groups[anime].forEach(o => {
-      const btn = document.createElement('button');
-      btn.className = 'opening-btn';
-      btn.textContent = o.title;
-      btn.addEventListener('click', () => {
-        currentTrack = openings.indexOf(o);
-        loadTrack(currentTrack);
-        playTrack();
-      });
-      openingsDiv.appendChild(btn);
-    });
-
-    animeDiv.addEventListener('click', () => {
-      openingsDiv.style.display = openingsDiv.style.display === 'block' ? 'none' : 'block';
-    });
-
-    animeListContainer.appendChild(animeDiv);
-    animeListContainer.appendChild(openingsDiv);
-  }
-}
-
-// Filtre recherche
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.toLowerCase();
-  animeListContainer.querySelectorAll('.anime-item').forEach((animeDiv) => {
-    const animeName = animeDiv.textContent.toLowerCase();
-    const openingsDiv = animeDiv.nextSibling;
-    let showAnime = animeName.includes(q);
-    let showAnyOpening = false;
-    openingsDiv.querySelectorAll('.opening-btn').forEach(btn => {
-      if (btn.textContent.toLowerCase().includes(q)) {
-        btn.style.display = '';
-        showAnyOpening = true;
-      } else btn.style.display = 'none';
-    });
-    animeDiv.style.display = showAnime || showAnyOpening ? '' : 'none';
-    openingsDiv.style.display = showAnyOpening || showAnime ? 'block' : 'none';
+// Mise à jour dropdown opening selon anime
+animeSelect.addEventListener('change', ()=>{
+  const anime = animeSelect.value;
+  openingSelect.innerHTML = '<option value="">Choisir l\'opening</option>';
+  openings.filter(o=>o.anime===anime).forEach((o,i)=>{
+    const opt = document.createElement('option');
+    opt.value=i;
+    opt.textContent=o.title;
+    openingSelect.appendChild(opt);
   });
 });
 
-// Player functions
-function loadTrack(i) {
+// Bouton jouer sélection
+playSelectedBtn.addEventListener('click', ()=>{
+  const index = parseInt(openingSelect.value);
+  if(!isNaN(index)){
+    currentTrack = index;
+    loadTrack(currentTrack);
+    playTrack();
+    progressContainer.style.display='block';
+    menuPopup.style.display='none';
+  }
+});
+
+// Afficher / cacher menu
+menuBtn.addEventListener('click', ()=>menuPopup.style.display = menuPopup.style.display==='block'?'none':'block');
+
+function loadTrack(i){
   const t = openings[i];
   audio.src = t.audio;
   titleEl.textContent = `${t.anime} - ${t.title}`;
-  backgroundEl.style.backgroundImage = `url('${t.image}')`;
 }
 
-function playTrack() {
-  audio.play(); isPlaying = true;
+function playTrack(){
+  audio.play(); isPlaying=true;
   playIcon.style.display='none'; pauseIcon.style.display='block';
 }
-function pauseTrack() {
+function pauseTrack(){
   audio.pause(); isPlaying=false;
   playIcon.style.display='block'; pauseIcon.style.display='none';
 }
@@ -320,12 +230,10 @@ function pauseTrack() {
 playPauseBtn.addEventListener('click', ()=>isPlaying?pauseTrack():playTrack());
 prevTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack-1+openings.length)%openings.length; loadTrack(currentTrack); playTrack();});
 nextTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack+1)%openings.length; loadTrack(currentTrack); playTrack();});
-rewindBtn.addEventListener('click', ()=>audio.currentTime=Math.max(0,audio.currentTime-10));
-forwardBtn.addEventListener('click', ()=>audio.currentTime=Math.min(audio.duration,audio.currentTime+10));
 
 audio.addEventListener('timeupdate', ()=>{
   const p=(audio.currentTime/audio.duration)*100;
-  progressBar.style.width=p+'%';
+  progressBar.style.width = p+'%';
   const m=Math.floor(audio.currentTime/60);
   const s=Math.floor(audio.currentTime%60).toString().padStart(2,'0');
   currentTimeEl.textContent=`${m}:${s}`;
@@ -338,9 +246,9 @@ progressContainer.addEventListener('click',(e)=>{
   audio.currentTime=(e.offsetX/progressContainer.clientWidth)*audio.duration;
 });
 
-// Init
-createAnimeMenu();
-if(openings.length>0) loadTrack(0);
+// Initialiser premier track
+loadTrack(0);
 </script>
+
 </body>
 </html>
