@@ -31,11 +31,11 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.7);
-      padding: 25px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
       border-radius: 20px;
-      width: 80%;
-      max-width: 650px;
+      width: 90%;
+      max-width: 700px;
       text-align: center;
     }
 
@@ -97,6 +97,45 @@
       font-size: 14px;
       margin-top: 8px;
     }
+
+    /* Nouveau style pour liste et recherche */
+    .search-container {
+      margin: 15px 0;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+
+    .list-container {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .list-container button {
+      background: #222;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .list-container button:hover {
+      background: #444;
+    }
+
+    .list-container button.active {
+      background: #00b4d8;
+      color: #000;
+    }
   </style>
 </head>
 <body>
@@ -106,29 +145,36 @@
   <div class="player-container">
     <div class="title" id="title">Titre de l'opening</div>
 
+    <div class="search-container">
+      <input type="text" id="search" placeholder="Rechercher anime ou opening...">
+    </div>
+
+    <div class="list-container" id="anime-list">
+      <!-- Boutons anime ici -->
+    </div>
+
+    <div class="list-container" id="opening-list">
+      <!-- Boutons openings ici -->
+    </div>
+
     <div class="controls">
-      <!-- Bouton précédent -->
       <button class="control-btn" id="prev-track" title="Opening précédent">
         <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
       </button>
 
-      <!-- Reculer 10s -->
       <button class="control-btn" id="rewind" title="-10 secondes">
         <svg viewBox="0 0 24 24"><path d="M12 5v2c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.14-7-7h-2c0 4.97 4.03 9 9 9s9-4.03 9-9-4.03-9-9-9zm-1 8V8l-5 5 5 5v-4h6v-2h-6z"/></svg>
       </button>
 
-      <!-- Play / Pause -->
       <button class="control-btn" id="play-pause" title="Lecture / Pause">
         <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
       </button>
 
-      <!-- Avancer 10s -->
       <button class="control-btn" id="forward" title="+10 secondes">
         <svg viewBox="0 0 24 24"><path d="M12 5v2c-3.86 0-7 3.14-7 7s3.14 7 7 7 7-3.14 7-7h2c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9zm1 8v5l5-5-5-5v4H7v2h6z"/></svg>
       </button>
 
-      <!-- Bouton suivant -->
       <button class="control-btn" id="next-track" title="Opening suivant">
         <svg viewBox="0 0 24 24"><path d="M16 4v16h2V4h-2zM5 4v16l9.5-8L5 4z"/></svg>
       </button>
@@ -164,19 +210,75 @@
     const rewindBtn = document.getElementById('rewind');
     const forwardBtn = document.getElementById('forward');
 
+    const animeListContainer = document.getElementById('anime-list');
+    const openingListContainer = document.getElementById('opening-list');
+    const searchInput = document.getElementById('search');
+
     let isPlaying = false;
     let currentTrack = 0;
+    let currentAnime = null;
 
-    // 📝 MODIFIE ICI TES OPENINGS 🎧
+    // Liste complète d'openings
     const openings = [
-      { title: "One Piece - We Are", audio: "Opening/WeAre.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
-      { title: "Naruto - Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
+      { anime: "One Piece", title: "We Are", audio: "Opening/WeAre.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
+      { anime: "Naruto", title: "Opening 1", audio: "audio-citation/naruto.mp3", image: "assets/images/naruto.jpg" },
+      { anime: "Naruto", title: "Opening 2", audio: "audio-citation/naruto2.mp3", image: "assets/images/naruto2.jpg" },
+      { anime: "Bleach", title: "Opening 1", audio: "audio-citation/bleach1.mp3", image: "assets/images/bleach1.jpg" },
     ];
+
+    // Créer liste d'animes uniques
+    const animes = [...new Set(openings.map(o => o.anime))];
+
+    function createAnimeButtons() {
+      animeListContainer.innerHTML = '';
+      animes.forEach(anime => {
+        const btn = document.createElement('button');
+        btn.textContent = anime;
+        btn.addEventListener('click', () => {
+          currentAnime = anime;
+          highlightAnimeButton(btn);
+          createOpeningButtons(anime);
+        });
+        animeListContainer.appendChild(btn);
+      });
+    }
+
+    function highlightAnimeButton(activeBtn) {
+      animeListContainer.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+      activeBtn.classList.add('active');
+    }
+
+    function createOpeningButtons(anime) {
+      openingListContainer.innerHTML = '';
+      const filtered = openings.filter(o => o.anime === anime);
+      filtered.forEach((o, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = o.title;
+        btn.addEventListener('click', () => {
+          currentTrack = openings.indexOf(o);
+          loadTrack(currentTrack);
+          playTrack();
+        });
+        openingListContainer.appendChild(btn);
+      });
+    }
+
+    function filterList() {
+      const query = searchInput.value.toLowerCase();
+      animeListContainer.querySelectorAll('button').forEach(btn => {
+        btn.style.display = btn.textContent.toLowerCase().includes(query) ? '' : 'none';
+      });
+      openingListContainer.querySelectorAll('button').forEach(btn => {
+        btn.style.display = btn.textContent.toLowerCase().includes(query) ? '' : 'none';
+      });
+    }
+
+    searchInput.addEventListener('input', filterList);
 
     function loadTrack(index) {
       const track = openings[index];
       audio.src = track.audio;
-      titleEl.textContent = track.title;
+      titleEl.textContent = `${track.anime} - ${track.title}`;
       backgroundEl.style.backgroundImage = `url('${track.image}')`;
     }
 
@@ -240,8 +342,10 @@
       audio.currentTime = (clickX / width) * duration;
     });
 
-    // Chargement initial
-    loadTrack(currentTrack);
+    // Initialisation
+    createAnimeButtons();
+    if (openings.length > 0) loadTrack(0);
+
   </script>
 </body>
 </html>
