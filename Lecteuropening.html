@@ -177,11 +177,13 @@ body {
 <div class="player-container">
   <div class="title" id="title">Titre de l'opening</div>
 
-  <!-- Bouton repeat -->
-  <button class="repeat-btn" id="repeat-btn" title="Mode de répétition">
-    <svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4V6H7a5 5 0 0 0-5 5v2h2v-2a3 3 0 0 1 3-3h10V1zm-2 22H7l4-4-4-4v3H17a3 3 0 0 0 3-3v-2h2v2a5 5 0 0 1-5 5z"/></svg>
-    <span class="loop-one" id="loop-one-indicator">1</span>
-  </button>
+ <!-- Bouton repeat -->
+<button class="repeat-btn" id="repeat-btn" title="Mode de répétition">
+  <svg viewBox="0 0 24 24">
+    <path d="M17 1l4 4-4 4M7 11h10a5 5 0 0 1 0 10H7l4-4-4-4"/>
+  </svg>
+  <span class="loop-one" id="loop-one-indicator">1</span>
+</button>
 
   <!-- Bouton loupe -->
   <button class="menu-btn" id="menu-btn" title="Choisir Opening">
@@ -305,13 +307,10 @@ menuBtn.addEventListener('click', ()=>menuPopup.style.display = menuPopup.style.
 repeatBtn.addEventListener('click', ()=>{
   repeatMode = (repeatMode + 1) % 3;
   loopOneIndicator.style.display = repeatMode === 2 ? 'block' : 'none';
-  if(repeatMode === 0){
-    repeatBtn.style.background = '#222';
-  } else if(repeatMode === 1){
-    repeatBtn.style.background = '#00b4d8';
-  } else if(repeatMode === 2){
-    repeatBtn.style.background = '#0077a3';
-  }
+  // changement de couleur selon le mode
+  if(repeatMode === 0) repeatBtn.style.background = '#222';
+  else if(repeatMode === 1) repeatBtn.style.background = '#5cd1ff'; // bleu clair
+  else repeatBtn.style.background = '#0093b9'; // bleu foncé
 });
 
 // gestion de la fin de la chanson
