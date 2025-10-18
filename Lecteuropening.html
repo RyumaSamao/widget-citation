@@ -106,7 +106,7 @@ body {
   z-index: 10;
   display: flex;
   justify-content: center;
-  align-items: center; /* centrer logo */
+  align-items: center;
   transition: 0.3s;
 }
 .menu-btn:hover { background: #444; }
@@ -140,6 +140,34 @@ body {
 .menu-popup select:focus { outline: none; background: #333; }
 .menu-popup button { background: #00b4d8; color: #000; font-weight: bold; cursor: pointer; }
 .menu-popup button:hover { background: #0093b9; }
+
+/* Bouton repeat */
+.repeat-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: #222;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+}
+.repeat-btn:hover { background: #444; }
+.repeat-btn svg { width: 20px; height: 20px; fill: white; }
+.repeat-btn .loop-one {
+  position: absolute;
+  font-size: 12px;
+  font-weight: bold;
+  color: #00b4d8;
+  bottom: 6px;
+  right: 7px;
+  display: none;
+}
 </style>
 </head>
 <body>
@@ -148,6 +176,12 @@ body {
 
 <div class="player-container">
   <div class="title" id="title">Titre de l'opening</div>
+
+  <!-- Bouton repeat -->
+  <button class="repeat-btn" id="repeat-btn" title="Mode de répétition">
+    <svg viewBox="0 0 24 24"><path d="M17 1l4 4-4 4V6H7a5 5 0 0 0-5 5v2h2v-2a3 3 0 0 1 3-3h10V1zm-2 22H7l4-4-4-4v3H17a3 3 0 0 0 3-3v-2h2v2a5 5 0 0 1-5 5z"/></svg>
+    <span class="loop-one" id="loop-one-indicator">1</span>
+  </button>
 
   <!-- Bouton loupe -->
   <button class="menu-btn" id="menu-btn" title="Choisir Opening">
@@ -220,8 +254,12 @@ const animeSelect = document.getElementById('anime-select');
 const openingSelect = document.getElementById('opening-select');
 const playSelectedBtn = document.getElementById('play-selected');
 
+const repeatBtn = document.getElementById('repeat-btn');
+const loopOneIndicator = document.getElementById('loop-one-indicator');
+
 let isPlaying = false;
 let currentTrack = 0;
+let repeatMode = 0; // 0 = off, 1 = next, 2 = loop one
 
 const openings = [
   { anime: "One Piece", title: "We Are", audio: "Opening/OnePiece/OP1.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
@@ -262,6 +300,25 @@ playSelectedBtn.addEventListener('click', ()=>{
 
 // toggle menu
 menuBtn.addEventListener('click', ()=>menuPopup.style.display = menuPopup.style.display==='block'?'none':'block');
+
+// repeat mode toggle
+repeatBtn.addEventListener('click', ()=>{
+  repeatMode = (repeatMode + 1) % 3;
+  loopOneIndicator.style.display = repeatMode === 2 ? 'block' : 'none';
+  repeatBtn.style.background = repeatMode === 0 ? '#222' : (repeatMode === 1 ? '#00b4d8' : '#00b4d8');
+});
+
+// gestion de la fin de la chanson
+audio.addEventListener('ended', ()=>{
+  if(repeatMode === 1){
+    currentTrack=(currentTrack+1)%openings.length;
+    loadTrack(currentTrack);
+    playTrack();
+  } else if(repeatMode === 2){
+    audio.currentTime = 0;
+    playTrack();
+  }
+});
 
 function loadTrack(i){
   const t=openings[i];
