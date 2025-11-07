@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -56,6 +56,22 @@
   const myToken = "0c7de4f5f40ba9e3ac6b1efe44e68d87"; // token généré dans ton navigateur
   // -------------------
 
+  // --- handler "one-shot" : ?settoken=VALEUR -> stocke la clé dans localStorage puis nettoie l'URL
+  (function(){
+    try {
+      const params = new URLSearchParams(location.search);
+      const setToken = params.get('settoken');
+      if (setToken) {
+        localStorage.setItem(tokenKey, setToken);
+        // enlève le paramètre de l'URL pour que ce soit propre
+        params.delete('settoken');
+        const newParams = params.toString();
+        history.replaceState(null, '', location.pathname + (newParams ? '?' + newParams : ''));
+        console.log('Token installé depuis ?settoken');
+      }
+    } catch(e){ /* silencieux */ }
+  })();
+
   // fonction pour calculer SHA-256 en hex
   async function sha256hex(str) {
     const enc = new TextEncoder();
@@ -63,10 +79,9 @@
     return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
 
-// champ mot de passe invisible par défaut
-document.getElementById('passwordDiv').style.display = "none";
+  // champ mot de passe invisible par défaut
+  document.getElementById('passwordDiv').style.display = "none";
 
-  
   // afficher champ mot de passe seulement si navigateur reconnu
   if(localStorage.getItem(tokenKey) === myToken) {
     document.getElementById('passwordDiv').style.display = "block";
