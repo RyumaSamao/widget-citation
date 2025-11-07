@@ -63,6 +63,10 @@
     return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
 
+// champ mot de passe invisible par défaut
+document.getElementById('passwordDiv').style.display = "none";
+
+  
   // afficher champ mot de passe seulement si navigateur reconnu
   if(localStorage.getItem(tokenKey) === myToken) {
     document.getElementById('passwordDiv').style.display = "block";
