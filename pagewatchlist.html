@@ -2,90 +2,60 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Accès privé</title>
+  <title>Page Privée</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background-color: #111;
-      color: #fff;
-      text-align: center;
-      padding-top: 100px;
+    body { 
+      font-family: Arial, sans-serif; 
+      text-align: center; 
+      margin-top: 50px; 
+      background-color: #F5F5F5; /* fond Notion / citations */
     }
-    #login, #access {
-      display: none;
-    }
-    input {
-      padding: 8px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-    }
-    button {
-      margin-top: 10px;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #00aaff;
-      color: white;
-      cursor: pointer;
-    }
+    #passwordDiv, #notionButton { display: none; }
+    input { padding: 5px; font-size: 16px; }
+    button { padding: 5px 10px; font-size: 16px; cursor: pointer; }
+    #errorMsg { color: red; }
   </style>
 </head>
 <body>
 
-  <div id="login">
-    <h2>Entre le mot de passe</h2>
-    <input type="password" id="pwd" placeholder="Mot de passe">
-    <br>
+  <div id="passwordDiv">
+    <input type="password" id="passwordInput" placeholder="Mot de passe"/>
     <button onclick="checkPassword()">Valider</button>
+    <p id="errorMsg"></p>
   </div>
 
-  <div id="access">
-    <h2>✅ Accès autorisé</h2>
-    <button onclick="openNotion()">Ouvrir la page Notion</button>
-  </div>
+  <button id="notionButton" onclick="openNotion()">Ouvrir Notion</button>
 
   <script>
-    // --- 🔐 PARAMÈTRES À MODIFIER ICI ---
-    const expectedToken = "0c7de4f5f40ba9e3ac6b1efe44e68d87"; // ta clé du localStorage (celle que tu as générée)
-    const expectedHash = "38cd641b99c40364e9b3e85467218fda2c3ad4959fc33384f0a59f23bd1b0c57"; // ton mot de passe (en version hashée)
-    const notionURL = "https://www.notion.so/Test-html-2a4ee35fbb8e80ca8fb7d85b7ee512de"; // ton lien Notion
-    const storageKeyName = "ryu_browser_marker"; // le nom de ta clé dans localStorage
-    // ------------------------------------
+    // --- MODIFIER ICI ---
+    const correctPassword = "38cd641b99c40364e9b3e85467218fda2c3ad4959fc33384f0a59f23bd1b0c57"; // ton mot de passe
+    const notionLink = "https://www.notion.so/Test-html-2a4ee35fbb8e80ca8fb7d85b7ee512de"; // lien public Notion
+    const tokenKey = "ryu_browser_marker"; // clé pour reconnaitre ton navigateur
+    const myToken = "0c7de4f5f40ba9e3ac6b1efe44e68d87"; // token généré
+    // ---------------------
 
-    // Fonction de hash pour comparer ton mot de passe
-    async function sha256(text) {
-      const enc = new TextEncoder().encode(text);
-      const buf = await crypto.subtle.digest("SHA-256", enc);
-      return Array.from(new Uint8Array(buf))
-        .map(b => b.toString(16).padStart(2, "0"))
-        .join("");
+    // Vérifie si le navigateur est reconnu
+    if(localStorage.getItem(tokenKey) === myToken) {
+      document.getElementById('passwordDiv').style.display = "block";
     }
 
-    // Vérifie si c’est bien TON navigateur
-    const token = localStorage.getItem(storageKeyName);
-    if (token === expectedToken) {
-      document.getElementById("login").style.display = "block";
-    } else {
-      document.body.innerHTML = ""; // cache tout
-    }
+    function checkPassword() {
+      const input = document.getElementById('passwordInput').value;
+      const errorMsg = document.getElementById('errorMsg');
 
-    // Vérifie le mot de passe
-    async function checkPassword() {
-      const input = document.getElementById("pwd").value;
-      const hash = await sha256(input);
-      if (hash === expectedHash) {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("access").style.display = "block";
+      if(input === correctPassword) {
+        document.getElementById('notionButton').style.display = "inline-block";
+        errorMsg.textContent = "";
       } else {
-        alert("Mauvais mot de passe !");
+        errorMsg.textContent = "Mot de passe incorrect !";
+        document.getElementById('notionButton').style.display = "none";
       }
     }
 
-    // Ouvre ta page Notion privée
     function openNotion() {
-      window.open(notionURL, "_blank");
+      window.open(notionLink, "_blank");
     }
   </script>
+
 </body>
 </html>
