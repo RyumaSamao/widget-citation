@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Accès privé</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #111;
+      color: #fff;
+      text-align: center;
+      padding-top: 100px;
+    }
+    #login, #access {
+      display: none;
+    }
+    input {
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #00aaff;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="login">
+    <h2>Entre le mot de passe</h2>
+    <input type="password" id="pwd" placeholder="Mot de passe">
+    <br>
+    <button onclick="checkPassword()">Valider</button>
+  </div>
+
+  <div id="access">
+    <h2>✅ Accès autorisé</h2>
+    <button onclick="openNotion()">Ouvrir la page Notion</button>
+  </div>
+
+  <script>
+    // --- 🔐 PARAMÈTRES À MODIFIER ICI ---
+    const expectedToken = "ICI_TA_CLE"; // ta clé du localStorage (celle que tu as générée)
+    const expectedHash = "ICI_TON_HASH_SHA256"; // ton mot de passe (en version hashée)
+    const notionURL = "https://www.notion.so/TON_LIEN"; // ton lien Notion
+    const storageKeyName = "ryu_browser_marker"; // le nom de ta clé dans localStorage
+    // ------------------------------------
+
+    // Fonction de hash pour comparer ton mot de passe
+    async function sha256(text) {
+      const enc = new TextEncoder().encode(text);
+      const buf = await crypto.subtle.digest("SHA-256", enc);
+      return Array.from(new Uint8Array(buf))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    // Vérifie si c’est bien TON navigateur
+    const token = localStorage.getItem(storageKeyName);
+    if (token === expectedToken) {
+      document.getElementById("login").style.display = "block";
+    } else {
+      document.body.innerHTML = ""; // cache tout
+    }
+
+    // Vérifie le mot de passe
+    async function checkPassword() {
+      const input = document.getElementById("pwd").value;
+      const hash = await sha256(input);
+      if (hash === expectedHash) {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("access").style.display = "block";
+      } else {
+        alert("Mauvais mot de passe !");
+      }
+    }
+
+    // Ouvre ta page Notion privée
+    function openNotion() {
+      window.open(notionURL, "_blank");
+    }
+  </script>
+</body>
+</html>
