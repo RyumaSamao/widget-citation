@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Donut Responsive</title>
+<title>Donut Responsive Petit</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
@@ -34,12 +34,12 @@ body{
   gap:2%;
   background:var(--panel);
   border-radius:1em;
-  padding:1em; /* réduit */
+  padding:1.5em;
   box-sizing:border-box;
   justify-content:center;
   align-items:center;
-  width:90%;
-  max-width:600px; /* réduit */
+  width:95%;
+  max-width:1000px;
   height:auto;
 }
 
@@ -48,17 +48,17 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  min-width:120px;
-  min-height:120px;
-  max-width:300px; /* réduit */
-  max-height:300px;
+  min-width:100px;
+  min-height:100px;
+  max-width:250px;
+  max-height:250px;
 }
 
 .donut-shell{
   width:100%;
   height:auto;
   position:relative;
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.5s ease-in-out; /* transition douce */
 }
 
 canvas{
@@ -72,7 +72,7 @@ canvas{
   left:50%; top:50%;
   transform:translate(-50%, -50%);
   color:var(--text);
-  font-size:1.5em; /* réduit pour le donut plus petit */
+  font-size:1.5em;
   font-weight:700;
   pointer-events:none;
 }
@@ -81,9 +81,9 @@ canvas{
   flex:0 0 auto;
   display:flex;
   flex-direction:column;
-  gap:0.5em;
+  gap:0.8em;
   justify-content:center;
-  min-width:100px;
+  min-width:120px;
 }
 
 .item{
@@ -91,20 +91,20 @@ canvas{
   align-items:center;
   gap:0.5em;
   background:var(--muted);
-  padding:0.4em 0.8em;
+  padding:0.5em 1em;
   border-radius:999px;
   color:var(--text);
-  font-size:0.9em;
+  font-size:1em;
   justify-content:space-between;
   transition:background 0.2s;
 }
 
 .item:hover{ background:rgba(255,255,255,0.12); }
-.badge{ width:0.8em; height:0.8em; border-radius:50%; flex-shrink:0; }
+.badge{ width:0.9em; height:0.9em; border-radius:50%; flex-shrink:0; }
 
 @media (max-width:600px){
   .card{ flex-direction:column; }
-  .legend{ flex-direction:row; flex-wrap:wrap; justify-content:center; gap:0.3em; }
+  .legend{ flex-direction:row; flex-wrap:wrap; justify-content:center; gap:0.5em; }
 }
 </style>
 </head>
