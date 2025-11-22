@@ -20,41 +20,46 @@
     }
     .card{
       background:var(--panel);
-      border-radius:12px;
+      border-radius:16px;
       border:1px solid rgba(255,255,255,0.06);
-      display:flex; gap:24px;
-      padding:24px;
+      display:flex; gap:32px;
+      padding:28px;
       box-sizing:border-box;
       width:90%;
-      max-width:800px;
+      max-width:850px;
       flex-wrap:wrap;
       justify-content:center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     .chart-area{
-      flex:1; position:relative; display:flex; align-items:center; justify-content:center; min-width:250px; max-width:400px;
+      flex:1; position:relative; display:flex; align-items:center; justify-content:center; min-width:250px; max-width:450px;
     }
     .donut-shell{
-      width:100%; aspect-ratio:1/1; position:relative; transition:transform 0.2s ease;
+      width:100%; aspect-ratio:1/1; position:relative; transition:transform 0.25s ease, filter 0.25s ease;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
     }
     canvas{ width:100% !important; height:100% !important; }
     .center-number{
       position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-      color:var(--text); font-size:32px; font-weight:700; pointer-events:none;
+      color:var(--text); font-size:36px; font-weight:800;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      pointer-events:none;
     }
     .legend{
-      display:flex; flex-direction:column; gap:12px; justify-content:center;
-      min-width:120px;
+      display:flex; flex-direction:column; gap:14px; justify-content:center;
+      min-width:130px;
     }
     .item{
       display:flex; align-items:center; gap:10px;
-      background:var(--muted); padding:8px 12px; border-radius:999px; color:var(--text); font-size:14px;
-      justify-content:space-between;
+      background:var(--muted); padding:10px 14px; border-radius:999px; color:var(--text); font-size:14px;
+      justify-content:space-between; transition:background 0.2s;
     }
-    .badge{ width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+    .item:hover{ background:rgba(255,255,255,0.12); }
+    .badge{ width:14px; height:14px; border-radius:50%; flex-shrink:0; }
 
     @media (max-width:680px){
       .card{ flex-direction:column; align-items:center; }
-      .legend{ width:100%; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px; }
+      .legend{ width:100%; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:10px; }
     }
   </style>
 </head>
@@ -80,18 +85,29 @@ const DEFAULT = {
 let current = JSON.parse(JSON.stringify(DEFAULT));
 
 const ctx = document.getElementById("donutCanvas").getContext("2d");
+
+// Création de dégradé pour chaque couleur (un peu plus moderne)
+function createGradient(color) {
+  const gradient = ctx.createLinearGradient(0,0,0,400);
+  gradient.addColorStop(0, color);
+  gradient.addColorStop(1, "rgba(0,0,0,0.2)");
+  return gradient;
+}
+
+const gradientColors = DEFAULT.colors.map(c => createGradient(c));
+
 let chart = new Chart(ctx, {
   type: "doughnut",
   data: {
     labels: current.labels,
     datasets: [{
       data: current.values,
-      backgroundColor: current.colors,
-      hoverOffset: 10,
+      backgroundColor: gradientColors,
+      hoverOffset: 12,
       spacing: 4,
-      borderColor: "#292929", // plus soft : même couleur que le panel
-      borderWidth: 2,          // plus fin
-      borderRadius: 6
+      borderColor: "#292929",
+      borderWidth: 2,
+      borderRadius: 8
     }]
   },
   options: {
@@ -100,7 +116,7 @@ let chart = new Chart(ctx, {
     cutout:"60%",
     plugins:{ legend:{display:false}, tooltip:{enabled:true} },
     onHover: (evt, els)=>{
-      document.getElementById("donutShell").style.transform = els.length ? "scale(1.03)" : "scale(1)";
+      document.getElementById("donutShell").style.transform = els.length ? "scale(1.05)" : "scale(1)";
     }
   }
 });
@@ -108,16 +124,16 @@ let chart = new Chart(ctx, {
 function buildLegend(){
   const leg = document.getElementById("legendArea");
   leg.innerHTML="";
-  const order = [2,1,0,3]; 
+  const order = [2,1,0,3];
   order.forEach(i=>{
     const item = document.createElement("div");
     item.className="item";
     item.innerHTML = `
       <div style="display:flex; align-items:center; gap:6px;">
-        <div class="badge" style="background:${chart.data.datasets[0].backgroundColor[i]}"></div>
-        <div>${chart.data.labels[i]}</div>
+        <div class="badge" style="background:${DEFAULT.colors[i]}"></div>
+        <div>${DEFAULT.labels[i]}</div>
       </div>
-      <div>${chart.data.datasets[0].data[i]}</div>
+      <div>${DEFAULT.values[i]}</div>
     `;
     leg.appendChild(item);
   });
