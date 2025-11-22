@@ -1,76 +1,134 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Donut Notion</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Donut Notion Graphy Style</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
   <style>
-    body {
-      display:flex; justify-content:center; align-items:center;
-      height:100vh; background:#1f1f1f; color:#eaeaea; font-family:sans-serif;
-      margin:0;
+    :root{
+      --bg: #1f1f1f;
+      --panel: #121212;
+      --text: #eaeaea;
+      --muted: rgba(255,255,255,0.08);
     }
-    .chart-container {
-      width:400px; height:400px; position:relative;
+    html,body{
+      margin:0; padding:0; background:var(--bg);
+      font-family:Inter, sans-serif; overflow:hidden;
+      display:flex; justify-content:center; align-items:center; height:100vh;
     }
-    #centerNumber {
-      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-      font-size:32px; font-weight:bold;
+    .card{
+      background:var(--panel);
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.06);
+      display:flex; gap:24px;
+      padding:24px;
+      box-sizing:border-box;
+      width:100%;
+      max-width:800px;
+      height:auto;
     }
-    .legend {
-      display:flex; justify-content:space-between; margin-top:16px;
-      color:#eaeaea; font-size:14px;
+    .chart-area{
+      flex:1; position:relative; display:flex; align-items:center; justify-content:center; min-width:0;
     }
-    .legend div { display:flex; align-items:center; gap:6px; }
-    .legend-color { width:12px; height:12px; border-radius:50%; display:inline-block; }
+    .donut-shell{
+      width:100%; max-width:360px; aspect-ratio:1/1; position:relative; transition:transform 0.2s ease;
+    }
+    canvas{ width:100% !important; height:100% !important; }
+    .center-number{
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      color:var(--text); font-size:32px; font-weight:700; pointer-events:none;
+    }
+    .legend{
+      width:160px; display:flex; flex-direction:column; gap:12px; justify-content:center;
+    }
+    .item{
+      display:flex; align-items:center; gap:10px;
+      background:var(--muted); padding:8px 12px; border-radius:999px; color:var(--text); font-size:14px;
+    }
+    .badge{ width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+
+    @media (max-width:680px){
+      .card{ flex-direction:column; align-items:center; }
+      .legend{ width:100%; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px; }
+    }
   </style>
 </head>
-<body>
 
-<div class="chart-container">
-  <canvas id="donutCanvas"></canvas>
-  <div id="centerNumber">0</div>
-  <div class="legend" id="legendArea">
-    <div><span class="legend-color" style="background:#FACC15"></span>Not Started</div>
-    <div><span class="legend-color" style="background:#3B82F6"></span>In Progress</div>
-    <div><span class="legend-color" style="background:#EF4444"></span>Paused</div>
-    <div><span class="legend-color" style="background:#22C55E"></span>Completed</div>
+<body>
+  <div class="card">
+    <div class="chart-area">
+      <div class="donut-shell" id="donutShell">
+        <canvas id="donutCanvas"></canvas>
+        <div class="center-number" id="centerNumber">0</div>
+      </div>
+    </div>
+    <div class="legend" id="legendArea"></div>
   </div>
-</div>
 
 <script>
-const labels = ["Not Started","In Progress","Paused","Completed"];
-const values = [76,19,10,7]; // Modifie ici si tu veux changer les counts
-const colors = ["#FACC15","#3B82F6","#EF4444","#22C55E"];
+const DEFAULT = {
+  labels: ["Not Started","In Progress","Paused","Completed"],
+  values: [76,19,10,7],
+  colors: ["#F5B333","#F48FA1","#B9A7FF","#31F0FF"],
+};
+
+let current = JSON.parse(JSON.stringify(DEFAULT));
 
 const ctx = document.getElementById("donutCanvas").getContext("2d");
-const chart = new Chart(ctx, {
+let chart = new Chart(ctx, {
   type: "doughnut",
   data: {
-    labels: labels,
+    labels: current.labels,
     datasets: [{
-      data: values,
-      backgroundColor: colors,
+      data: current.values,
+      backgroundColor: current.colors,
+      hoverOffset: 10,
+      spacing: 4,
+      borderColor: "#1f1f1f",
       borderWidth: 4,
-      borderColor:"#1f1f1f",
-      spacing:4
+      borderRadius: 6
     }]
   },
   options: {
     responsive:true,
     maintainAspectRatio:false,
     cutout:"60%",
-    plugins: {
-      legend:{display:false},
-      tooltip:{enabled:true}
+    plugins:{ legend:{display:false}, tooltip:{enabled:true} },
+    onHover: (evt, els)=>{
+      document.getElementById("donutShell").style.transform = els.length ? "scale(1.03)" : "scale(1)";
     }
   }
 });
 
-// Centre du donut
-document.getElementById("centerNumber").textContent = values.reduce((a,b)=>a+b,0);
-</script>
+function buildLegend(){
+  const leg = document.getElementById("legendArea");
+  leg.innerHTML="";
+  const order = [2,1,0,3]; // comme ton screenshot
+  order.forEach(i=>{
+    const item = document.createElement("div");
+    item.className="item";
+    item.innerHTML = `<div class="badge" style="background:${chart.data.datasets[0].backgroundColor[i]}"></div>
+                      <div>${chart.data.labels[i]}</div>`;
+    leg.appendChild(item);
+  });
+}
+buildLegend();
 
+function updateDonut(newValues){
+  chart.data.datasets[0].data = newValues;
+  chart.update();
+  document.getElementById("centerNumber").textContent = newValues.reduce((a,b)=>a+b,0);
+  buildLegend();
+}
+
+// Exemple : update automatique depuis JSON (tu peux remplacer par ton fetch)
+window.updateDonut = updateDonut;
+
+// set initial center
+document.getElementById("centerNumber").textContent = DEFAULT.values.reduce((a,b)=>a+b,0);
+
+</script>
 </body>
 </html>
