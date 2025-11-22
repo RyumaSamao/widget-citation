@@ -73,11 +73,11 @@
   </div>
 
 <script>
-// Couleurs d'origine
+// Couleurs ajustées
 const DEFAULT = {
   labels: ["Not Started","In Progress","Paused","Completed"],
   values: [76,19,10,7],
-  colors: ["#F5B333","#F48FA1","#B9A7FF","#31F0FF"],
+  colors: ["#F5B333","#F06292","#8C8CFF","#2FC7FF"], // jaune, rose vif, violet, bleu
 };
 
 // Fonction pour éclaircir une couleur
@@ -98,7 +98,7 @@ let chart = new Chart(ctx, {
     datasets: [{
       data: DEFAULT.values,
       backgroundColor: DEFAULT.colors,
-      hoverBackgroundColor: hoverColors, // plus clair au survol
+      hoverBackgroundColor: hoverColors,
       hoverOffset: 12,
       spacing: 4,
       borderColor: "#292929",
