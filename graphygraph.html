@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Donut Responsive Petit</title>
+<title>Donut Responsive Flexible</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
@@ -31,15 +31,14 @@ body{
 
 .card{
   display:flex;
-  flex-direction:row;
+  flex-direction:column;
+  align-items:center;
   background:var(--panel);
   border-radius:1em;
   padding:1em;
   gap:1em;
-  justify-content:center;
-  align-items:center;
   width:100%;
-  max-width:400px;       /* max largeur du container réduit */
+  max-width:250px;
   height:auto;
   box-sizing:border-box;
 }
@@ -47,8 +46,8 @@ body{
 .chart-area{
   position: relative;
   width:100%;
-  max-width:150px;   /* taille max réduite */
-  aspect-ratio:1/1;   /* carré pour pas déformer */
+  max-width:150px;
+  aspect-ratio:1/1;
 }
 
 .donut-shell{
@@ -75,29 +74,28 @@ canvas{
 }
 
 .legend{
-  flex:0 0 auto;
   display:flex;
   flex-direction:column;
-  gap:0.5em;
+  gap:0.4em;
   justify-content:center;
-  min-width:100px;
+  width:100%;
 }
 
 .item{
   display:flex;
   align-items:center;
-  gap:0.5em;
+  gap:0.4em;
   background:var(--muted);
-  padding:0.4em 0.8em;
-  border-radius:999px;
+  padding:0.3em 0.6em;
+  border-radius:0.5em; /* moins arrondi */
   color:var(--text);
-  font-size:0.9em;
+  font-size:0.75em; /* plus petite légende */
   justify-content:space-between;
   transition:background 0.2s;
 }
 
 .item:hover{ background:rgba(255,255,255,0.12); }
-.badge{ width:0.8em; height:0.8em; border-radius:50%; flex-shrink:0; }
+.badge{ width:0.7em; height:0.7em; border-radius:50%; flex-shrink:0; }
 </style>
 </head>
 
