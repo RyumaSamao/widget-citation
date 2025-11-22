@@ -34,7 +34,7 @@ body{
   gap:2%;
   background:var(--panel);
   border-radius:1em;
-  padding:1em; /* un peu moins grand */
+  padding:1em; /* réduit */
   box-sizing:border-box;
   justify-content:center;
   align-items:center;
@@ -71,7 +71,7 @@ canvas{
   left:50%; top:50%;
   transform:translate(-50%, -50%);
   color:var(--text);
-  font-size:1.5em; /* un peu plus petit */
+  font-size:1.5em; /* réduit pour le donut plus petit */
   font-weight:700;
   pointer-events:none;
 }
@@ -121,9 +121,9 @@ canvas{
 
 <script>
 const DEFAULT={
-  labels:["Not Started","Paused","In Progress","Completed"],
-  values:[76,10,19,7],
-  colors:["#F5B333","#FF4C4C","#4C8EFF","#2FC7FF"]
+  labels:["Not Started","In Progress","Paused","Completed"],
+  values:[76,19,10,7],
+  colors:["#F5B333","#F06292","#8C8CFF","#2FC7FF"]
 };
 
 function lightenColor(color, percent){
@@ -166,7 +166,7 @@ let chart=new Chart(ctx,{
 function buildLegend(){
   const leg=document.getElementById("legendArea");
   leg.innerHTML="";
-  const order=[0,1,2,3]; // ordre correspondant aux labels
+  const order=[2,1,0,3];
   order.forEach(i=>{
     const item=document.createElement("div");
     item.className="item";
