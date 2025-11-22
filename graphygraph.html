@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Donut Notion Graphy Style</title>
+  <title>Donut Fixed Size</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
@@ -13,47 +13,43 @@
       --text: #eaeaea;
       --muted: rgba(255,255,255,0.08);
     }
-
     html, body{
       margin:0; padding:0;
       background:var(--bg);
       font-family:Inter, sans-serif;
       display:flex; justify-content:center; align-items:center;
-      height:100vh; /* remplit tout l’iframe */
+      height:100vh;
+      overflow:hidden;
     }
-
     .card{
       background:var(--panel);
       border-radius:16px;
       border:1px solid rgba(255,255,255,0.06);
-      display:flex; flex-direction:row;
+      display:flex;
       gap:32px;
       padding:28px;
       box-sizing:border-box;
-      width:100%; height:100%; /* prend tout l’espace disponible */
-      max-width:850px; max-height:650px;
       justify-content:center;
       align-items:center;
-      flex-wrap:wrap;
     }
-
     .chart-area{
-      flex:1;
-      display:flex; justify-content:center; align-items:center;
-      width:100%; height:100%; /* prend toute la place disponible */
-      min-width:250px; min-height:250px;
+      width:400px;  /* taille fixe */
+      height:400px; /* taille fixe */
+      position:relative;
+      display:flex;
+      justify-content:center;
+      align-items:center;
     }
-
     .donut-shell{
-      width:100%; height:100%; /* max utilisation de l’espace */
+      width:100%;
+      height:100%;
       position:relative;
       transition:transform 0.25s ease;
     }
-
     canvas{
-      width:100% !important; height:100% !important;
+      width:100% !important;
+      height:100% !important;
     }
-
     .center-number{
       position:absolute;
       left:50%; top:50%;
@@ -62,26 +58,17 @@
       font-size:36px; font-weight:800;
       pointer-events:none;
     }
-
     .legend{
       display:flex; flex-direction:column; gap:14px; justify-content:center;
       min-width:130px;
     }
-
     .item{
       display:flex; align-items:center; gap:10px;
       background:var(--muted); padding:10px 14px; border-radius:999px; color:var(--text); font-size:14px;
       justify-content:space-between; transition:background 0.2s;
     }
-
     .item:hover{ background:rgba(255,255,255,0.12); }
-
     .badge{ width:14px; height:14px; border-radius:50%; flex-shrink:0; }
-
-    @media (max-width:680px){
-      .card{ flex-direction:column; align-items:center; }
-      .legend{ width:100%; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:10px; }
-    }
   </style>
 </head>
 
@@ -100,7 +87,7 @@
 const DEFAULT = {
   labels: ["Not Started","In Progress","Paused","Completed"],
   values: [76,19,10,7],
-  colors: ["#F5B333","#F06292","#8C8CFF","#2FC7FF"], 
+  colors: ["#F5B333","#F06292","#8C8CFF","#2FC7FF"]
 };
 
 function lightenColor(color, percent) {
@@ -129,7 +116,7 @@ let chart = new Chart(ctx, {
   },
   options: {
     responsive:true,
-    maintainAspectRatio:false, // important pour utiliser tout l’espace de la div
+    maintainAspectRatio:true, // important pour cercle parfait
     cutout:"60%",
     plugins:{ legend:{display:false}, tooltip:{enabled:true} },
     onHover: (evt, els)=>{
