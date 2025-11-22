@@ -39,17 +39,16 @@ body{
   justify-content:center;
   align-items:center;
   width:100%;
-  max-width:600px;       /* max largeur du container */
-  aspect-ratio:1.6;       /* proportion largeur/hauteur pour que le donut ne soit jamais coupé */
+  max-width:600px;
+  height:auto; /* hauteur automatique */
   box-sizing:border-box;
 }
 
 .chart-area{
-  flex:1 1 auto;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100%;           /* prend toute la hauteur dispo */
+  position: relative;
+  width:100%;
+  max-width:250px;   /* taille max */
+  aspect-ratio:1/1;   /* carré pour pas déformer */
 }
 
 .donut-shell{
@@ -148,7 +147,7 @@ let chart=new Chart(ctx,{
   },
   options:{
     responsive:true,
-    maintainAspectRatio:true,
+    maintainAspectRatio:true, // <-- important pour garder les proportions
     cutout:"60%",
     plugins:{ legend:{display:false}, tooltip:{enabled:true} },
     onHover:(evt,els)=>{
