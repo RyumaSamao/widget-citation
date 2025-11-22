@@ -40,7 +40,7 @@ body{
   padding:1em;
   gap:1em;
   width:100%;
-  max-width:300px; /* un peu plus large = pas crop dans Notion */
+  max-width:100%; /* full width so Notion can't crop */ /* un peu plus large = pas crop dans Notion */
   height:auto;
   box-sizing:border-box;
   overflow:visible; /* crucial */
@@ -49,8 +49,8 @@ body{
 .chart-area{
   position: relative;
   width:100%;
-  max-width:180px; /* taille raisonnable pour embed */
-  aspect-ratio:1/1;
+  width:100%; /* let it shrink fully */ /* taille raisonnable pour embed */
+  height:auto; /* remove forced ratio to allow full shrink */
   overflow:visible; /* crucial pour Notion */
 }
 
@@ -64,9 +64,8 @@ body{
 
 canvas{
   width:100% !important;
-  height:100% !important;
+  height:auto !important;
   display:block;
-  overflow:visible;
 }
 
 .center-number{
