@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Donut Responsive Petit</title>
+<title>Donut Responsive Fixe</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
@@ -26,21 +26,22 @@ body{
   justify-content:center;
   align-items:center;
   overflow:hidden;
+  padding:1em;
 }
 
 .card{
   display:flex;
   flex-direction:row;
-  gap:2%;
   background:var(--panel);
   border-radius:1em;
-  padding:1.5em;
-  box-sizing:border-box;
+  padding:1em;
+  gap:1em;
   justify-content:center;
   align-items:center;
-  width:95%;
-  max-width:1000px;
-  height:auto;
+  width:100%;
+  max-width:600px;       /* max largeur du container */
+  aspect-ratio:1.6;       /* proportion largeur/hauteur pour que le donut ne soit jamais coupé */
+  box-sizing:border-box;
 }
 
 .chart-area{
@@ -48,22 +49,19 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  min-width:100px;
-  min-height:100px;
-  max-width:250px;
-  max-height:250px;
+  height:100%;           /* prend toute la hauteur dispo */
 }
 
 .donut-shell{
   width:100%;
-  height:auto;
+  height:100%;
   position:relative;
-  transition: transform 0.5s ease-in-out; /* transition douce */
+  transition: transform 0.5s ease-in-out;
 }
 
 canvas{
   width:100% !important;
-  height:auto !important;
+  height:100% !important;
   display:block;
 }
 
@@ -81,7 +79,7 @@ canvas{
   flex:0 0 auto;
   display:flex;
   flex-direction:column;
-  gap:0.8em;
+  gap:0.5em;
   justify-content:center;
   min-width:120px;
 }
@@ -91,21 +89,16 @@ canvas{
   align-items:center;
   gap:0.5em;
   background:var(--muted);
-  padding:0.5em 1em;
+  padding:0.4em 0.8em;
   border-radius:999px;
   color:var(--text);
-  font-size:1em;
+  font-size:0.9em;
   justify-content:space-between;
   transition:background 0.2s;
 }
 
 .item:hover{ background:rgba(255,255,255,0.12); }
-.badge{ width:0.9em; height:0.9em; border-radius:50%; flex-shrink:0; }
-
-@media (max-width:600px){
-  .card{ flex-direction:column; }
-  .legend{ flex-direction:row; flex-wrap:wrap; justify-content:center; gap:0.5em; }
-}
+.badge{ width:0.8em; height:0.8em; border-radius:50%; flex-shrink:0; }
 </style>
 </head>
 
@@ -129,9 +122,9 @@ const DEFAULT={
 
 function lightenColor(color, percent){
   const f=color.slice(1),
-    R=parseInt(f.slice(0,2),16),
-    G=parseInt(f.slice(2,4),16),
-    B=parseInt(f.slice(4,6),16);
+        R=parseInt(f.slice(0,2),16),
+        G=parseInt(f.slice(2,4),16),
+        B=parseInt(f.slice(4,6),16);
   return "#" + (0x1000000 + (Math.round(R+(255-R)*percent)<<16) + (Math.round(G+(255-G)*percent)<<8) + Math.round(B+(255-B)*percent)).toString(16).slice(1);
 }
 
