@@ -29,20 +29,17 @@
       max-width:850px;
       flex-wrap:wrap;
       justify-content:center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     .chart-area{
       flex:1; position:relative; display:flex; align-items:center; justify-content:center; min-width:250px; max-width:450px;
     }
     .donut-shell{
-      width:100%; aspect-ratio:1/1; position:relative; transition:transform 0.25s ease, filter 0.25s ease;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+      width:100%; aspect-ratio:1/1; position:relative; transition:transform 0.25s ease;
     }
     canvas{ width:100% !important; height:100% !important; }
     .center-number{
       position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
       color:var(--text); font-size:36px; font-weight:800;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.4);
       pointer-events:none;
     }
     .legend{
@@ -86,23 +83,13 @@ let current = JSON.parse(JSON.stringify(DEFAULT));
 
 const ctx = document.getElementById("donutCanvas").getContext("2d");
 
-// Création de dégradé pour chaque couleur (un peu plus moderne)
-function createGradient(color) {
-  const gradient = ctx.createLinearGradient(0,0,0,400);
-  gradient.addColorStop(0, color);
-  gradient.addColorStop(1, "rgba(0,0,0,0.2)");
-  return gradient;
-}
-
-const gradientColors = DEFAULT.colors.map(c => createGradient(c));
-
 let chart = new Chart(ctx, {
   type: "doughnut",
   data: {
     labels: current.labels,
     datasets: [{
       data: current.values,
-      backgroundColor: gradientColors,
+      backgroundColor: DEFAULT.colors,
       hoverOffset: 12,
       spacing: 4,
       borderColor: "#292929",
