@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Widget Donut — Notion Dark</title>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --notion-dark: #1f1f1f;
+      --panel: #121212;
+      --muted: rgba(255,255,255,0.07);
+      --text: #EDEDED;
+      --small: 13px;
+      --radius: 14px;
+    }
+    html,body{height:100%;margin:0;background:var(--notion-dark);font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px;}
+    .card{
+      display:flex;gap:20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--radius);padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 30px rgba(0,0,0,0.45);
+      align-items:center;
+    }
+
+    /* Left: chart area */
+    .chart-area{flex:1;display:flex;align-items:center;justify-content:center;min-height:420px;position:relative}
+    .donut-shell{width:520px;height:420px;position:relative;display:flex;align-items:center;justify-content:center}
+    canvas{display:block;max-width:100%;}
+    .center-number{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;
+      color:var(--text);font-weight:700;font-size:42px;letter-spacing:0.2px;
+    }
+
+    /* Labels manually placed (optional) */
+    .slice-label{position:absolute;color:#dcdcdc;font-size:13px}
+
+    /* Right: legend */
+    .legend{width:260px;display:flex;flex-direction:column;gap:12px}
+    .legend .item{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:999px;background:var(--muted);}
+    .legend .left{display:flex;gap:10px;align-items:center;color:var(--text);font-size:14px}
+    .badge{width:12px;height:12px;border-radius:6px;flex:0 0 12px}
+
+    /* controls */
+    .controls{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+    .btn{padding:8px 12px;border-radius:999px;border:0;background:rgba(255,255,255,0.04);color:var(--text);cursor:pointer}
+    .btn.highlight{background:linear-gradient(90deg,#C7A5FF66,#7ED0FF33);color:#080808}
+
+    /* small image (screenshot) */
+    .screenshot{position:absolute;right:8px;top:8px;width:120px;height:72px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 6px 24px rgba(0,0,0,0.6)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="region" aria-label="Donut widget">
+      <div class="chart-area">
+        <div class="donut-shell" id="donutShell">
+          <!-- screenshot intégrée (chemin local fourni) -->
+          <img class="screenshot" src="/mnt/data/Capture d&#39;écran 2025-11-22 140300.png" alt="screenshot" />
+          <canvas id="donutCanvas" width="520" height="420" aria-label="Graphique donut"></canvas>
+          <div class="center-number" id="centerNumber">0</div>
+        </div>
+      </div>
+
+      <div class="legend" id="legendArea">
+        <!-- items générés par JS -->
+      </div>
+    </div>
+
+    <div class="controls" style="margin-top:10px;">
+      <button class="btn" id="updateBtn">Exemple données aléatoires</button>
+      <button class="btn highlight" id="exportHi">Exporter PNG ×4</button>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    /* ---------------------------
+       CONFIG / Données par défaut
+       Tu peux remplacer ces valeurs depuis ton code serveur / Notion -> widget
+       --------------------------- */
+    const DEFAULT = {
+      labels: ["Not Started","In Progress","paused","Completed"],
+      values: [76,19,10,7],
+      colors: ["#F5B333","#F48FA1","#B9A7FF","#31F0FF"],
+      notionBg: "#1f1f1f"
+    };
+
+    // helper % calc
+    function pct(v,total){ return (total===0)? "0.00%": ( (v/total*100).toFixed(2) + "%" ); }
+
+    /* ---------------------------
+       Création du donut Chart.js
+       --------------------------- */
+    const ctx = document.getElementById("donutCanvas").getContext("2d");
+    let current = JSON.parse(JSON.stringify(DEFAULT));
+    let total = current.values.reduce((a,b)=>a+b,0);
+    document.getElementById('centerNumber').textContent = total;
+
+    // Chart instance
+    const chart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: current.labels,
+        datasets: [{
+          data: current.values,
+          backgroundColor: current.colors,
+          hoverOffset: 14,
+          borderWidth: 4,
+          borderColor: current.notionBg,
+          spacing: 6
+        }]
+      },
+      options: {
+        cutout: "58%",
+        responsive: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            enabled: true,
+            backgroundColor: "#0f0f0f",
+            titleColor: "#fff",
+            bodyColor: "#ddd",
+            padding: 10,
+            displayColors: false,
+            callbacks: {
+              label: function(ctx){
+                const v = ctx.parsed;
+                const t = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                return ctx.label + " • " + v + " (" + ((v/t*100).toFixed(2)) + "%)";
+              }
+            }
+          }
+        },
+        animation: { duration: 450, easing: 'easeOutQuart' },
+        onHover: (evt, elements) => {
+          // scale canvas a bit quand la souris est sur le graphe
+          const shell = document.getElementById('donutShell');
+          if(elements && elements.length) shell.style.transform = "scale(1.02)";
+          else shell.style.transform = "scale(1)";
+        }
+      }
+    });
+
+    /* ---------------------------
+       Légende personnalisée (droite)
+       --------------------------- */
+    function buildLegend(){
+      const leg = document.getElementById('legendArea');
+      leg.innerHTML = ""; // reset
+      const t = chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+      // ordre volontaire pour ressembler à ton screenshot (tu peux changer)
+      const order = [2,1,0,3]; // paused, In Progress, Not Started, Completed
+      for(const i of order){
+        const label = chart.data.labels[i];
+        const value = chart.data.datasets[0].data[i] || 0;
+        const color = chart.data.datasets[0].backgroundColor[i];
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `
+          <div class="left"><span class="badge" style="background:${color}"></span><div style="line-height:1">${label}</div></div>
+          <div style="color:var(--text)">${pct(value,t)}</div>
+        `;
+        // Hover slice when hovering legend item
+        item.addEventListener('mouseenter', ()=> {
+          // simulate highlight by temporarily setting hover style on chart
+          chart.setActiveElements([{datasetIndex:0,index:i}]);
+          chart.update();
+        });
+        item.addEventListener('mouseleave', ()=> {
+          chart.setActiveElements([]);
+          chart.update();
+        });
+        leg.appendChild(item);
+      }
+
+      // "Made with Graphy" pill and export small UI inside legend
+      const pill = document.createElement('div');
+      pill.style.marginTop = '8px';
+      pill.style.display = 'flex';
+      pill.style.justifyContent = 'flex-end';
+      pill.innerHTML = `<div style="background:rgba(255,255,255,0.04);padding:8px 12px;border-radius:999px;color:#fff;font-size:13px">Made with Graphy</div>`;
+      leg.appendChild(pill);
+    }
+
+    buildLegend();
+
+    /* ---------------------------
+       Bouton : données aléatoires (exemple d'automatisation)
+       Tu remplaces cet handler par un fetch vers Notion / ton JSON
+       --------------------------- */
+    document.getElementById('updateBtn').addEventListener('click', ()=> {
+      // exemple: simule fetch et met à jour le chart
+      const a = Math.floor(Math.random()*90)+1;
+      const b = Math.floor(Math.random()*60)+1;
+      const c = Math.floor(Math.random()*30)+1;
+      const d = Math.floor(Math.random()*15)+1;
+      updateData([a,b,c,d]);
+    });
+
+    /* ---------------------------
+       Fonction de mise à jour des data (utilise ceci pour automatiser)
+       Ex: updateData([notStarted, inProgress, paused, completed])
+       --------------------------- */
+    function updateData(newValues){
+      chart.data.datasets[0].data = newValues;
+      chart.update();
+      // total center
+      const tot = newValues.reduce((a,b)=>a+b,0);
+      document.getElementById('centerNumber').textContent = tot;
+      buildLegend();
+    }
+
+    /* ---------------------------
+       Export canvas PNG (hi-res x4)
+       --------------------------- */
+    document.getElementById('exportHi').addEventListener('click', ()=> {
+      const scale = 4;
+      const orig = chart.canvas;
+      const w = orig.width;
+      const h = orig.height;
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = w * scale;
+      exportCanvas.height = h * scale;
+      const ctx2 = exportCanvas.getContext('2d');
+      // white/transparent handling: fill with notion bg to keep same look
+      ctx2.fillStyle = DEFAULT.notionBg || "#1f1f1f";
+      ctx2.fillRect(0,0,exportCanvas.width,exportCanvas.height);
+      ctx2.scale(scale, scale);
+      ctx2.drawImage(orig,0,0);
+      const url = exportCanvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'donut-4x.png';
+      a.click();
+    });
+
+    /* ---------------------------
+       Expose updateData global pour intégration facile:
+       window.updateDonut([..vals..])
+       --------------------------- */
+    window.updateDonut = (arr) => {
+      if(!Array.isArray(arr) || arr.length<4) return console.warn("updateDonut expects [notStarted,inProgress,paused,completed]");
+      updateData(arr);
+    };
+
+    // set initial scale to 1 (smooth)
+    document.getElementById('donutShell').style.transition = 'transform 220ms ease';
+    // initial center number already set above
+
+  })();
+  </script>
+</body>
+</html>
