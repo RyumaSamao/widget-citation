@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Donut Responsive Flexible</title>
+<title>Donut Notion Safe</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
@@ -19,14 +19,16 @@ html, body{
   width:100%; height:100%;
   background:var(--bg);
   font-family:Inter, sans-serif;
+  overflow:visible;
 }
 
+/* --- Fix Notion: empêcher le crop --- */
 body{
   display:flex;
   justify-content:center;
-  align-items:center;
-  overflow:hidden;
+  align-items:flex-start; /* plus safe pour Notion */
   padding:1em;
+  box-sizing:border-box;
 }
 
 .card{
@@ -38,16 +40,18 @@ body{
   padding:1em;
   gap:1em;
   width:100%;
-  max-width:250px;
+  max-width:300px; /* un peu plus large = pas crop dans Notion */
   height:auto;
   box-sizing:border-box;
+  overflow:visible; /* crucial */
 }
 
 .chart-area{
   position: relative;
   width:100%;
-  max-width:150px;
+  max-width:180px; /* taille raisonnable pour embed */
   aspect-ratio:1/1;
+  overflow:visible; /* crucial pour Notion */
 }
 
 .donut-shell{
@@ -55,12 +59,14 @@ body{
   height:100%;
   position:relative;
   transition: transform 0.5s ease-in-out;
+  overflow:visible;
 }
 
 canvas{
   width:100% !important;
   height:100% !important;
   display:block;
+  overflow:visible;
 }
 
 .center-number{
@@ -79,6 +85,7 @@ canvas{
   gap:0.4em;
   justify-content:center;
   width:100%;
+  overflow:visible;
 }
 
 .item{
@@ -87,14 +94,12 @@ canvas{
   gap:0.4em;
   background:var(--muted);
   padding:0.3em 0.6em;
-  border-radius:0.5em; /* moins arrondi */
+  border-radius:0.5em;
   color:var(--text);
-  font-size:0.75em; /* plus petite légende */
+  font-size:0.75em;
   justify-content:space-between;
-  transition:background 0.2s;
 }
 
-.item:hover{ background:rgba(255,255,255,0.12); }
 .badge{ width:0.7em; height:0.7em; border-radius:50%; flex-shrink:0; }
 </style>
 </head>
@@ -173,15 +178,7 @@ function buildLegend(){
 }
 buildLegend();
 
-function updateDonut(newValues){
-  chart.data.datasets[0].data=newValues;
-  chart.update();
-  document.getElementById("centerNumber").textContent=newValues.reduce((a,b)=>a+b,0);
-  buildLegend();
-}
-
 document.getElementById("centerNumber").textContent=DEFAULT.values.reduce((a,b)=>a+b,0);
-window.updateDonut=updateDonut;
 </script>
 </body>
 </html>
