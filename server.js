@@ -1,12 +1,12 @@
 import express from "express";
-import fetch from "node-fetch"; // si Node >= 18, fetch est déjà natif
+import fetch from "node-fetch"; // si Node >= 18, fetch est natif
 import cors from "cors";
 
 const app = express();
-app.use(cors()); // autorise ton navigateur à parler au serveur
+app.use(cors());
 app.use(express.json());
 
-const GITHUB_TOKEN = "TON_GITHUB_PAT"; // ton token GitHub Actions
+const GITHUB_TOKEN = "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";
 const WORKFLOW_URL = "https://api.github.com/repos/RyumaSamao/notion-stats/actions/workflows/update.yml/dispatches";
 
 app.post("/trigger-workflow", async (req, res) => {
