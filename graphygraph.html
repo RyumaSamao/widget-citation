@@ -214,7 +214,7 @@ async function triggerWorkflow() {
       body: JSON.stringify({ ref: "main" })
     });
     // attente 3 sec pour counts.json
-    setTimeout(updateDataFromCounts, 3000);
+    setTimeout(updateDataFromCounts, 15000);
   } catch(err) { console.error("Erreur déclenchement workflow :", err); }
 }
 
