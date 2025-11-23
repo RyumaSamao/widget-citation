@@ -189,7 +189,7 @@ document.getElementById("centerNumber").textContent=DEFAULT.values.reduce((a,b)=
 // --- FETCH counts.json depuis GitHub / Vercel avec token ---
 async function updateDataFromCounts(){
   try{
-    const token = "TON_TOKEN_ICI"; // <-- ici tu mets ton token
+    const token = "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"; // <-- ici tu mets ton token
     const res = await fetch("https://raw.githubusercontent.com/RyumaSamao/notion-stats/main/counts.json", {
       headers: {
         Authorization: `Bearer ${token}`
