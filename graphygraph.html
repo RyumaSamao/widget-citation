@@ -22,11 +22,10 @@ html, body{
   overflow:visible;
 }
 
-/* --- Fix Notion: empêcher le crop --- */
 body{
   display:flex;
   justify-content:center;
-  align-items:flex-start; /* plus safe pour Notion */
+  align-items:flex-start;
   padding:1em;
   box-sizing:border-box;
 }
@@ -40,18 +39,17 @@ body{
   padding:1em;
   gap:1em;
   width:100%;
-  max-width:100%; /* full width so Notion can't crop */ /* un peu plus large = pas crop dans Notion */
+  max-width:100%;
   height:auto;
   box-sizing:border-box;
-  overflow:visible; /* crucial */
+  overflow:visible;
 }
 
 .chart-area{
   position: relative;
   width:100%;
-  width:100%; /* let it shrink fully */ /* taille raisonnable pour embed */
-  height:auto; /* remove forced ratio to allow full shrink */
-  overflow:visible; /* crucial pour Notion */
+  height:auto;
+  overflow:visible;
 }
 
 .donut-shell{
@@ -116,9 +114,9 @@ canvas{
 
 <script>
 const DEFAULT={
-  labels:["Not Started","In Progress","Paused","Completed"],
-  values:[76,19,10,7],
-  colors:["#F5B333","#F06292","#8C8CFF","#2FC7FF"]
+  labels:["Anime","Films","Series"],
+  values:[0,0,0],
+  colors:["#F5B333","#F06292","#8C8CFF"]
 };
 
 function lightenColor(color, percent){
@@ -152,16 +150,14 @@ let chart=new Chart(ctx,{
     maintainAspectRatio:true,
     cutout:"60%",
     plugins:{ legend:{display:false}, tooltip:{enabled:true} },
-    onHover:(evt,els)=>{
-      document.getElementById("donutShell").style.transform=els.length?"scale(1.05)":"scale(1)";
-    }
+    onHover:(evt,els)=>{document.getElementById("donutShell").style.transform=els.length?"scale(1.05)":"scale(1)"}
   }
 });
 
 function buildLegend(){
   const leg=document.getElementById("legendArea");
   leg.innerHTML="";
-  const order=[2,1,0,3];
+  const order=[0,1,2];
   order.forEach(i=>{
     const item=document.createElement("div");
     item.className="item";
@@ -176,8 +172,30 @@ function buildLegend(){
   });
 }
 buildLegend();
-
 document.getElementById("centerNumber").textContent=DEFAULT.values.reduce((a,b)=>a+b,0);
+
+// --- FETCH counts.json depuis GitHub ---
+async function updateDataFromCounts() {
+  try {
+    const res = await fetch("https://raw.githubusercontent.com/RyumaSamao/notion-stats/main/counts.json");
+    const data = await res.json();
+
+    DEFAULT.labels = ["Anime","Films","Series"];
+    DEFAULT.values = [data.anime, data.films, data.series];
+    DEFAULT.colors = ["#F5B333","#F06292","#8C8CFF"];
+
+    chart.data.labels = DEFAULT.labels;
+    chart.data.datasets[0].data = DEFAULT.values;
+    chart.data.datasets[0].backgroundColor = DEFAULT.colors;
+    chart.update();
+
+    buildLegend();
+    document.getElementById("centerNumber").textContent = DEFAULT.values.reduce((a,b)=>a+b,0);
+  } catch(err) {
+    console.error("Impossible de récupérer counts.json :", err);
+  }
+}
+updateDataFromCounts();
 </script>
 </body>
 </html>
