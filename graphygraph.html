@@ -189,7 +189,10 @@ document.getElementById("centerNumber").textContent=DEFAULT.values.reduce((a,b)=
 // --- Récupère counts.json depuis GitHub ---
 async function updateDataFromCounts() {
   try {
-    const res = await fetch("https://raw.githubusercontent.com/RyumaSamao/notion-stats/main/counts.json");
+const res = await fetch(
+  "https://raw.githubusercontent.com/RyumaSamao/notion-stats/main/counts.json?cache_bust=" + Date.now()
+);
+
     const data = await res.json();
     DEFAULT.values = [data.anime, data.films, data.series];
     chart.data.datasets[0].data = DEFAULT.values;
