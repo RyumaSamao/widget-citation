@@ -99,13 +99,14 @@ canvas{
 
 .badge{ width:0.7em; height:0.7em; border-radius:50%; flex-shrink:0; }
 
-button{
+button.update-btn{
   margin-top:1em;
   padding:0.5em 1em;
+  background:#2FC7FF;
+  color:#1B1B1B;
   border:none;
-  border-radius:0.4em;
-  background:#F06292;
-  color:#fff;
+  border-radius:0.5em;
+  font-weight:700;
   cursor:pointer;
 }
 </style>
@@ -120,9 +121,8 @@ button{
     </div>
   </div>
   <div class="legend" id="legendArea"></div>
-
-  <!-- Bouton pour rafraîchir -->
-  <button id="refreshBtn">Mettre à jour</button>
+  <!-- Bouton pour mettre à jour le graphique -->
+  <button class="update-btn" id="updateBtn">Mettre à jour</button>
 </div>
 
 <script>
@@ -209,11 +209,34 @@ async function updateDataFromCounts() {
   }
 }
 
-// Bouton pour mettre à jour à la demande
-document.getElementById("refreshBtn").addEventListener("click", updateDataFromCounts);
+// --- Fonction pour déclencher le workflow GitHub quand on clique sur le bouton ---
+async function triggerWorkflow() {
+  try {
+    // ---- ICI METTONS LE TOKEN ----
+    const token = "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"; // <--- Remplace TON_TOKEN_ICI par TokenGraph que tu as créé
+    const owner = "RyumaSamao";        // <--- Ton pseudo GitHub
+    const repo = "notion-stats";       // <--- Le repo avec update.js
+    const workflow_id = "update.yml";  // <--- le fichier workflow à déclencher
+    const branch = "main";
 
-// Remplissage initial
-updateDataFromCounts();
+    await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflow_id}/dispatches`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.github+json"
+      },
+      body: JSON.stringify({ ref: branch })
+    });
+
+    // Après déclenchement, on attend 2 secondes et on recharge les données
+    setTimeout(updateDataFromCounts, 2000);
+  } catch(err){
+    console.error("Impossible de déclencher le workflow :", err);
+  }
+}
+
+// --- On bind le bouton ---
+document.getElementById("updateBtn").addEventListener("click", triggerWorkflow);
 </script>
 </body>
 </html>
