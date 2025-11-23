@@ -189,22 +189,23 @@ document.getElementById("centerNumber").textContent=DEFAULT.values.reduce((a,b)=
 // --- Récupère counts.json depuis GitHub ---
 async function updateDataFromCounts() {
   try {
-const res = await fetch(
-  "https://raw.githubusercontent.com/RyumaSamao/notion-stats/main/counts.json?cache_bust=" + Date.now()
-);
-
+    const res = await fetch(
+      "https://raw.githubusercontent.com/RyumaSamao/notion-stats/main/counts.json?cache_bust=" + Date.now()
+    );
     const data = await res.json();
     DEFAULT.values = [data.anime, data.films, data.series];
     chart.data.datasets[0].data = DEFAULT.values;
     chart.update();
     buildLegend();
     document.getElementById("centerNumber").textContent = DEFAULT.values.reduce((a,b)=>a+b,0);
-  } catch(err) { console.error("Impossible de récupérer counts.json :", err); }
+  } catch(err) {
+    console.error("Impossible de récupérer counts.json :", err);
+  }
 }
 
 // --- Déclenche le workflow GitHub ---
 async function triggerWorkflow() {
-  const token = "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"; // 🔹 remplace ici par ton Personal Access Token
+  const token = "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"; 
   const url = "https://api.github.com/repos/RyumaSamao/notion-stats/actions/workflows/update.yml/dispatches";
 
   try {
@@ -216,8 +217,8 @@ async function triggerWorkflow() {
       },
       body: JSON.stringify({ ref: "main" })
     });
-    // attente 3 sec pour counts.json
-    setTimeout(updateDataFromCounts, 15000);
+    // ⬅ délai augmenté pour attendre que GitHub mette à jour counts.json
+    setTimeout(updateDataFromCounts, 25000);
   } catch(err) { console.error("Erreur déclenchement workflow :", err); }
 }
 
