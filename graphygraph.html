@@ -14,101 +14,18 @@
   --muted:rgba(255,255,255,0.08);
 }
 
-html, body{
-  margin:0; padding:0;
-  width:100%; height:100%;
-  background:var(--bg);
-  font-family:Inter, sans-serif;
-  overflow:visible;
-}
+html, body{ margin:0; padding:0; width:100%; height:100%; background:var(--bg); font-family:Inter, sans-serif;}
+body{ display:flex; justify-content:center; align-items:flex-start; padding:1em; box-sizing:border-box;}
 
-body{
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  padding:1em;
-  box-sizing:border-box;
-}
-
-.card{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  background:var(--panel);
-  border-radius:1em;
-  padding:1em;
-  gap:1em;
-  width:100%;
-  max-width:100%;
-  height:auto;
-  box-sizing:border-box;
-  overflow:visible;
-}
-
-.chart-area{
-  position: relative;
-  width:100%;
-  height:auto;
-  overflow:visible;
-}
-
-.donut-shell{
-  width:100%;
-  height:100%;
-  position:relative;
-  transition: transform 0.5s ease-in-out;
-  overflow:visible;
-}
-
-canvas{
-  width:100% !important;
-  height:auto !important;
-  display:block;
-}
-
-.center-number{
-  position:absolute;
-  left:50%; top:50%;
-  transform:translate(-50%, -50%);
-  color:var(--text);
-  font-size:1.2em;
-  font-weight:700;
-  pointer-events:none;
-}
-
-.legend{
-  display:flex;
-  flex-direction:column;
-  gap:0.4em;
-  justify-content:center;
-  width:100%;
-  overflow:visible;
-}
-
-.item{
-  display:flex;
-  align-items:center;
-  gap:0.4em;
-  background:var(--muted);
-  padding:0.3em 0.6em;
-  border-radius:0.5em;
-  color:var(--text);
-  font-size:0.75em;
-  justify-content:space-between;
-}
-
+.card{ display:flex; flex-direction:column; align-items:center; background:var(--panel); border-radius:1em; padding:1em; gap:1em; width:100%; max-width:100%; height:auto; box-sizing:border-box;}
+.chart-area{ position: relative; width:100%; height:auto; overflow:visible;}
+.donut-shell{ width:100%; height:100%; position:relative; transition: transform 0.5s ease-in-out; overflow:visible;}
+canvas{ width:100% !important; height:auto !important; display:block;}
+.center-number{ position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); color:var(--text); font-size:1.2em; font-weight:700; pointer-events:none;}
+.legend{ display:flex; flex-direction:column; gap:0.4em; justify-content:center; width:100%; overflow:visible;}
+.item{ display:flex; align-items:center; gap:0.4em; background:var(--muted); padding:0.3em 0.6em; border-radius:0.5em; color:var(--text); font-size:0.75em; justify-content:space-between;}
 .badge{ width:0.7em; height:0.7em; border-radius:50%; flex-shrink:0; }
-
-button.update-btn{
-  margin-top:1em;
-  padding:0.5em 1em;
-  background:#2FC7FF;
-  color:#1B1B1B;
-  border:none;
-  border-radius:0.5em;
-  font-weight:700;
-  cursor:pointer;
-}
+button{ margin-top:0.5em; padding:0.5em 1em; border:none; border-radius:0.5em; cursor:pointer; background:#2FC7FF; color:#000; font-weight:700;}
 </style>
 </head>
 
@@ -121,16 +38,11 @@ button.update-btn{
     </div>
   </div>
   <div class="legend" id="legendArea"></div>
-  <!-- Bouton pour mettre à jour le graphique -->
-  <button class="update-btn" id="updateBtn">Mettre à jour</button>
+  <button id="updateBtn">Mettre à jour</button>
 </div>
 
 <script>
-const DEFAULT={
-  labels:["Anime","Films","Series"],
-  values:[0,0,0],
-  colors:["#F5B333","#F06292","#8C8CFF"]
-};
+const DEFAULT={ labels:["Anime","Films","Series"], values:[0,0,0], colors:["#F5B333","#F06292","#8C8CFF"] };
 
 function lightenColor(color, percent){
   const f=color.slice(1),
@@ -145,26 +57,8 @@ const ctx=document.getElementById("donutCanvas").getContext("2d");
 
 let chart=new Chart(ctx,{
   type:"doughnut",
-  data:{
-    labels:DEFAULT.labels,
-    datasets:[{
-      data:DEFAULT.values,
-      backgroundColor:DEFAULT.colors,
-      hoverBackgroundColor:hoverColors,
-      hoverOffset:12,
-      spacing:4,
-      borderColor:"#292929",
-      borderWidth:2,
-      borderRadius:8
-    }]
-  },
-  options:{
-    responsive:true,
-    maintainAspectRatio:true,
-    cutout:"60%",
-    plugins:{ legend:{display:false}, tooltip:{enabled:true} },
-    onHover:(evt,els)=>{document.getElementById("donutShell").style.transform=els.length?"scale(1.05)":"scale(1)"}
-  }
+  data:{ labels:DEFAULT.labels, datasets:[{ data:DEFAULT.values, backgroundColor:DEFAULT.colors, hoverBackgroundColor:hoverColors, hoverOffset:12, spacing:4, borderColor:"#292929", borderWidth:2, borderRadius:8 }]},
+  options:{ responsive:true, maintainAspectRatio:true, cutout:"60%", plugins:{legend:{display:false}, tooltip:{enabled:true}}, onHover:(evt,els)=>{document.getElementById("donutShell").style.transform=els.length?"scale(1.05)":"scale(1)"} }
 });
 
 function buildLegend(){
@@ -187,7 +81,7 @@ function buildLegend(){
 buildLegend();
 document.getElementById("centerNumber").textContent=DEFAULT.values.reduce((a,b)=>a+b,0);
 
-// --- Fonction pour récupérer counts.json depuis GitHub ---
+// --- FETCH counts.json depuis GitHub ---
 async function updateDataFromCounts() {
   try {
     const res = await fetch("https://raw.githubusercontent.com/RyumaSamao/notion-stats/main/counts.json");
@@ -209,34 +103,8 @@ async function updateDataFromCounts() {
   }
 }
 
-// --- Fonction pour déclencher le workflow GitHub quand on clique sur le bouton ---
-async function triggerWorkflow() {
-  try {
-    // ---- ICI METTONS LE TOKEN ----
-    const token = "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"; // <--- Remplace TON_TOKEN_ICI par TokenGraph que tu as créé
-    const owner = "RyumaSamao";        // <--- Ton pseudo GitHub
-    const repo = "notion-stats";       // <--- Le repo avec update.js
-    const workflow_id = "update.yml";  // <--- le fichier workflow à déclencher
-    const branch = "main";
-
-    await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflow_id}/dispatches`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Accept": "application/vnd.github+json"
-      },
-      body: JSON.stringify({ ref: branch })
-    });
-
-    // Après déclenchement, on attend 2 secondes et on recharge les données
-    setTimeout(updateDataFromCounts, 2000);
-  } catch(err){
-    console.error("Impossible de déclencher le workflow :", err);
-  }
-}
-
-// --- On bind le bouton ---
-document.getElementById("updateBtn").addEventListener("click", triggerWorkflow);
+// --- Bouton de mise à jour ---
+document.getElementById("updateBtn").addEventListener("click", updateDataFromCounts);
 </script>
 </body>
 </html>
