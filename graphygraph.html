@@ -203,23 +203,14 @@ async function updateDataFromCounts() {
   }
 }
 
-// --- Déclenche le workflow GitHub ---
+// --- Déclenche le workflow via serveur Node ---
 async function triggerWorkflow() {
-  const token = "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"; 
-  const url = "https://api.github.com/repos/RyumaSamao/notion-stats/actions/workflows/update.yml/dispatches";
-
   try {
-    await fetch(url, {
-      method: "POST",
-      headers: {
-        "Authorization": `token ${token}`,
-        "Accept": "application/vnd.github+json"
-      },
-      body: JSON.stringify({ ref: "main" })
-    });
-    // ⬅ délai augmenté pour attendre que GitHub mette à jour counts.json
-    setTimeout(updateDataFromCounts, 25000);
-  } catch(err) { console.error("Erreur déclenchement workflow :", err); }
+    await fetch("http://localhost:3000/trigger-workflow", { method: "POST" });
+    setTimeout(updateDataFromCounts, 25000); // refresh après que GitHub ait écrit
+  } catch(err) {
+    console.error("Erreur déclenchement workflow :", err);
+  }
 }
 
 document.getElementById("refreshBtn").addEventListener("click", triggerWorkflow);
