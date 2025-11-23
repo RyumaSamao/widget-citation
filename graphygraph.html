@@ -99,15 +99,15 @@ canvas{
 
 .badge{ width:0.7em; height:0.7em; border-radius:50%; flex-shrink:0; }
 
-button#updateBtn{
-  margin-top: 1em;
+button{
   padding:0.5em 1em;
   border:none;
   border-radius:0.5em;
   background:#2FC7FF;
   color:#fff;
-  font-weight:700;
   cursor:pointer;
+  font-weight:700;
+  margin-top:0.5em;
 }
 </style>
 </head>
@@ -121,14 +121,14 @@ button#updateBtn{
     </div>
   </div>
   <div class="legend" id="legendArea"></div>
-  <button id="updateBtn">Mettre à jour</button>
+  <button id="refreshBtn">Actualiser</button>
 </div>
 
 <script>
-const DEFAULT={
-  labels:["Anime","Films","Series"],
-  values:[0,0,0],
-  colors:["#F5B333","#F06292","#8C8CFF"]
+const DEFAULT = {
+  labels: ["Anime","Films","Series"],
+  values: [0,0,0],
+  colors: ["#F5B333","#F06292","#8C8CFF"]
 };
 
 function lightenColor(color, percent){
@@ -139,10 +139,10 @@ function lightenColor(color, percent){
   return "#" + (0x1000000 + (Math.round(R+(255-R)*percent)<<16) + (Math.round(G+(255-G)*percent)<<8) + Math.round(B+(255-B)*percent)).toString(16).slice(1);
 }
 
-const hoverColors=DEFAULT.colors.map(c=>lightenColor(c,0.3));
-const ctx=document.getElementById("donutCanvas").getContext("2d");
+const hoverColors = DEFAULT.colors.map(c => lightenColor(c,0.3));
+const ctx = document.getElementById("donutCanvas").getContext("2d");
 
-let chart=new Chart(ctx,{
+let chart = new Chart(ctx,{
   type:"doughnut",
   data:{
     labels:DEFAULT.labels,
@@ -186,35 +186,42 @@ function buildLegend(){
 buildLegend();
 document.getElementById("centerNumber").textContent=DEFAULT.values.reduce((a,b)=>a+b,0);
 
-// --- FETCH counts.json depuis GitHub / Vercel avec token ---
-async function updateDataFromCounts(){
-  try{
-    const token = "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"; // <-- ici tu mets ton token
-    const res = await fetch("https://raw.githubusercontent.com/RyumaSamao/notion-stats/main/counts.json", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+// --- Récupère counts.json depuis GitHub ---
+async function updateDataFromCounts() {
+  try {
+    const res = await fetch("https://raw.githubusercontent.com/RyumaSamao/notion-stats/main/counts.json");
     const data = await res.json();
-
-    DEFAULT.labels=["Anime","Films","Series"];
-    DEFAULT.values=[data.anime, data.films, data.series];
-    DEFAULT.colors=["#F5B333","#F06292","#8C8CFF"];
-
-    chart.data.labels=DEFAULT.labels;
-    chart.data.datasets[0].data=DEFAULT.values;
-    chart.data.datasets[0].backgroundColor=DEFAULT.colors;
+    DEFAULT.values = [data.anime, data.films, data.series];
+    chart.data.datasets[0].data = DEFAULT.values;
     chart.update();
-
     buildLegend();
-    document.getElementById("centerNumber").textContent=DEFAULT.values.reduce((a,b)=>a+b,0);
-  }catch(err){
-    console.error("Impossible de récupérer counts.json :", err);
-  }
+    document.getElementById("centerNumber").textContent = DEFAULT.values.reduce((a,b)=>a+b,0);
+  } catch(err) { console.error("Impossible de récupérer counts.json :", err); }
 }
 
-// --- Bouton pour mettre à jour le graphique ---
-document.getElementById("updateBtn").addEventListener("click", updateDataFromCounts);
+// --- Déclenche le workflow GitHub ---
+async function triggerWorkflow() {
+  const token = "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"; // 🔹 remplace ici par ton Personal Access Token
+  const url = "https://api.github.com/repos/RyumaSamao/notion-stats/actions/workflows/update.yml/dispatches";
+
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `token ${token}`,
+        "Accept": "application/vnd.github+json"
+      },
+      body: JSON.stringify({ ref: "main" })
+    });
+    // attente 3 sec pour counts.json
+    setTimeout(updateDataFromCounts, 3000);
+  } catch(err) { console.error("Erreur déclenchement workflow :", err); }
+}
+
+document.getElementById("refreshBtn").addEventListener("click", triggerWorkflow);
+
+// --- Initial load ---
+updateDataFromCounts();
 </script>
 </body>
 </html>
