@@ -300,7 +300,8 @@ let quizMode = false;
 
 function applyFade(el, hide) {
   if(!el) return;
-  el.style.opacity = hide ? 0 : 1;
+  if(hide) el.style.opacity = 0;
+  else el.style.opacity = 1;
 }
 
 function stopAudio() { 
@@ -308,14 +309,7 @@ function stopAudio() {
   audioPlaying=false; 
 }
 
-function updateCounter() {
-  counterEl.textContent = (currentIndex+1) + "/" + quotes.length;
-}
-
 function renderQuoteByIndex(index){
-  // <-- CORRECTION : retirer la citation du pool dispo
-  availablePool = availablePool.filter(i => i !== index);
-
   stopAudio();
   if(pool.length === 0){
     quoteEl.textContent="";
@@ -352,80 +346,118 @@ function renderQuoteByIndex(index){
   updateCounter();
 }
 
-// --- Gestion pool aléatoire ---
-function getNextFromPoolRandom() {
-  if(availablePool.length===0) availablePool = pool.slice(); 
-  let randIndex = Math.floor(Math.random()*availablePool.length);
-  let index = availablePool[randIndex];
-  availablePool.splice(randIndex,1);
-  return index;
+function updateCounter(){
+  const total = quotes.length;
+  const filtered = pool.length;
+  counterEl.textContent = `${filtered}/${total}`;
 }
 
-function showNextInPool() {
-  let nextIndex = getNextFromPoolRandom();
-  poolHistory.push(nextIndex);
-  poolHistoryIndex = poolHistory.length-1;
-  renderQuoteByIndex(nextIndex);
-}
-
-function showPrevInHistory() {
-  if(poolHistoryIndex>0){
-    poolHistoryIndex--;
-    renderQuoteByIndex(poolHistory[poolHistoryIndex]);
+function updatePoolFromTerm(term){
+  const t=(term||"").trim().toLowerCase();
+  if(!t){ pool=quotes.map((_,i)=>i); }
+  else{
+    pool=[];
+    quotes.forEach((q,i)=>{ if(q.text.toLowerCase().includes(t)||q.author.toLowerCase().includes(t)||(q.scan && q.scan.toLowerCase().includes(t))) pool.push(i); });
   }
-}
-
-// --- Event Listeners ---
-nextBtn.addEventListener('click', ()=>{ showNextInPool(); });
-prevBtn.addEventListener('click', ()=>{ showPrevInHistory(); });
-playPauseBtn.addEventListener('click', ()=>{
-  rotationActive=!rotationActive;
-  playPauseBtn.textContent = rotationActive ? "❚❚" : "▶";
-  if(rotationActive) startRotation();
-  else stopRotation();
-});
-
-audioBtn.addEventListener('click', ()=>{
-  const q = quotes[currentIndex];
-  if(!q.audio) return;
-  if(audioPlaying){
-    stopAudio();
-  } else {
-    audio = new Audio(q.audio);
-    audio.play();
-    audioPlaying = true;
-  }
-});
-
-searchInput.addEventListener('input', ()=>{
-  const term = searchInput.value.toLowerCase();
-  if(term==="") { availablePool=pool.slice(); showNextInPool(); return; }
-  const results = quotes.filter(q=>q.text.toLowerCase().includes(term)||q.author.toLowerCase().includes(term)||q.scan.toLowerCase().includes(term));
-  if(results.length>0){
-    const index = quotes.indexOf(results[0]);
-    renderQuoteByIndex(index);
-  }
-});
-
-resetSearchBtn.addEventListener('click', ()=>{
-  searchInput.value="";
   availablePool=pool.slice();
-  showNextInPool();
-});
-
-quizBtn.addEventListener('click', ()=>{
-  quizMode = !quizMode;
-  renderQuoteByIndex(currentIndex);
-});
-
-// --- Rotation auto ---
-function startRotation() {
-  if(rotationTimer) clearInterval(rotationTimer);
-  rotationTimer = setInterval(()=>{ showNextInPool(); }, 10000);
+  poolHistory=[];
+  poolHistoryIndex=-1;
+  updateCounter();
 }
-function stopRotation() { if(rotationTimer) clearInterval(rotationTimer); }
 
-renderQuoteByIndex(0);
+function getNextFromPoolRandom(){
+  if(pool.length===0) return -1;
+  if(availablePool.length===0) availablePool=pool.slice();
+  const r=Math.floor(Math.random()*availablePool.length);
+  return availablePool.splice(r,1)[0];
+}
+
+function showNextInPool(){
+  if(pool.length===0) return;
+  if(poolHistoryIndex<poolHistory.length-1){ poolHistoryIndex++; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
+  else { const idx=getNextFromPoolRandom(); poolHistory.push(idx); poolHistoryIndex++; renderQuoteByIndex(idx); }
+}
+
+function showPrevInPool(){
+  if(poolHistoryIndex>0){ poolHistoryIndex--; renderQuoteByIndex(poolHistory[poolHistoryIndex]); }
+}
+
+function startRotation(){ 
+  rotationActive=true; 
+  playPauseBtn.textContent="❚❚"; 
+  clearTimeout(rotationTimer); 
+  rotationTimer=setTimeout(()=>{
+    showNextInPool(); 
+    if(rotationActive) startRotation();
+  },10000); 
+}
+
+function stopRotation(){ rotationActive=false; playPauseBtn.textContent="▶"; clearTimeout(rotationTimer); }
+
+function toggleRotation(){ rotationActive?stopRotation():startRotation(); }
+
+function toggleAudio(){ 
+  if(audioPlaying){ stopAudio(); return; }
+  if(!quotes[currentIndex].audio) return;
+  rotationWasActiveBeforeAudio=rotationActive; 
+  if(rotationActive) stopRotation();
+  audio=new Audio(quotes[currentIndex].audio); 
+  audioPlaying=true; 
+  audio.play().catch(()=>{audioPlaying=false; audio=null;});
+  audio.addEventListener('ended',()=>{
+    audioPlaying=false; audio=null; 
+    if(rotationWasActiveBeforeAudio) startRotation(); else playPauseBtn.textContent="▶"; 
+  });
+}
+
+prevBtn.addEventListener('click',()=>{ stopRotation(); showPrevInPool(); });
+nextBtn.addEventListener('click',()=>{ stopRotation(); showNextInPool(); });
+playPauseBtn.addEventListener('click',toggleRotation);
+audioBtn.addEventListener('click',toggleAudio);
+
+quizBtn.addEventListener('click',()=>{
+  quizMode=!quizMode; 
+  if(quizMode){ 
+    applyFade(authorEl,true); 
+    applyFade(scanEl,true); 
+    quizBtn.classList.add('active'); 
+    quizBtn.style.opacity=0.7; 
+  } else{ 
+    applyFade(authorEl,false); 
+    applyFade(scanEl,false); 
+    quizBtn.classList.remove('active'); 
+    quizBtn.style.opacity=1; 
+  }
+});
+
+searchInput.addEventListener('input',(e)=>{
+  const term=e.target.value; 
+  updatePoolFromTerm(term); 
+  if(rotationActive) stopRotation(); 
+  if(pool.length===0){ 
+    quoteEl.textContent=""; authorEl.textContent=""; scanEl.textContent=""; 
+    return; 
+  } 
+  const first=pool[0]; 
+  availablePool=pool.filter(i=>i!==first); 
+  poolHistory=[first]; 
+  poolHistoryIndex=0; 
+  renderQuoteByIndex(first); 
+});
+
+resetSearchBtn.addEventListener('click',()=>{
+  searchInput.value=""; 
+  updatePoolFromTerm(""); 
+  availablePool=pool.slice(); 
+  poolHistory=[]; 
+  poolHistoryIndex=-1; 
+  stopRotation(); 
+});
+
+updatePoolFromTerm("");
+const firstIdx=getNextFromPoolRandom();
+poolHistory.push(firstIdx); poolHistoryIndex=0;
+renderQuoteByIndex(firstIdx);
 startRotation();
 </script>
 </body>
