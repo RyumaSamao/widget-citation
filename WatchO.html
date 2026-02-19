@@ -8,45 +8,45 @@
     font-family: Arial, sans-serif; 
     text-align: center; 
     margin: 0; 
-    padding: 10px;
+    padding: 5px;
     background-color: #191919;
-    color: #FFFFFF;
-    overflow: hidden; /* empêche les scrollbars */
+    color: #FFF;
+    overflow: hidden;
   }
   #passwordDiv { 
-    padding: 5px 10px;
-    border-radius: 4px;
-    display: inline-block;
-    font-size: 12px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
   }
   input { 
-    padding: 4px; 
-    font-size: 12px; 
-    border-radius: 3px; 
+    padding: 2px 4px; 
+    font-size: 11px; 
+    border-radius: 2px; 
     border: 1px solid #555; 
     background-color: #2A2A2A; 
-    color: #FFFFFF;
-    width: 120px;
+    color: #FFF;
+    width: 90px;
   }
   button { 
-    padding: 4px 8px; 
-    font-size: 12px; 
+    padding: 2px 6px; 
+    font-size: 11px; 
     cursor: pointer; 
-    border-radius: 3px; 
+    border-radius: 2px; 
     border: 1px solid #555; 
     background-color: #2A2A2A;
-    color: #FFFFFF;
-    margin-left: 5px;
+    color: #FFF;
   }
   #errorMsg { 
-    color: #FF5555; 
-    margin-top: 2px; 
-    font-size: 11px; 
+    color: #F55; 
+    font-size: 10px; 
+    margin-left: 5px;
   }
   #notionButton { 
-    margin-top: 5px; 
-    padding: 4px 8px;
-    font-size: 12px;
+    margin-top: 4px; 
+    padding: 2px 6px;
+    font-size: 11px;
   }
 </style>
 </head>
@@ -55,14 +55,13 @@
 <div id="passwordDiv">
   <input type="password" id="passwordInput" placeholder="Mot de passe"/>
   <button onclick="checkPassword()">Valider</button>
-  <p id="errorMsg"></p>
+  <span id="errorMsg"></span>
 </div>
-
 <br>
 <button id="notionButton" onclick="openNotion()" style="display:none;">2nd Watchlist</button>
 
 <script>
-  const password = "WeAre"; // mot de passe en clair
+  const password = "WeAre"; 
   const notionLink = "notion://www.notion.so/Test-html-2a4ee35fbb8e80ca8fb7d85b7ee512de";
 
   function checkPassword() {
@@ -73,7 +72,7 @@
       errorMsg.textContent = "";
     } else {
       document.getElementById('notionButton').style.display = "none";
-      errorMsg.textContent = "Mot de passe incorrect !";
+      errorMsg.textContent = "❌";
     }
   }
 
