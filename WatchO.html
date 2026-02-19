@@ -16,16 +16,11 @@
     overflow: hidden;
   }
 
-  .container {
-    display: inline-block;
-  }
-
   #passwordDiv { 
     display: flex; 
     align-items: center; 
     justify-content: center;
     gap: 16px;
-    font-size: 13px;
   }
 
   input { 
@@ -62,11 +57,33 @@
     display: none;
   }
 
-  /* 📱 VERSION TÉLÉPHONE */
-  @media (max-width: 600px) {
-    .container {
-      transform: scale(3);
-      transform-origin: top center;
+  /* 📱 UNIQUEMENT téléphone (écran tactile) */
+  @media (hover: none) and (pointer: coarse) {
+
+    #passwordDiv {
+      gap: 48px; /* 16 x3 */
+    }
+
+    input {
+      padding: 12px 24px;
+      font-size: 39px;   /* ajuste si tu veux */
+      width: 390px;
+    }
+
+    button {
+      padding: 12px 30px;
+      font-size: 39px;
+    }
+
+    #notionButton {
+      margin-top: 42px;
+      padding: 12px 42px;
+      font-size: 39px;
+    }
+
+    #errorMsg {
+      margin-top: 42px;
+      font-size: 39px;
     }
   }
 
@@ -74,17 +91,13 @@
 </head>
 <body>
 
-<div class="container">
-
-  <div id="passwordDiv">
-    <input type="password" id="passwordInput" placeholder="Mot de passe"/>
-    <button onclick="checkPassword()">Valider</button>
-  </div>
-
-  <div id="errorMsg">❌ Mauvais mot de passe</div>
-  <button id="notionButton" onclick="openNotion()">2nd Watchlist</button>
-
+<div id="passwordDiv">
+  <input type="password" id="passwordInput" placeholder="Mot de passe"/>
+  <button onclick="checkPassword()">Valider</button>
 </div>
+
+<div id="errorMsg">❌ Mauvais mot de passe</div>
+<button id="notionButton" onclick="openNotion()">2nd Watchlist</button>
 
 <script>
   const password = "WeAre"; 
