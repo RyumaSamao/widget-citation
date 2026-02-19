@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Watchlist</title>
+
 <style>
   body { 
     font-family: Arial, sans-serif; 
@@ -14,11 +16,15 @@
     overflow: hidden;
   }
 
+  .container {
+    display: inline-block;
+  }
+
   #passwordDiv { 
     display: flex; 
     align-items: center; 
     justify-content: center;
-    gap: 16px; /* espace plus large → bouton plus à droite */
+    gap: 16px;
     font-size: 13px;
   }
 
@@ -50,23 +56,35 @@
   }
 
   #errorMsg { 
-    margin-top: 14px; /* même position verticale que le bouton */
+    margin-top: 14px;
     font-size: 13px;
     color: #F55;
     display: none;
+  }
+
+  /* 📱 VERSION TÉLÉPHONE */
+  @media (max-width: 600px) {
+    .container {
+      transform: scale(3);
+      transform-origin: top center;
+    }
   }
 
 </style>
 </head>
 <body>
 
-<div id="passwordDiv">
-  <input type="password" id="passwordInput" placeholder="Mot de passe"/>
-  <button onclick="checkPassword()">Valider</button>
-</div>
+<div class="container">
 
-<div id="errorMsg">❌ Bah alors ??</div>
-<button id="notionButton" onclick="openNotion()">2nd Watchlist</button>
+  <div id="passwordDiv">
+    <input type="password" id="passwordInput" placeholder="Mot de passe"/>
+    <button onclick="checkPassword()">Valider</button>
+  </div>
+
+  <div id="errorMsg">❌ Mauvais mot de passe</div>
+  <button id="notionButton" onclick="openNotion()">2nd Watchlist</button>
+
+</div>
 
 <script>
   const password = "WeAre"; 
