@@ -17,36 +17,36 @@
     display: flex; 
     align-items: center; 
     justify-content: center;
-    gap: 4px;
-    font-size: 11px;
+    gap: 6px;           /* un peu plus d’espace entre input et bouton */
+    font-size: 12px;    /* texte un peu plus grand */
   }
   input { 
-    padding: 2px 4px; 
-    font-size: 11px; 
-    border-radius: 2px; 
+    padding: 3px 6px;   /* légèrement plus grand */
+    font-size: 12px;    /* texte plus lisible */
+    border-radius: 3px; 
     border: 1px solid #555; 
     background-color: #2A2A2A; 
     color: #FFF;
-    width: 90px;
+    width: 110px;       /* champ plus long */
   }
   button { 
-    padding: 2px 6px; 
-    font-size: 11px; 
+    padding: 3px 8px;   /* plus confortable */
+    font-size: 12px; 
     cursor: pointer; 
-    border-radius: 2px; 
+    border-radius: 3px; 
     border: 1px solid #555; 
     background-color: #2A2A2A;
     color: #FFF;
   }
   #errorMsg { 
     color: #F55; 
-    font-size: 10px; 
+    font-size: 11px; 
     margin-left: 5px;
   }
   #notionButton { 
-    margin-top: 4px; 
-    padding: 2px 6px;
-    font-size: 11px;
+    margin-top: 6px; 
+    padding: 3px 10px;  /* plus large que le bouton valider */
+    font-size: 12px;
   }
 </style>
 </head>
@@ -57,7 +57,7 @@
   <button onclick="checkPassword()">Valider</button>
   <span id="errorMsg"></span>
 </div>
-<br>
+
 <button id="notionButton" onclick="openNotion()" style="display:none;">2nd Watchlist</button>
 
 <script>
