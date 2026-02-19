@@ -13,24 +13,27 @@
     color: #FFF;
     overflow: hidden;
   }
+
   #passwordDiv { 
     display: flex; 
     align-items: center; 
     justify-content: center;
-    gap: 8px;           /* encore plus d’espace entre input et bouton */
-    font-size: 13px;    /* texte plus grand */
+    gap: 16px; /* espace plus large → bouton plus à droite */
+    font-size: 13px;
   }
+
   input { 
-    padding: 4px 8px;   /* plus grand que précédemment */
-    font-size: 13px;    /* texte plus lisible */
+    padding: 4px 8px;  
+    font-size: 13px;  
     border-radius: 4px; 
     border: 1px solid #555; 
     background-color: #2A2A2A; 
     color: #FFF;
-    width: 130px;       /* champ plus long */
+    width: 130px;
   }
+
   button { 
-    padding: 4px 10px;  /* plus grand */
+    padding: 4px 10px;  
     font-size: 13px; 
     cursor: pointer; 
     border-radius: 3px; 
@@ -38,16 +41,21 @@
     background-color: #2A2A2A;
     color: #FFF;
   }
-  #errorMsg { 
-    color: #F55; 
-    font-size: 12px; 
-    margin-left: 5px;
-  }
+
   #notionButton { 
-    margin-top: 12px;   /* plus d’espace entre le bloc du haut et ce bouton */
-    padding: 4px 14px;  /* plus large que le bouton valider */
+    margin-top: 14px;  
+    padding: 4px 14px;  
     font-size: 13px;
+    display: none;
   }
+
+  #errorMsg { 
+    margin-top: 14px; /* même position verticale que le bouton */
+    font-size: 13px;
+    color: #F55;
+    display: none;
+  }
+
 </style>
 </head>
 <body>
@@ -55,10 +63,10 @@
 <div id="passwordDiv">
   <input type="password" id="passwordInput" placeholder="Mot de passe"/>
   <button onclick="checkPassword()">Valider</button>
-  <span id="errorMsg"></span>
 </div>
 
-<button id="notionButton" onclick="openNotion()" style="display:none;">2nd Watchlist</button>
+<div id="errorMsg">❌ Mauvais mot de passe</div>
+<button id="notionButton" onclick="openNotion()">2nd Watchlist</button>
 
 <script>
   const password = "WeAre"; 
@@ -66,13 +74,13 @@
 
   function checkPassword() {
     const input = document.getElementById('passwordInput').value;
-    const errorMsg = document.getElementById('errorMsg');
+
     if(input === password) {
       document.getElementById('notionButton').style.display = "inline-block";
-      errorMsg.textContent = "";
+      document.getElementById('errorMsg').style.display = "none";
     } else {
       document.getElementById('notionButton').style.display = "none";
-      errorMsg.textContent = "❌";
+      document.getElementById('errorMsg').style.display = "block";
     }
   }
 
