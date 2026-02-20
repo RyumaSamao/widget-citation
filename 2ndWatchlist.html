@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime Calendar</title>
+<style>
+/* ===================== */
+/* RESET & BASE */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+body { margin: 0; background: #191919; color: #fff; font-family: system-ui, sans-serif; display: flex; justify-content: center; }
+
+/* ===================== */
+/* CALENDAR LAYOUT */
+.calendar { width: 100%; max-width: 420px; padding: 12px; overflow: hidden; position: relative; }
+
+/* ===================== */
+/* HEADER & BUTTONS */
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.arrow { font-size: 32px; cursor: pointer; user-select: none; opacity: 0.9; transition: transform 0.15s ease; }
+.arrow.disabled { opacity: 0.3; pointer-events: none; }
+.arrow:hover:not(.disabled) { transform: scale(1.2); }
+.month { font-size: 18px; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px; }
+.today-button { font-size: 22px; cursor: pointer; margin-left: 8px; opacity: 0.9; transition: transform 0.15s ease; }
+.today-button:hover { transform: scale(1.2); }
+
+/* ===================== */
+/* TABLE & CELLS */
+table { width: 100%; border-collapse: collapse; }
+th { font-size: 12px; color: #aaa; padding-bottom: 6px; }
+td { height: 64px; padding: 4px; vertical-align: top; cursor: pointer; position: relative; transition: transform 0.1s ease; }
+td.empty { cursor: default; }
+td:not(.empty):hover { background: rgba(255,255,255,0.06); border-radius: 6px; transform: scale(1.03); }
+td.today { border: 2px solid rgba(200,200,200,0.5); border-radius: 6px; }
+.day-number { font-size: 12px; opacity: 0.8; }
+
+/* ===================== */
+/* MARKERS */
+.markers { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.marker { height: 6px; border-radius: 3px; }
+
+/* ===================== */
+/* POPUP */
+.popup { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; }
+.popup.show { display: flex; }
+.popup-content { background: #222; padding: 16px; border-radius: 10px; width: 260px; animation: pop 0.5s ease-out; }
+@keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.popup-title { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.color-dot { width: 10px; height: 10px; border-radius: 50%; }
+.popup-time { margin-top: 6px; font-size: 14px; opacity: 0.8; }
+
+/* ===================== */
+/* PROGRESS BAR */
+.progress { margin-top: 8px; }
+.progress-label { font-size: 12px; opacity: 0.7; margin-bottom: 4px; }
+.progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 6px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 6px; transition: width 0.4s ease; }
+
+/* ===================== */
+/* REMOVE FOCUS FLASH */
+td, .arrow, .today-button { outline: none; }
+td:active, .arrow:active, .today-button:active { background: none !important; }
+</style>
+</head>
+<body>
+
+<div class="calendar" id="calendar">
+  <div class="header">
+    <span id="prev" class="arrow">←</span>
+    <span class="month" id="month"></span>
+    <span id="today" class="today-button">📅</span>
+    <span id="next" class="arrow">→</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Lun</th><th>Mar</th><th>Mer</th>
+        <th>Jeu</th><th>Ven</th><th>Sam</th><th>Dim</th>
+      </tr>
+    </thead>
+    <tbody id="calendar-body"></tbody>
+  </table>
+</div>
+
+<div id="popup" class="popup">
+  <div class="popup-content" id="popup-content"></div>
+</div>
+
+<script>
+/* ===================== */
+/* DATA ANIMES */
+const ANIMES = [
+  { name: "Frieren", color: "#27F548", start: "2026-01-16", episodes: 10, hour: "16:20", breaks: [] },
+  { name: "Jujutsu Kaisen", color: "#8D14D9", start: "2026-01-08", episodes: 12, hour: "17:50", breaks: [] },
+  { name: "One Piece", color: "#EEFF00", start: "2026-04-05", episodes: 13, hour: "21:00", breaks: [] },
+  { name: "Darwin's Incident", color: "#734A1A", start: "2026-01-06", episodes: 13, hour: "17:00", breaks: [] },
+  { name: "Fire Force", color: "#FF5B00", start: "2026-01-10", episodes: 13, hour: "18:50", breaks: [] },
+  { name: "MHA Vigilantes", color: "#0A007D", start: "2026-01-05", episodes: 13, hour: "15:20", breaks: [] },
+  { name: "Oshi No Ko", color: "#F007CC", start: "2026-01-14", episodes: 11, hour: "16:20", breaks: [] },
+  { name: "Sentenced To Be a Hero", color: "#7A0A0A", start: "2026-01-03", episodes: 12, hour: "15:20", breaks: [{ start: "2026-01-03", end: "2026-01-15" }] },
+  { name: "Hell's Paradise", color: "#1F6F5B", start: "2026-01-11", episodes: 12, hour: "16:35", breaks: [] },
+  { name: "To Your Eternity", color: "#5F7A8A", start: "2025-10-04", episodes: 22, hour: "17:05", breaks: [] },
+  { name: "Fate Stange Fake", color: "#BF0000", start: "2026-01-03", episodes: 13, hour: "17:20", breaks: [] }
+];
+
+/* ===================== */
+/* STATE */
+let currentDate = new Date(2026,0,1);
+const today = new Date();
+const monthNames = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+const calendarBody = document.getElementById("calendar-body");
+const monthLabel = document.getElementById("month");
+
+let isDragging = false, startX = 0, deltaX = 0;
+
+/* ===================== */
+/* UTILITAIRES */
+function toISO(date){
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2,"0");
+  const d = String(date.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+
+/* 🔧 CORRECTION UNIQUE DU BREAK */
+function getEpisodeDates(anime){
+  let dates = [];
+  let cur = new Date(anime.start);
+
+  for(let ep = 1; ep <= anime.episodes; ep++){
+    dates.push({ date: new Date(cur), ep });
+
+    const pause = anime.breaks.find(b => toISO(cur) === b.start);
+
+    if(pause){
+      cur = new Date(pause.end);
+    } else {
+      cur.setDate(cur.getDate() + 7);
+    }
+  }
+  return dates;
+}
+
+/* ===================== */
+/* RENDER CALENDAR */
+function renderCalendar(){
+  calendarBody.innerHTML="";
+  const y=currentDate.getFullYear();
+  const m=currentDate.getMonth();
+  monthLabel.textContent=`${monthNames[m]} ${y}`;
+
+  const firstDay=new Date(y,m,1);
+  const offset=(firstDay.getDay()+6)%7;
+  const daysInMonth=new Date(y,m+1,0).getDate();
+
+  let row=document.createElement("tr");
+  for(let i=0;i<offset;i++) row.appendChild(document.createElement("td")).className="empty";
+
+  for(let day=1;day<=daysInMonth;day++){
+    if(row.children.length===7){ calendarBody.appendChild(row); row=document.createElement("tr"); }
+
+    const td=document.createElement("td");
+    td.innerHTML=`<div class="day-number">${day}</div><div class="markers"></div>`;
+    const dateStr=`${y}-${String(m+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const markers=td.querySelector(".markers");
+    const animesToday=[];
+
+    if(y===today.getFullYear() && m===today.getMonth() && day===today.getDate()) td.classList.add("today");
+
+    ANIMES.forEach(anime=>{
+      getEpisodeDates(anime).forEach(epInfo=>{
+        if(toISO(epInfo.date)===dateStr){
+          const mDiv=document.createElement("div");
+          mDiv.className="marker";
+          mDiv.style.background=anime.color;
+          markers.appendChild(mDiv);
+          animesToday.push({anime:anime,ep:epInfo.ep});
+        }
+      });
+    });
+
+    if(animesToday.length>0) td.onclick=()=>showPopup(animesToday);
+
+    row.appendChild(td);
+  }
+  calendarBody.appendChild(row);
+  updateArrows();
+}
+
+/* ===================== */
+/* POPUP */
+function showPopup(animes){
+  const popup=document.getElementById("popup");
+  const content=document.getElementById("popup-content");
+  const todayISO=toISO(today);
+
+  content.innerHTML=animes.map(a=>{
+    const percent=Math.round((a.ep / a.anime.episodes)*100);
+    const episodeDateISO=toISO(getEpisodeDates(a.anime)[a.ep-1].date);
+    const availability = episodeDateISO<=todayISO?"Disponible":`Sort à ${a.anime.hour}`;
+    return `
+      <div class="popup-title">
+        <div class="color-dot" style="background:${a.anime.color}"></div>
+        ${a.anime.name} (Ep ${a.ep}/${a.anime.episodes})
+      </div>
+      <div class="popup-time">${availability}</div>
+      <div class="progress">
+        <div class="progress-label">${percent}% complété</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${percent}%;background:${a.anime.color}"></div>
+        </div>
+      </div>
+      <hr style="opacity:.2;margin:8px 0">
+    `;
+  }).join("");
+  popup.classList.add("show");
+}
+
+document.getElementById("popup").onclick=()=>document.getElementById("popup").classList.remove("show");
+
+/* ===================== */
+/* NAVIGATION MOIS */
+document.getElementById("prev").onclick=()=>{ currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); };
+document.getElementById("next").onclick=()=>{ currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); };
+document.getElementById("today").onclick=()=>{ currentDate=new Date(); renderCalendar(); };
+
+/* ===================== */
+/* ARROWS LIMITS */
+function updateArrows(){
+  const prev=document.getElementById("prev");
+  const next=document.getElementById("next");
+  prev.classList.remove("disabled");
+  next.classList.remove("disabled");
+  if(currentDate.getFullYear()===2026 && currentDate.getMonth()===0) prev.classList.add("disabled");
+  const nextLimit=new Date(2027,0,1);
+  if(currentDate.getFullYear()===nextLimit.getFullYear() && currentDate.getMonth()===nextLimit.getMonth()) next.classList.add("disabled");
+}
+
+/* ===================== */
+/* SWIPE MOBILE FLUIDE */
+const calendarEl = document.getElementById("calendar");
+calendarEl.addEventListener("touchstart", e=>{
+  startX=e.touches[0].clientX;
+  deltaX=0;
+  isDragging=true;
+  calendarBody.style.transition="none";
+});
+calendarEl.addEventListener("touchmove", e=>{
+  if(!isDragging) return;
+  deltaX = e.touches[0].clientX - startX;
+  calendarBody.style.transform = `translateX(${deltaX}px)`;
+});
+calendarEl.addEventListener("touchend", e=>{
+  if(!isDragging) return;
+  isDragging=false;
+  calendarBody.style.transition="transform 0.3s ease";
+  const threshold=80;
+  if(deltaX<-threshold){
+    currentDate.setMonth(currentDate.getMonth()+1);
+  } else if(deltaX>threshold){
+    currentDate.setMonth(currentDate.getMonth()-1);
+  }
+  calendarBody.style.transform="translateX(0)";
+  renderCalendar();
+});
+
+/* ===================== */
+/* INIT */
+renderCalendar();
+</script>
+</body>
+</html>
