@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>General</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../DonnéesCharts.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: transparent;
+      font-family: Arial;
+    }
+
+    .container {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <canvas id="chart"></canvas>
+</div>
+
+<script>
+function total(obj) {
+  return Object.values(obj).reduce((a,b)=>a+b,0);
+}
+
+const data = [
+  { name: "Anime", value: total(WATCHLIST_DATA.anime) },
+  { name: "Animation", value: total(WATCHLIST_DATA.animation) },
+  { name: "Series", value: total(WATCHLIST_DATA.series) },
+  { name: "Movies", value: total(WATCHLIST_DATA.films) }
+];
+
+const labels = data.map(d => d.name);
+const values = data.map(d => d.value);
+
+new Chart(document.getElementById("chart"), {
+  type: "doughnut",
+  data: {
+    labels,
+    datasets: [{
+      data: values,
+      backgroundColor: [
+        "#4F8CFF",
+        "#A855F7",
+        "#FFA500",
+        "#22C55E"
+      ],
+      borderRadius: 10,
+      spacing: 3,
+      hoverOffset: 15
+    }]
+  },
+  options: {
+    cutout: "70%",
+    plugins: {
+      legend: {
+        display: true,
+        position: "bottom"
+      }
+    }
+  },
+  plugins: [{
+    id: "centerText",
+    beforeDraw(chart) {
+      const { width } = chart;
+      const ctx = chart.ctx;
+
+      ctx.save();
+      ctx.font = "bold 28px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      const totalAll = values.reduce((a,b)=>a+b,0);
+
+      ctx.fillText(
+        totalAll,
+        width / 2,
+        chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2
+      );
+
+      ctx.restore();
+    }
+  }]
+});
+</script>
+
+</body>
+</html>
