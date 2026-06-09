@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Anime</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../DonnéesCharts.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: transparent;
+      font-family: Arial;
+    }
+
+    .container {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <canvas id="chart"></canvas>
+</div>
+
+<script>
+const d = WATCHLIST_DATA.series;
+
+const labels = [
+  "In Progress",
+  "Paused",
+  "Not Started",
+  "Rewatching",
+  "Dropped",
+  "Completed"
+];
+
+const values = [
+  d.InProgress,
+  d.Paused,
+  d.NotStarted,
+  d.Rewatching,
+  d.Dropped,
+  d.Completed
+];
+
+const total = values.reduce((a,b)=>a+b,0);
+
+new Chart(document.getElementById("chart"), {
+  type: "doughnut",
+  data: {
+    labels,
+    datasets: [{
+      data: values,
+      backgroundColor: [
+        "#4F8CFF",
+        "#FFA500",
+        "#B0B0B0",
+        "#A855F7",
+        "#FF4D4D",
+        "#22C55E"
+      ],
+      borderRadius: 10,
+      spacing: 3,
+      hoverOffset: 15
+    }]
+  },
+  options: {
+    cutout: "70%",
+    plugins: {
+      legend: {
+        display: true,
+        position: "bottom"
+      }
+    }
+  },
+  plugins: [{
+    id: "centerText",
+    beforeDraw(chart) {
+      const { width } = chart;
+      const ctx = chart.ctx;
+
+      ctx.save();
+      ctx.font = "bold 28px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.fillText(
+        total,
+        width / 2,
+        chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2
+      );
+
+      ctx.restore();
+    }
+  }]
+});
+</script>
+
+</body>
+</html>
