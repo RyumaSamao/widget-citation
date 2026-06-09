@@ -85,7 +85,13 @@ new Chart(document.getElementById("chart"), {
     plugins: {
       legend: {
         display: true,
-        position: "bottom"
+        position: "bottom",
+        labels: {
+          usePointStyle: true,
+          pointStyle: "circle",
+          boxWidth: 8,
+          boxHeight: 8,
+          color: "#ffffff"
       }
     }
   },
