@@ -27,11 +27,9 @@ const WATCHLIST_DATA = {
   },
 
   movies: {
-    InProgress: 6,
-    Paused: 1,
-    NotStarted: 10,
-    Rewatching: 0,
-    Dropped: 1,
-    Completed: 25
+    InProgress: 5,
+    NotStarted: 2,
+    Dropped: 0,
+    Completed: 6
   }
 };
