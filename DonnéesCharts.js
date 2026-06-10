@@ -26,7 +26,7 @@ const WATCHLIST_DATA = {
     Completed: 60
   },
 
-  movies: {
+  films: {
     InProgress: 5,
     NotStarted: 2,
     Dropped: 0,
