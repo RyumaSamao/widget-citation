@@ -285,13 +285,17 @@ function updateMusiquesDropdown(film){
 filmSelect.addEventListener('change', ()=>updateMusiquesDropdown(filmSelect.value));
 
 // jouer track sélectionné
-playSelectedBtn.addEventListener('click', ()=>{
-  const index=parseInt(musiqueSelect.value);
-  if(!isNaN(index)){
-    currentTrack=index;
+playSelectedBtn.addEventListener('click', () => {
+  const film = filmSelect.value;
+  if (!film) return;
+
+  const index = musiques.findIndex(m => m.film === film);
+
+  if (index !== -1) {
+    currentTrack = index;
     loadTrack(currentTrack);
     playTrack();
-    menuPopup.style.display='none';
+    menuPopup.style.display = 'none';
   }
 });
 
