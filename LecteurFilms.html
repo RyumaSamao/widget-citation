@@ -197,9 +197,6 @@ body {
     <select id="film-select">
       <option value="">Choisir un film</option>
     </select>
-    <select id="musique-select">
-      <option value="">Choisir la musique</option>
-    </select>
     <button id="play-selected">Jouer</button>
   </div>
 
@@ -255,7 +252,6 @@ const forwardBtn = document.getElementById('forward');
 const menuBtn = document.getElementById('menu-btn');
 const menuPopup = document.getElementById('menu-popup');
 const filmSelect = document.getElementById('film-select');
-const musiqueSelect = document.getElementById('musique-select');
 const playSelectedBtn = document.getElementById('play-selected');
 
 const repeatBtn = document.getElementById('repeat-btn');
@@ -277,8 +273,8 @@ filmSet.forEach(a=>{
 });
 
 // remplir opening select
-function updateMusiquesDropdown(anime){
-  musiqueSelect.innerHTML='<option value="">Choisir la'musique</option>';
+function updateMusiquesDropdown(film){
+  musiqueSelect.innerHTML='<option value="">Choisir la musique</option>';
   musiques.filter(o=>o.film===film).forEach(o=>{
     const opt=document.createElement('option');
     opt.value=musiques.indexOf(o);
