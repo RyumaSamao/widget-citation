@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Lecteur d'Openings</title>
+<title>Lecteur de Films</title>
 <style>
 body {
   margin: 0;
@@ -175,7 +175,7 @@ body {
 <div class="player-background" id="player-background"></div>
 
 <div class="player-container">
-  <div class="title" id="title">Titre de l'opening</div>
+  <div class="title" id="title">Titre de la musique</div>
 
 <!-- Bouton repeat -->
 <button class="repeat-btn" id="repeat-btn" title="Mode de répétition">
@@ -188,23 +188,23 @@ body {
 </button>
 
   <!-- Bouton loupe -->
-  <button class="menu-btn" id="menu-btn" title="Choisir Opening">
+  <button class="menu-btn" id="menu-btn" title="Choisir musique">
     <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.518 6.518 0 001.48-5.34C15.24 5.59 12.66 3 9.5 3S3.76 5.59 3.76 8.76 6.34 14.5 9.5 14.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 13C7.01 13 5 10.99 5 8.5S7.01 4 9.5 4 14 6.01 14 8.5 11.99 13 9.5 13z"/></svg>
   </button>
 
   <!-- Menu loupe -->
   <div class="menu-popup" id="menu-popup">
-    <select id="anime-select">
-      <option value="">Choisir un anime</option>
+    <select id="film-select">
+      <option value="">Choisir un film</option>
     </select>
-    <select id="opening-select">
-      <option value="">Choisir l'opening</option>
+    <select id="musique-select">
+      <option value="">Choisir la musique</option>
     </select>
     <button id="play-selected">Jouer</button>
   </div>
 
   <div class="controls">
-    <button class="control-btn" id="prev-track" title="Opening précédent">
+    <button class="control-btn" id="prev-track" title="Musique précédente">
       <svg viewBox="0 0 24 24"><path d="M6 4v16h2V4H6zm3.5 8 9.5 8V4l-9.5 8z"/></svg>
     </button>
     <button class="control-btn" id="rewind" title="-10 secondes">
@@ -217,7 +217,7 @@ body {
     <button class="control-btn" id="forward" title="+10 secondes">
       <svg viewBox="0 0 24 24"><path d="M12 5v2c-3.86 0-7 3.14-7 7s3.14 7 7 7 7-3.14 7-7h2c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9zm1 8v5l5-5-5-5v4H7v2h6z"/></svg>
     </button>
-    <button class="control-btn" id="next-track" title="Opening suivant">
+    <button class="control-btn" id="next-track" title="Musique suivante">
       <svg viewBox="0 0 24 24"><path d="M16 4v16h2V4h-2zM5 4v16l9.5-8L5 4z"/></svg>
     </button>
   </div>
@@ -254,8 +254,8 @@ const forwardBtn = document.getElementById('forward');
 
 const menuBtn = document.getElementById('menu-btn');
 const menuPopup = document.getElementById('menu-popup');
-const animeSelect = document.getElementById('anime-select');
-const openingSelect = document.getElementById('opening-select');
+const filmSelect = document.getElementById('film-select');
+const musiqueSelect = document.getElementById('musique-select');
 const playSelectedBtn = document.getElementById('play-selected');
 
 const repeatBtn = document.getElementById('repeat-btn');
@@ -265,35 +265,35 @@ let isPlaying = false;
 let currentTrack = 0;
 let repeatMode = 0; // 0 = off, 1 = next, 2 = loop one
 
-const openings = [
-  { anime: "One Piece", title: "We Are", audio: "Opening/OnePiece/OP1.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
-  { anime: "One Piece", title: "Believe", audio: "Opening/OnePiece/OP2.mp3", image: "OpeningImages/op2op.jpg" },
-  { anime: "One Piece", title: "Hikari e", audio: "Opening/OnePiece/OP3.mp3", image: "OpeningImages/op3op.jpg" },
-  { anime: "Naruto", title: "ROCKS", audio: "Opening/Naruto/OP1.mp3", image: "OpeningImages/rocks.jpg" },
+const musiques = [
+  { film: "Jurassic World", title: "?", audio: "Opening/OnePiece/OP1.mp3", image: "OpeningImages/OnePieceWeAre4K.jpg" },
+  { film: "One Piece", title: "Believe", audio: "Opening/OnePiece/OP2.mp3", image: "OpeningImages/op2op.jpg" },
+  { film: "One Piece", title: "Hikari e", audio: "Opening/OnePiece/OP3.mp3", image: "OpeningImages/op3op.jpg" },
+  { film: "Naruto", title: "ROCKS", audio: "Opening/Naruto/OP1.mp3", image: "OpeningImages/rocks.jpg" },
 ];
 
 // remplir anime select
-const animeSet = [...new Set(openings.map(o => o.anime))];
-animeSet.forEach(a=>{
+const filmSet = [...new Set(musiques.map(o => o.film))];
+filmSet.forEach(a=>{
   const opt=document.createElement('option'); opt.value=a; opt.textContent=a;
-  animeSelect.appendChild(opt);
+  filmSelect.appendChild(opt);
 });
 
 // remplir opening select
-function updateOpeningsDropdown(anime){
-  openingSelect.innerHTML='<option value="">Choisir l\'opening</option>';
-  openings.filter(o=>o.anime===anime).forEach(o=>{
+function updateMusiquesDropdown(anime){
+  musiqueSelect.innerHTML='<option value="">Choisir l\'musique</option>';
+  musiques.filter(o=>o.film===film).forEach(o=>{
     const opt=document.createElement('option');
-    opt.value=openings.indexOf(o);
+    opt.value=musiques.indexOf(o);
     opt.textContent=o.title;
-    openingSelect.appendChild(opt);
+    musiqueSelect.appendChild(opt);
   });
 }
-animeSelect.addEventListener('change', ()=>updateOpeningsDropdown(animeSelect.value));
+filmSelect.addEventListener('change', ()=>updateMusiquesDropdown(filmSelect.value));
 
 // jouer track sélectionné
 playSelectedBtn.addEventListener('click', ()=>{
-  const index=parseInt(openingSelect.value);
+  const index=parseInt(musiqueSelect.value);
   if(!isNaN(index)){
     currentTrack=index;
     loadTrack(currentTrack);
@@ -318,7 +318,7 @@ repeatBtn.addEventListener('click', ()=>{
 // gestion de la fin de la chanson
 audio.addEventListener('ended', ()=>{
   if(repeatMode === 1){
-    currentTrack=(currentTrack+1)%openings.length;
+    currentTrack=(currentTrack+1)%musiques.length;
     loadTrack(currentTrack);
     playTrack();
   } else if(repeatMode === 2){
@@ -328,9 +328,9 @@ audio.addEventListener('ended', ()=>{
 });
 
 function loadTrack(i){
-  const t=openings[i];
+  const t=musiques[i];
   audio.src=t.audio;
-  titleEl.textContent=`${t.anime} - ${t.title}`;
+  titleEl.textContent=`${t.film} - ${t.title}`;
   if(t.image) backgroundEl.style.backgroundImage=`url('${t.image}')`;
 }
 
@@ -338,8 +338,8 @@ function playTrack(){ audio.play(); isPlaying=true; playIcon.style.display='none
 function pauseTrack(){ audio.pause(); isPlaying=false; playIcon.style.display='block'; pauseIcon.style.display='none'; }
 
 playPauseBtn.addEventListener('click', ()=>isPlaying?pauseTrack():playTrack());
-prevTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack-1+openings.length)%openings.length; loadTrack(currentTrack); playTrack();});
-nextTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack+1)%openings.length; loadTrack(currentTrack); playTrack();});
+prevTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack-1+musiques.length)%musiques.length; loadTrack(currentTrack); playTrack();});
+nextTrackBtn.addEventListener('click', ()=>{currentTrack=(currentTrack+1)%musiques.length; loadTrack(currentTrack); playTrack();});
 rewindBtn.addEventListener('click', ()=>audio.currentTime=Math.max(0,audio.currentTime-10));
 forwardBtn.addEventListener('click', ()=>audio.currentTime=Math.min(audio.duration,audio.currentTime+10));
 
