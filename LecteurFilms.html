@@ -267,9 +267,6 @@ let repeatMode = 0; // 0 = off, 1 = next, 2 = loop one
 
 const musiques = [
   { film: "Jurassic World", title: "Welcome to Jurassic World", audio: "MusiqueFilm/JurassicWorld.mp3", image: "OpeningImages/Blue.jpg" },
-  { film: "One Piece", title: "Believe", audio: "Opening/OnePiece/OP2.mp3", image: "OpeningImages/op2op.jpg" },
-  { film: "One Piece", title: "Hikari e", audio: "Opening/OnePiece/OP3.mp3", image: "OpeningImages/op3op.jpg" },
-  { film: "Naruto", title: "ROCKS", audio: "Opening/Naruto/OP1.mp3", image: "OpeningImages/rocks.jpg" },
 ];
 
 // remplir anime select
@@ -281,7 +278,7 @@ filmSet.forEach(a=>{
 
 // remplir opening select
 function updateMusiquesDropdown(anime){
-  musiqueSelect.innerHTML='<option value="">Choisir l\'musique</option>';
+  musiqueSelect.innerHTML='<option value="">Choisir la'musique</option>';
   musiques.filter(o=>o.film===film).forEach(o=>{
     const opt=document.createElement('option');
     opt.value=musiques.indexOf(o);
