@@ -9,21 +9,21 @@ const WATCHLIST_DATA = {
   },
 
   animation: {
-    InProgress: 20,
-    Paused: 5,
-    NotStarted: 30,
-    Rewatching: 2,
-    Dropped: 1,
-    Completed: 40
+    InProgress: 0,
+    Paused: 0,
+    NotStarted: 0,
+    Rewatching: 0,
+    Dropped: 0,
+    Completed: 0
   },
 
   series: {
-    InProgress: 15,
-    Paused: 3,
-    NotStarted: 22,
-    Rewatching: 4,
-    Dropped: 2,
-    Completed: 60
+    InProgress: 0,
+    Paused: 0,
+    NotStarted: 0,
+    Rewatching: 0,
+    Dropped: 0,
+    Completed: 0
   },
 
   films: {
