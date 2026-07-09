@@ -78,6 +78,9 @@ h1{
     cursor:grab;
     user-select:none;
     overflow:hidden;
+}
+
+.card:not(.dragging){
     transition:.2s;
 }
 
@@ -90,7 +93,6 @@ h1{
     z-index:999;
     pointer-events:none;
     opacity:.85;
-    transform:scale(1.1);
     will-change:transform;
 }
     
