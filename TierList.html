@@ -346,7 +346,8 @@ function load(){
 
 function resetTier(){
 
-    document.getElementById("confirmOverlay").classList.add("show");
+    overlay.classList.add("show");
+    document.body.style.overflow = "hidden";
 
 }
 
@@ -355,6 +356,7 @@ const overlay = document.getElementById("confirmOverlay");
 document.getElementById("cancelBtn").onclick = () => {
 
     overlay.classList.remove("show");
+    document.body.style.overflow = "";
 
 };
 
@@ -370,6 +372,7 @@ overlay.onclick = (e) => {
     if(e.target === overlay){
 
         overlay.classList.remove("show");
+        document.body.style.overflow = "";
 
     }
 
@@ -380,6 +383,7 @@ document.addEventListener("keydown",(e)=>{
     if(e.key==="Escape"){
 
         overlay.classList.remove("show");
+        document.body.style.overflow = "";
 
     }
 
