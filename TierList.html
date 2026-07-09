@@ -85,6 +85,14 @@ h1{
     transform:scale(1.05);
 }
 
+.card.dragging{
+    position:fixed;
+    z-index:999;
+    pointer-events:none;
+    opacity:.85;
+    transform:scale(1.1);
+}
+    
 .card img{
     width:100%;
     height:100%;
@@ -337,12 +345,12 @@ function createCards(){
 }
     
 let selectedCard = null;
-let startX = 0;
-let startY = 0;
+let offsetX = 0;
+let offsetY = 0;
 let moved = false;
 
 
-document.addEventListener("mousedown",(e)=>{
+document.addEventListener("mousedown", (e)=>{
 
     const card = e.target.closest(".card");
 
@@ -351,32 +359,70 @@ document.addEventListener("mousedown",(e)=>{
 
     selectedCard = card;
 
-    startX = e.clientX;
-    startY = e.clientY;
+    const rect = card.getBoundingClientRect();
+
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
 
     moved = false;
 
 });
 
-document.addEventListener("mousemove",(e)=>{
+
+document.addEventListener("mousemove", (e)=>{
 
     if(!selectedCard) return;
 
 
-    if(
-        Math.abs(e.clientX - startX) > 5 ||
-        Math.abs(e.clientY - startY) > 5
-    ){
+    moved = true;
 
-        moved = true;
+
+    if(!selectedCard.classList.contains("dragging")){
+
+        const rect = selectedCard.getBoundingClientRect();
+
+        selectedCard.style.width = rect.width + "px";
+        selectedCard.style.height = rect.height + "px";
+
+        selectedCard.classList.add("dragging");
+
+    }
+
+
+    selectedCard.style.left =
+        e.clientX - offsetX + "px";
+
+    selectedCard.style.top =
+        e.clientY - offsetY + "px";
+
+
+    // scroll automatique
+    const edge = 100;
+    const speed = 15;
+
+
+    if(e.clientY < edge){
+
+        window.scrollBy(0, -speed);
+
+    }
+
+
+    if(window.innerHeight - e.clientY < edge){
+
+        window.scrollBy(0, speed);
 
     }
 
 });
 
-document.addEventListener("mouseup",(e)=>{
+
+document.addEventListener("mouseup", (e)=>{
 
     if(!selectedCard) return;
+
+
+    const card = selectedCard;
 
 
     if(moved){
@@ -386,12 +432,13 @@ document.addEventListener("mouseup",(e)=>{
             e.clientY
         );
 
+
         const zone = element.closest(".dropzone");
 
 
         if(zone){
 
-            zone.appendChild(selectedCard);
+            zone.appendChild(card);
 
             save();
 
@@ -399,13 +446,21 @@ document.addEventListener("mouseup",(e)=>{
 
     }
 
+
+    card.classList.remove("dragging");
+
+    card.style.left="";
+    card.style.top="";
+
+
     selectedCard = null;
 
-setTimeout(()=>{
 
-    moved = false;
+    setTimeout(()=>{
 
-},100);
+        moved = false;
+
+    },100);
 
 });
 
