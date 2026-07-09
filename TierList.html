@@ -78,6 +78,7 @@ h1{
     cursor:grab;
     user-select:none;
     overflow:hidden;
+    touch-action:none;
 }
 
 .card:not(.dragging){
@@ -93,7 +94,7 @@ h1{
     z-index:999;
     pointer-events:none;
     opacity:.85;
-    will-change:transform;
+    cursor:grabbing;
 }
     
 .card img{
@@ -348,15 +349,18 @@ function createCards(){
 }
     
 let selectedCard = null;
-let dragGhost = null;
+
 let offsetX = 0;
 let offsetY = 0;
-let moved = false;
+
 let startX = 0;
 let startY = 0;
 
+let moved = false;
 
-document.addEventListener("mousedown", (e)=>{
+
+
+document.addEventListener("pointerdown", (e)=>{
 
     const card = e.target.closest(".card");
 
@@ -365,84 +369,102 @@ document.addEventListener("mousedown", (e)=>{
 
     selectedCard = card;
 
+
     const rect = card.getBoundingClientRect();
+
 
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
 
+
     startX = e.clientX;
     startY = e.clientY;
 
+
     moved = false;
+
 
 });
 
 
-document.addEventListener("mousemove", (e)=>{
+
+document.addEventListener("pointermove", (e)=>{
 
     if(!selectedCard) return;
 
 
-    if(
-        Math.abs(e.clientX - startX) > 5 ||
-        Math.abs(e.clientY - startY) > 5
-    ){
+    const distance = Math.sqrt(
+        (e.clientX - startX) ** 2 +
+        (e.clientY - startY) ** 2
+    );
+
+
+    if(distance > 8){
 
         moved = true;
 
     }
 
 
-    if(moved && !dragGhost){
+    if(!moved) return;
+
+
+
+    if(!selectedCard.classList.contains("dragging")){
 
         const rect = selectedCard.getBoundingClientRect();
 
-        dragGhost = selectedCard.cloneNode(true);
 
-        dragGhost.classList.add("dragging");
+        selectedCard.style.width = rect.width + "px";
+        selectedCard.style.height = rect.height + "px";
 
-        dragGhost.style.width = rect.width + "px";
-        dragGhost.style.height = rect.height + "px";
 
-        document.body.appendChild(dragGhost);
+        selectedCard.classList.add("dragging");
 
     }
 
 
-    if(dragGhost){
 
-        dragGhost.style.transform =
-        `translate3d(
-            ${e.clientX - offsetX}px,
-            ${e.clientY - offsetY}px,
-            0
-        )`;
+    selectedCard.style.left =
+        e.clientX - offsetX + "px";
 
 
-        const edge = 100;
-        const speed = 15;
+    selectedCard.style.top =
+        e.clientY - offsetY + "px";
 
 
-        if(e.clientY < edge){
-            window.scrollBy(0,-speed);
-        }
+
+    const edge = 80;
+    const speed = 12;
 
 
-        if(window.innerHeight - e.clientY < edge){
-            window.scrollBy(0,speed);
-        }
+
+    if(e.clientY < edge){
+
+        window.scrollBy(0,-speed);
 
     }
+
+
+    if(window.innerHeight - e.clientY < edge){
+
+        window.scrollBy(0,speed);
+
+    }
+
 
 });
 
 
-document.addEventListener("mouseup",(e)=>{
+
+document.addEventListener("pointerup", (e)=>{
 
     if(!selectedCard) return;
 
 
+
     if(moved){
+
 
         const element = document.elementFromPoint(
             e.clientX,
@@ -450,7 +472,7 @@ document.addEventListener("mouseup",(e)=>{
         );
 
 
-        const zone = element.closest(".dropzone");
+        const zone = element?.closest(".dropzone");
 
 
         if(zone){
@@ -464,25 +486,28 @@ document.addEventListener("mouseup",(e)=>{
     }
 
 
-    if(dragGhost){
 
-        dragGhost.remove();
-        dragGhost = null;
+    selectedCard.classList.remove("dragging");
 
-    }
+
+    selectedCard.style.left = "";
+    selectedCard.style.top = "";
+    selectedCard.style.width = "";
+    selectedCard.style.height = "";
 
 
     selectedCard = null;
+
 
 
     setTimeout(()=>{
 
         moved = false;
 
-    },50);
+    },100);
+
 
 });
-
 function save(){
 
     const data={};
@@ -577,7 +602,7 @@ document.addEventListener("click",(e)=>{
     const card = e.target.closest(".card");
 
 
-    if(card && !moved){
+    if(card && !moved && !selectedCard){
 
         viewerImg.src = card.querySelector("img").src;
 
