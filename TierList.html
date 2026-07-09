@@ -192,6 +192,42 @@ button{
     background:#ff3c3c;
 }
 
+#imageViewer{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.75);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.2s;
+
+    z-index:100;
+
+}
+
+#imageViewer.show{
+
+    opacity:1;
+    visibility:visible;
+
+}
+
+#imageViewer img{
+
+    max-width:80vw;
+    max-height:85vh;
+
+    border-radius:15px;
+
+}
+    
 </style>
 </head>
 
@@ -266,9 +302,14 @@ button{
     </div>
 
 </div>
-<script>
 
-let dragged;
+<div id="imageViewer">
+
+    <img src="">
+
+</div>
+    
+<script>
 
     const animes = [
 
@@ -285,16 +326,9 @@ function createCards(){
         const card = document.createElement("div");
 
         card.className = "card";
-        card.draggable = true;
         card.id = anime.id;
 
         card.innerHTML = `<img src="${anime.image}" alt="${anime.id}">`;
-
-        card.addEventListener("dragstart",()=>{
-
-            dragged = card;
-
-        });
 
         pool.appendChild(card);
 
@@ -302,23 +336,76 @@ function createCards(){
 
 }
     
-document.querySelectorAll(".dropzone").forEach(zone=>{
+let selectedCard = null;
+let startX = 0;
+let startY = 0;
+let moved = false;
 
-    zone.addEventListener("dragover",(e)=>{
 
-        e.preventDefault();
+document.addEventListener("mousedown",(e)=>{
 
-    });
+    const card = e.target.closest(".card");
 
-    zone.addEventListener("drop",(e)=>{
+    if(!card) return;
 
-        e.preventDefault();
 
-        zone.appendChild(dragged);
+    selectedCard = card;
 
-        save();
+    startX = e.clientX;
+    startY = e.clientY;
 
-    });
+    moved = false;
+
+});
+
+document.addEventListener("mousemove",(e)=>{
+
+    if(!selectedCard) return;
+
+
+    if(
+        Math.abs(e.clientX - startX) > 5 ||
+        Math.abs(e.clientY - startY) > 5
+    ){
+
+        moved = true;
+
+    }
+
+});
+
+document.addEventListener("mouseup",(e)=>{
+
+    if(!selectedCard) return;
+
+
+    if(moved){
+
+        const element = document.elementFromPoint(
+            e.clientX,
+            e.clientY
+        );
+
+        const zone = element.closest(".dropzone");
+
+
+        if(zone){
+
+            zone.appendChild(selectedCard);
+
+            save();
+
+        }
+
+    }
+
+    selectedCard = null;
+
+setTimeout(()=>{
+
+    moved = false;
+
+},100);
 
 });
 
@@ -406,11 +493,37 @@ document.addEventListener("keydown",(e)=>{
     }
 
 });
+
+const viewer = document.getElementById("imageViewer");
+const viewerImg = viewer.querySelector("img");
+
+
+document.addEventListener("click",(e)=>{
+
+    const card = e.target.closest(".card");
+
+
+    if(card && !moved){
+
+        viewerImg.src = card.querySelector("img").src;
+
+        viewer.classList.add("show");
+
+    }
+
+});
+
+
+viewer.onclick = ()=>{
+
+    viewer.classList.remove("show");
+
+};
     
 createCards();    
 load();
 
 </script>
-
+    
 </body>
 </html>
