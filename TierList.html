@@ -239,15 +239,8 @@ button{
 
     <div class="poolZone dropzone" data-tier="pool">
 
-        <div class="card" draggable="true" id="onepiece">
-            <img src="https://placehold.co/80x110/3498db/ffffff?text=One+Piece">
-        </div>
-
-        <div class="card" draggable="true" id="frieren">
-            <img src="https://placehold.co/80x110/9b59b6/ffffff?text=Frieren">
-        </div>
-
     </div>
+    
 </div>
 
 <button onclick="resetTier()">Réinitialiser</button>
@@ -276,6 +269,12 @@ button{
 <script>
 
 let dragged;
+
+    const animes = [
+
+    { id: "onepiece", image: "TiersImages/onepiece.jpg" },
+    // Ajoute les suivants ici
+];
 
 document.querySelectorAll(".card").forEach(card=>{
 
