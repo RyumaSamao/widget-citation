@@ -101,6 +101,94 @@ button{
     border-radius:8px;
 }
 
+#confirmOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.65);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.2s;
+}
+
+#confirmOverlay.show{
+    opacity:1;
+    visibility:visible;
+}
+
+#confirmBox{
+    width:420px;
+    max-width:90%;
+
+    background:#2b2b2b;
+
+    border-radius:14px;
+
+    padding:25px;
+
+    text-align:center;
+
+    box-shadow:0 0 30px rgba(0,0,0,.45);
+
+    transform:scale(.9);
+
+    transition:.2s;
+}
+
+#confirmOverlay.show #confirmBox{
+    transform:scale(1);
+}
+
+#confirmBox h2{
+    margin-bottom:15px;
+    color:#ff5959;
+}
+
+#confirmBox p{
+    color:#ddd;
+    line-height:1.6;
+}
+
+.buttons{
+    margin-top:25px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+
+.buttons button{
+    margin:0;
+    padding:10px 22px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.2s;
+}
+
+#cancelBtn{
+    background:#555;
+    color:white;
+}
+
+#cancelBtn:hover{
+    background:#666;
+}
+
+#confirmBtn{
+    background:#ff5959;
+    color:white;
+}
+
+#confirmBtn:hover{
+    background:#ff3c3c;
+}
+
 </style>
 </head>
 
@@ -160,7 +248,28 @@ button{
 </div>
 
 <button onclick="resetTier()">Réinitialiser</button>
+<div id="confirmOverlay">
 
+    <div id="confirmBox">
+
+        <h2>⚠️ Réinitialiser ?</h2>
+
+        <p>
+            Cette action supprimera définitivement toute votre tier list.<br>
+            Êtes-vous sûr ?
+        </p>
+
+        <div class="buttons">
+
+            <button id="cancelBtn">Annuler</button>
+
+            <button id="confirmBtn">Réinitialiser</button>
+
+        </div>
+
+    </div>
+
+</div>
 <script>
 
 let dragged;
@@ -237,15 +346,45 @@ function load(){
 
 function resetTier(){
 
-    if(!confirm("Es-tu sûr de vouloir réinitialiser toute la tier list ?")){
-        return;
-    }
+    document.getElementById("confirmOverlay").classList.add("show");
+
+}
+
+const overlay = document.getElementById("confirmOverlay");
+
+document.getElementById("cancelBtn").onclick = () => {
+
+    overlay.classList.remove("show");
+
+};
+
+document.getElementById("confirmBtn").onclick = () => {
 
     localStorage.removeItem("AnimeTierList");
     location.reload();
 
-}
+};
 
+overlay.onclick = (e) => {
+
+    if(e.target === overlay){
+
+        overlay.classList.remove("show");
+
+    }
+
+};
+
+document.addEventListener("keydown",(e)=>{
+
+    if(e.key==="Escape"){
+
+        overlay.classList.remove("show");
+
+    }
+
+});
+    
 load();
 
 </script>
