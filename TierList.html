@@ -91,6 +91,7 @@ h1{
     pointer-events:none;
     opacity:.85;
     transform:scale(1.1);
+    will-change:transform;
 }
     
 .card img{
@@ -345,9 +346,12 @@ function createCards(){
 }
     
 let selectedCard = null;
+let dragGhost = null;
 let offsetX = 0;
 let offsetY = 0;
 let moved = false;
+let startX = 0;
+let startY = 0;
 
 
 document.addEventListener("mousedown", (e)=>{
@@ -364,6 +368,9 @@ document.addEventListener("mousedown", (e)=>{
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
 
+    startX = e.clientX;
+    startY = e.clientY;
+
     moved = false;
 
 });
@@ -374,55 +381,63 @@ document.addEventListener("mousemove", (e)=>{
     if(!selectedCard) return;
 
 
-    moved = true;
+    if(
+        Math.abs(e.clientX - startX) > 5 ||
+        Math.abs(e.clientY - startY) > 5
+    ){
+
+        moved = true;
+
+    }
 
 
-    if(!selectedCard.classList.contains("dragging")){
+    if(moved && !dragGhost){
 
         const rect = selectedCard.getBoundingClientRect();
 
-        selectedCard.style.width = rect.width + "px";
-        selectedCard.style.height = rect.height + "px";
+        dragGhost = selectedCard.cloneNode(true);
 
-        selectedCard.classList.add("dragging");
+        dragGhost.classList.add("dragging");
 
-    }
+        dragGhost.style.width = rect.width + "px";
+        dragGhost.style.height = rect.height + "px";
 
-
-    selectedCard.style.left =
-        e.clientX - offsetX + "px";
-
-    selectedCard.style.top =
-        e.clientY - offsetY + "px";
-
-
-    // scroll automatique
-    const edge = 100;
-    const speed = 15;
-
-
-    if(e.clientY < edge){
-
-        window.scrollBy(0, -speed);
+        document.body.appendChild(dragGhost);
 
     }
 
 
-    if(window.innerHeight - e.clientY < edge){
+    if(dragGhost){
 
-        window.scrollBy(0, speed);
+        dragGhost.style.transform =
+        `translate3d(
+            ${e.clientX - offsetX}px,
+            ${e.clientY - offsetY}px,
+            0
+        )`;
+
+
+        const edge = 100;
+        const speed = 15;
+
+
+        if(e.clientY < edge){
+            window.scrollBy(0,-speed);
+        }
+
+
+        if(window.innerHeight - e.clientY < edge){
+            window.scrollBy(0,speed);
+        }
 
     }
 
 });
 
 
-document.addEventListener("mouseup", (e)=>{
+document.addEventListener("mouseup",(e)=>{
 
     if(!selectedCard) return;
-
-
-    const card = selectedCard;
 
 
     if(moved){
@@ -438,7 +453,7 @@ document.addEventListener("mouseup", (e)=>{
 
         if(zone){
 
-            zone.appendChild(card);
+            zone.appendChild(selectedCard);
 
             save();
 
@@ -447,10 +462,12 @@ document.addEventListener("mouseup", (e)=>{
     }
 
 
-    card.classList.remove("dragging");
+    if(dragGhost){
 
-    card.style.left="";
-    card.style.top="";
+        dragGhost.remove();
+        dragGhost = null;
+
+    }
 
 
     selectedCard = null;
@@ -460,7 +477,7 @@ document.addEventListener("mouseup", (e)=>{
 
         moved = false;
 
-    },100);
+    },50);
 
 });
 
