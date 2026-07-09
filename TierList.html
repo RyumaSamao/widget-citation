@@ -135,13 +135,16 @@ button{
 
     box-shadow:0 0 30px rgba(0,0,0,.45);
 
-    transform:scale(.9);
+    transform:scale(.85);
 
-    transition:.2s;
+    transition:transform .25s ease;
+
+    opacity:0;
 }
 
 #confirmOverlay.show #confirmBox{
     transform:scale(1);
+    opacity:1;
 }
 
 #confirmBox h2{
