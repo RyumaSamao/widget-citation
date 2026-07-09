@@ -229,8 +229,11 @@ function load(){
 
 function resetTier(){
 
-    localStorage.removeItem("AnimeTierList");
+    if(!confirm("Es-tu sûr de vouloir réinitialiser toute la tier list ?")){
+        return;
+    }
 
+    localStorage.removeItem("AnimeTierList");
     location.reload();
 
 }
