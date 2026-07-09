@@ -276,16 +276,32 @@ let dragged;
     // Ajoute les suivants ici
 ];
 
-document.querySelectorAll(".card").forEach(card=>{
+function createCards(){
 
-    card.addEventListener("dragstart",()=>{
+    const pool = document.querySelector('[data-tier="pool"]');
 
-        dragged=card;
+    animes.forEach(anime=>{
+
+        const card = document.createElement("div");
+
+        card.className = "card";
+        card.draggable = true;
+        card.id = anime.id;
+
+        card.innerHTML = `<img src="${anime.image}" alt="${anime.id}">`;
+
+        card.addEventListener("dragstart",()=>{
+
+            dragged = card;
+
+        });
+
+        pool.appendChild(card);
 
     });
 
-});
-
+}
+    
 document.querySelectorAll(".dropzone").forEach(zone=>{
 
     zone.addEventListener("dragover",(e)=>{
@@ -391,6 +407,7 @@ document.addEventListener("keydown",(e)=>{
 
 });
     
+createCards();    
 load();
 
 </script>
