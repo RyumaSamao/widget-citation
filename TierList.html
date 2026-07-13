@@ -239,12 +239,74 @@ button{
     border-radius:15px;
 
 }
+
+    #loader{
+    position:fixed;
+    inset:0;
+    background:#191919;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:25px;
+    z-index:9999;
+    transition:opacity .35s;
+}
+
+#loader.hide{
+    opacity:0;
+    pointer-events:none;
+}
+
+#loader h2{
+    font-size:34px;
+}
+
+#loader p{
+    color:#bbb;
+}
+
+#progressBar{
+    width:320px;
+    max-width:80vw;
+    height:12px;
+    background:#333;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+#progress{
+    width:0%;
+    height:100%;
+    background:#ff5959;
+    transition:width .15s;
+}
+
+#content{
+    visibility:hidden;
+}
     
 </style>
 </head>
 
 <body>
 
+<div id="loader">
+
+    <h2>Anime Tier List</h2>
+
+    <div id="progressBar">
+        <div id="progress"></div>
+    </div>
+
+    <p id="progressText">
+        Chargement...
+    </p>
+
+</div>
+
+<div id="content">
+    
 <h1>Anime Tier List</h1>
 
 <div class="tier">
@@ -373,22 +435,51 @@ button{
     // Ajoute les suivants ici
 ];
 
-function createCards(){
+async function createCards(){
 
     const pool = document.querySelector('[data-tier="pool"]');
 
-    animes.forEach(anime=>{
+    const progress = document.getElementById("progress");
+    const text = document.getElementById("progressText");
 
-        const card = document.createElement("div");
+    let loaded = 0;
 
-        card.className = "card";
-        card.id = anime.id;
+    for(const anime of animes){
 
-        card.innerHTML = `<img src="${anime.image}" alt="${anime.id}">`;
+        await new Promise(resolve=>{
 
-        pool.appendChild(card);
+            const img = new Image();
 
-    });
+            img.onload = img.onerror = ()=>{
+
+                loaded++;
+
+                const percent = loaded / animes.length * 100;
+
+                progress.style.width = percent + "%";
+
+                text.textContent =
+                    `${loaded} / ${animes.length} affiches`;
+
+                const card = document.createElement("div");
+
+                card.className="card";
+                card.id=anime.id;
+
+                card.innerHTML =
+                    `<img src="${anime.image}" alt="${anime.id}">`;
+
+                pool.appendChild(card);
+
+                resolve();
+
+            };
+
+            img.src = anime.image;
+
+        });
+
+    }
 
 }
     
@@ -663,10 +754,23 @@ viewer.onclick = ()=>{
 
 };
     
-createCards();    
-load();
+(async()=>{
+
+    await createCards();
+
+    load();
+
+    document.getElementById("content").style.visibility="visible";
+
+    const loader=document.getElementById("loader");
+
+    loader.classList.add("hide");
+
+    setTimeout(()=>loader.remove(),350);
+
+})();
 
 </script>
-    
+   </div> 
 </body>
 </html>
