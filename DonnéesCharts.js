@@ -1,8 +1,8 @@
 const WATCHLIST_DATA = {
   anime: {
-    InProgress: 19,
-    Paused: 12,
-    NotStarted: 76,
+    InProgress: 20,
+    Paused: 13,
+    NotStarted: 81,
     Rewatching: 0,
     Dropped: 0,
     Completed: 8
