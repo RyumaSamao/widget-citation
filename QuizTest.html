@@ -6,6 +6,7 @@
 <title>Questions pour un Pirate</title>
 
 <style>
+
     :root {
         --red: #d92735;
         --red-light: #ff4c58;
@@ -25,6 +26,7 @@
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+        -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -40,6 +42,11 @@
         font-family: inherit;
     }
 
+    button {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
     .screen {
         display: none;
         min-height: 100vh;
@@ -50,8 +57,9 @@
         display: flex;
     }
 
+
     /* =====================================================
-       MENU PRINCIPAL
+       MENU
     ===================================================== */
 
     .home {
@@ -113,6 +121,8 @@
         border-radius: 18px;
         padding: 22px 12px;
         transition: 0.2s ease;
+        cursor: pointer;
+        user-select: none;
     }
 
     .level:hover {
@@ -121,12 +131,28 @@
         background: #1b1b1b;
     }
 
+    .level.selected {
+        border-color: var(--red);
+        background: linear-gradient(
+            145deg,
+            rgba(217, 39, 53, 0.18),
+            rgba(20, 20, 20, 0.95)
+        );
+        box-shadow:
+            0 0 0 1px rgba(217, 39, 53, 0.15),
+            0 10px 30px rgba(100, 0, 10, 0.18);
+    }
+
     .level .difficulty {
         font-size: 13px;
         color: var(--muted);
         text-transform: uppercase;
         letter-spacing: 1px;
         margin-bottom: 8px;
+    }
+
+    .level.selected .difficulty {
+        color: var(--red-light);
     }
 
     .level .name {
@@ -151,6 +177,7 @@
         transform: translateY(-3px);
         box-shadow: 0 15px 35px rgba(150, 0, 15, 0.45);
     }
+
 
     /* =====================================================
        QUIZ
@@ -297,23 +324,27 @@
         margin-bottom: 28px;
     }
 
+
     /* =====================================================
-       REPONSES
+       REPONSE UNIQUE
+       4 BLOCS EN 2 x 2
     ===================================================== */
 
-    .answers {
+    .answers.unique-grid {
         display: grid;
-        gap: 12px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
     }
 
     .answer {
         width: 100%;
+        min-height: 80px;
         border: 1px solid #303030;
         background: #191919;
         color: #eee;
         padding: 17px 18px;
         border-radius: 13px;
-        text-align: left;
+        text-align: center;
         font-size: 16px;
         cursor: pointer;
         transition: 0.15s ease;
@@ -350,16 +381,63 @@
         cursor: default;
     }
 
+
     /* =====================================================
-       TEXTE D'AIDE
+       MULTIPLE
     ===================================================== */
 
-    .double-click-help {
-        margin-top: 12px;
-        color: #777;
-        font-size: 12px;
-        text-align: center;
+    .answers.multiple-grid {
+        display: grid;
+        gap: 12px;
     }
+
+
+    /* =====================================================
+       VRAI / FAUX
+    ===================================================== */
+
+    .true-false {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .true-false button {
+        border: 1px solid #303030;
+        background: #191919;
+        color: white;
+        border-radius: 15px;
+        padding: 28px 20px;
+        min-height: 100px;
+        font-size: 22px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.15s ease;
+    }
+
+    .true-false button:hover:not(:disabled) {
+        background: #222;
+        border-color: #555;
+        transform: translateY(-1px);
+    }
+
+    .true-false button.selected {
+        background: var(--selected);
+        border-color: #626262;
+    }
+
+    .true-false button.correct {
+        background: rgba(53, 184, 107, 0.15);
+        border-color: var(--green);
+        color: #b9ffd4;
+    }
+
+    .true-false button.wrong {
+        background: rgba(217, 39, 53, 0.15);
+        border-color: var(--red);
+        color: #ffb5bb;
+    }
+
 
     /* =====================================================
        REPONSE LIBRE
@@ -391,54 +469,14 @@
         border-radius: 12px;
         background: var(--red);
         color: white;
-        padding: 0 20px;
+        padding: 14px 20px;
         font-weight: 700;
         cursor: pointer;
     }
 
-    /* =====================================================
-       VRAI / FAUX
-    ===================================================== */
-
-    .true-false {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-    }
-
-    .true-false button {
-        border: 1px solid #303030;
-        background: #191919;
-        color: white;
-        border-radius: 15px;
-        padding: 22px;
-        font-size: 19px;
-        cursor: pointer;
-        transition: 0.15s;
-    }
-
-    .true-false button:hover:not(:disabled) {
-        background: #222;
-        border-color: #555;
-    }
-
-    .true-false button.selected {
-        background: var(--selected);
-        border-color: #626262;
-    }
-
-    .true-false button.correct {
-        background: rgba(53, 184, 107, 0.15);
-        border-color: var(--green);
-    }
-
-    .true-false button.wrong {
-        background: rgba(217, 39, 53, 0.15);
-        border-color: var(--red);
-    }
 
     /* =====================================================
-       ORDRE / DRAG & DROP
+       DRAG & DROP
     ===================================================== */
 
     .order-list {
@@ -489,8 +527,21 @@
         flex: 1;
     }
 
+
     /* =====================================================
-       RESULTAT
+       AIDE DOUBLE CLIC
+    ===================================================== */
+
+    .double-click-help {
+        margin-top: 12px;
+        color: #777;
+        font-size: 12px;
+        text-align: center;
+    }
+
+
+    /* =====================================================
+       FEEDBACK
     ===================================================== */
 
     .feedback {
@@ -550,8 +601,9 @@
         background: #303030;
     }
 
+
     /* =====================================================
-       ECRAN FINAL
+       RESULTATS PAR DIFFICULTE
     ===================================================== */
 
     .result {
@@ -566,16 +618,46 @@
         margin-bottom: 15px;
     }
 
-    .result p {
+    .result-subtitle {
         color: #aaa;
         margin-bottom: 30px;
     }
+
+    .score-container {
+        width: min(700px, 100%);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-bottom: 30px;
+    }
+
+    .score-card {
+        background: #151515;
+        border: 1px solid #303030;
+        border-radius: 16px;
+        padding: 22px;
+    }
+
+    .score-card .score-level {
+        color: #aaa;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+
+    .score-card .score-value {
+        font-size: 30px;
+        font-weight: 800;
+    }
+
 
     /* =====================================================
        MOBILE
     ===================================================== */
 
     @media (max-width: 700px) {
+
         .levels {
             grid-template-columns: repeat(2, 1fr);
         }
@@ -588,6 +670,15 @@
             border-radius: 18px;
         }
 
+        .answers.unique-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .answer {
+            min-height: 75px;
+            padding: 14px 10px;
+        }
+
         .free-answer {
             flex-direction: column;
         }
@@ -595,9 +686,14 @@
         .validate-btn {
             padding: 14px;
         }
+
+        .score-container {
+            grid-template-columns: 1fr 1fr;
+        }
     }
 
     @media (max-width: 450px) {
+
         .screen {
             padding: 25px 14px;
         }
@@ -617,11 +713,23 @@
         .true-false {
             grid-template-columns: 1fr;
         }
+
+        .answers.unique-grid {
+            gap: 9px;
+        }
+
+        .answer {
+            min-height: 70px;
+            font-size: 14px;
+        }
     }
+
 </style>
 </head>
 
+
 <body>
+
 
 <!-- =====================================================
      MENU PRINCIPAL
@@ -644,22 +752,22 @@
 
     <div class="levels">
 
-        <div class="level">
+        <div class="level" data-level="EAST BLUE">
             <div class="difficulty">Facile</div>
             <div class="name">East Blue</div>
         </div>
 
-        <div class="level">
+        <div class="level" data-level="GRAND LINE">
             <div class="difficulty">Moyen</div>
             <div class="name">Grand Line</div>
         </div>
 
-        <div class="level">
+        <div class="level" data-level="NOUVEAU MONDE">
             <div class="difficulty">Dur</div>
             <div class="name">Nouveau Monde</div>
         </div>
 
-        <div class="level">
+        <div class="level" data-level="LAUGH TALE">
             <div class="difficulty">Impossible</div>
             <div class="name">Laugh Tale</div>
         </div>
@@ -770,12 +878,14 @@
 
     <h2>Fin de l'aventure</h2>
 
-    <p>
-        Tu as terminé toutes les questions !
+    <p class="result-subtitle">
+        Voici ton résultat par difficulté :
     </p>
 
-    <button class="start-btn" onclick="startQuiz()">
-        Recommencer
+    <div id="scoreContainer" class="score-container"></div>
+
+    <button class="start-btn" onclick="returnHome()">
+        Retour au menu
     </button>
 
 </section>
@@ -783,38 +893,12 @@
 
 <script>
 
+
 /* =========================================================
    MES QUESTIONS
-
-   COPIE/COLLE UN BLOC POUR AJOUTER UNE QUESTION.
-
-   MODES DISPONIBLES :
-
-   "unique"
-   → Une seule bonne réponse.
-   → 1 clic = sélection
-   → 2e clic = validation
-
-   "multiple"
-   → Plusieurs bonnes réponses possibles.
-
-   "libre"
-   → Le joueur écrit sa réponse.
-
-   "vrai_faux"
-   → Vrai ou Faux.
-   → 1 clic = sélection
-   → 2e clic = validation
-
-   "ordre"
-   → Le joueur déplace les éléments avec le drag & drop.
 ========================================================= */
 
 const questions = [
-
-    /* =====================================================
-       EXEMPLE 1 — REPONSE UNIQUE
-    ===================================================== */
 
     {
         niveau: "EAST BLUE",
@@ -823,9 +907,10 @@ const questions = [
 
         categorie: "Équipage",
 
-        question: "Quel est le premier membre à rejoindre l'équipage de Luffy ?",
+        question:
+            "Quel est le premier membre à rejoindre l'équipage de Luffy ?",
 
-        image: "OpeningImages/Blue.jpg",
+        image: "",
 
         reponses: [
             "Nami",
@@ -840,10 +925,6 @@ const questions = [
             "Roronoa Zoro est le premier membre à rejoindre officiellement l'équipage de Luffy."
     },
 
-
-    /* =====================================================
-       EXEMPLE 2 — REPONSES MULTIPLES
-    ===================================================== */
 
     {
         niveau: "GRAND LINE",
@@ -872,13 +953,9 @@ const questions = [
         ],
 
         explication:
-            "Zoro, Nami et Sanji sont membres de l'équipage de Luffy. Trafalgar Law et Shanks ne font pas partie de son équipage."
+            "Zoro, Nami et Sanji sont membres de l'équipage de Luffy."
     },
 
-
-    /* =====================================================
-       EXEMPLE 3 — REPONSE LIBRE
-    ===================================================== */
 
     {
         niveau: "GRAND LINE",
@@ -894,16 +971,13 @@ const questions = [
 
         reponses: [],
 
-        bonneReponse: "Tony Tony Chopper",
+        bonneReponse:
+            "Tony Tony Chopper",
 
         explication:
             "Tony Tony Chopper est le médecin de l'équipage des Mugiwara."
     },
 
-
-    /* =====================================================
-       EXEMPLE 4 — VRAI / FAUX
-    ===================================================== */
 
     {
         niveau: "NOUVEAU MONDE",
@@ -923,10 +997,6 @@ const questions = [
             "Ace et Luffy ne sont pas frères biologiques. Ils sont frères jurés."
     },
 
-
-    /* =====================================================
-       EXEMPLE 5 — ORDRE / DRAG & DROP
-    ===================================================== */
 
     {
         niveau: "LAUGH TALE",
@@ -955,7 +1025,7 @@ const questions = [
         ],
 
         explication:
-            "Ces événements sont ici présentés dans leur ordre chronologique."
+            "Ces événements sont présentés ici dans leur ordre chronologique."
     }
 
 ];
@@ -966,10 +1036,69 @@ const questions = [
 ========================================================= */
 
 let currentQuestion = 0;
+
 let selectedAnswer = null;
+
 let alreadyAnswered = false;
+
 let orderList = [];
+
 let draggedIndex = null;
+
+let selectedStartLevel = null;
+
+
+/*
+   SCORE PAR NIVEAU
+
+   Chaque niveau possède :
+   - bonnes réponses
+   - nombre total de questions répondues
+*/
+
+let scores = {
+    "EAST BLUE": {
+        correct: 0,
+        total: 0
+    },
+
+    "GRAND LINE": {
+        correct: 0,
+        total: 0
+    },
+
+    "NOUVEAU MONDE": {
+        correct: 0,
+        total: 0
+    },
+
+    "LAUGH TALE": {
+        correct: 0,
+        total: 0
+    }
+};
+
+
+/* =========================================================
+   SELECTION DU NIVEAU DANS LE MENU
+========================================================= */
+
+document.querySelectorAll(".level").forEach(level => {
+
+    level.addEventListener("click", () => {
+
+        document.querySelectorAll(".level").forEach(item => {
+            item.classList.remove("selected");
+        });
+
+        level.classList.add("selected");
+
+        selectedStartLevel =
+            level.dataset.level;
+
+    });
+
+});
 
 
 /* =========================================================
@@ -983,22 +1112,61 @@ function showScreen(id) {
     });
 
     document.getElementById(id).classList.add("active");
+
 }
 
 
 /* =========================================================
-   COMMENCER
+   COMMENCER LE QUIZ
 ========================================================= */
 
 function startQuiz() {
 
-    currentQuestion = 0;
+    /*
+        Si aucun niveau n'est sélectionné :
+        EAST BLUE par défaut.
+    */
+
+    const startLevel =
+        selectedStartLevel || "EAST BLUE";
+
+    const startIndex =
+        questions.findIndex(q =>
+            q.niveau === startLevel
+        );
+
+    currentQuestion =
+        startIndex === -1 ? 0 : startIndex;
+
     selectedAnswer = null;
     alreadyAnswered = false;
+
+    scores = {
+        "EAST BLUE": {
+            correct: 0,
+            total: 0
+        },
+
+        "GRAND LINE": {
+            correct: 0,
+            total: 0
+        },
+
+        "NOUVEAU MONDE": {
+            correct: 0,
+            total: 0
+        },
+
+        "LAUGH TALE": {
+            correct: 0,
+            total: 0
+        }
+    };
 
     showScreen("quiz");
 
     loadQuestion();
+
 }
 
 
@@ -1011,19 +1179,25 @@ function loadQuestion() {
     const q = questions[currentQuestion];
 
     alreadyAnswered = false;
+
     selectedAnswer = null;
+
 
     document.getElementById("levelPill").textContent =
         q.niveau;
 
+
     document.getElementById("progressText").textContent =
         `Question ${currentQuestion + 1} / ${questions.length}`;
+
 
     document.getElementById("progressFill").style.width =
         `${((currentQuestion + 1) / questions.length) * 100}%`;
 
+
     document.getElementById("questionCategory").textContent =
         q.categorie;
+
 
     document.getElementById("questionTitle").textContent =
         q.question;
@@ -1031,18 +1205,23 @@ function loadQuestion() {
 
     /* IMAGE */
 
-    const imageContainer = document.getElementById("questionImage");
-    const imageElement = document.getElementById("questionImageElement");
+    const imageContainer =
+        document.getElementById("questionImage");
+
+    const imageElement =
+        document.getElementById("questionImageElement");
+
 
     if (q.image && q.image.trim() !== "") {
 
         imageContainer.style.display = "block";
+
         imageElement.src = q.image;
-        imageElement.alt = "Illustration de la question";
 
     } else {
 
         imageContainer.style.display = "none";
+
         imageElement.src = "";
 
     }
@@ -1052,18 +1231,30 @@ function loadQuestion() {
 
     document.getElementById("answers").innerHTML = "";
 
+    document.getElementById("answers").className =
+        "answers";
+
+
     document.getElementById("feedback").className =
         "feedback";
 
-    document.getElementById("feedback").textContent = "";
+    document.getElementById("feedback").textContent =
+        "";
+
 
     document.getElementById("explanation").className =
         "explanation";
 
-    document.getElementById("explanation").textContent = "";
+    document.getElementById("explanation").innerHTML =
+        "";
+
 
     document.getElementById("nextBtn").style.display =
         "none";
+
+
+    document.getElementById("doubleClickHelp").style.display =
+        "block";
 
 
     /* MODE */
@@ -1097,36 +1288,53 @@ function loadQuestion() {
 
 function createUniqueQuestion(q) {
 
-    const container = document.getElementById("answers");
+    const container =
+        document.getElementById("answers");
+
+    container.classList.add("unique-grid");
+
+
+    document.getElementById("doubleClickHelp").textContent =
+        "Clique une première fois pour sélectionner, puis une deuxième fois pour valider.";
+
 
     q.reponses.forEach((answer, index) => {
 
-        const button = document.createElement("button");
+        const button =
+            document.createElement("button");
 
         button.className = "answer";
+
         button.textContent = answer;
+
 
         button.addEventListener("click", () => {
 
             if (alreadyAnswered) return;
 
+
             /*
                 PREMIER CLIC :
-                sélection uniquement
+                sélection
             */
 
             if (selectedAnswer !== index) {
 
                 selectedAnswer = index;
 
-                document.querySelectorAll(".answer").forEach(btn => {
-                    btn.classList.remove("selected");
-                });
+
+                document.querySelectorAll(".answer")
+                    .forEach(btn => {
+                        btn.classList.remove("selected");
+                    });
+
 
                 button.classList.add("selected");
 
                 return;
+
             }
+
 
             /*
                 DEUXIEME CLIC :
@@ -1137,6 +1345,7 @@ function createUniqueQuestion(q) {
 
         });
 
+
         container.appendChild(button);
 
     });
@@ -1145,7 +1354,7 @@ function createUniqueQuestion(q) {
 
 
 /* =========================================================
-   VERIFICATION REPONSE UNIQUE
+   VERIFICATION UNIQUE
 ========================================================= */
 
 function checkUnique(index) {
@@ -1156,23 +1365,35 @@ function checkUnique(index) {
 
     const q = questions[currentQuestion];
 
-    const buttons = document.querySelectorAll(".answer");
+    const buttons =
+        document.querySelectorAll("#answers .answer");
+
 
     buttons.forEach((button, i) => {
 
         button.disabled = true;
 
+
         if (i === q.bonneReponse) {
             button.classList.add("correct");
         }
 
-        if (i === index && i !== q.bonneReponse) {
+
+        if (
+            i === index &&
+            i !== q.bonneReponse
+        ) {
             button.classList.add("wrong");
         }
 
     });
 
-    const correct = index === q.bonneReponse;
+
+    const correct =
+        index === q.bonneReponse;
+
+
+    registerScore(correct);
 
     showResult(correct);
 
@@ -1185,17 +1406,23 @@ function checkUnique(index) {
 
 function createMultipleQuestion(q) {
 
-    const container = document.getElementById("answers");
+    const container =
+        document.getElementById("answers");
+
 
     document.getElementById("doubleClickHelp").textContent =
         "Sélectionne toutes les réponses que tu veux, puis valide.";
 
+
     q.reponses.forEach((answer, index) => {
 
-        const button = document.createElement("button");
+        const button =
+            document.createElement("button");
 
         button.className = "answer";
+
         button.textContent = answer;
+
 
         button.addEventListener("click", () => {
 
@@ -1205,20 +1432,28 @@ function createMultipleQuestion(q) {
 
         });
 
+
         container.appendChild(button);
 
     });
 
 
-    const validate = document.createElement("button");
+    const validate =
+        document.createElement("button");
 
     validate.className = "validate-btn";
-    validate.textContent = "Valider les réponses";
+
+    validate.textContent =
+        "Valider les réponses";
 
     validate.style.marginTop = "15px";
-    validate.style.padding = "14px 20px";
 
-    validate.addEventListener("click", checkMultiple);
+
+    validate.addEventListener(
+        "click",
+        checkMultiple
+    );
+
 
     container.appendChild(validate);
 
@@ -1237,10 +1472,13 @@ function checkMultiple() {
 
     const q = questions[currentQuestion];
 
+
     const buttons =
         document.querySelectorAll("#answers .answer");
 
+
     const selected = [];
+
 
     buttons.forEach((button, index) => {
 
@@ -1266,12 +1504,16 @@ function checkMultiple() {
             button.classList.add("correct");
         }
 
-        else if (button.classList.contains("selected")) {
+        else if (
+            button.classList.contains("selected")
+        ) {
             button.classList.add("wrong");
         }
 
     });
 
+
+    registerScore(correct);
 
     showResult(correct);
 
@@ -1284,35 +1526,60 @@ function checkMultiple() {
 
 function createFreeQuestion(q) {
 
-    document.getElementById("doubleClickHelp").textContent = "";
+    document.getElementById("doubleClickHelp").textContent =
+        "";
 
-    const container = document.getElementById("answers");
 
-    const wrapper = document.createElement("div");
+    const container =
+        document.getElementById("answers");
 
-    wrapper.className = "free-answer";
 
-    const input = document.createElement("input");
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "free-answer";
+
+
+    const input =
+        document.createElement("input");
 
     input.type = "text";
-    input.placeholder = "Écris ta réponse...";
 
-    const button = document.createElement("button");
+    input.placeholder =
+        "Écris ta réponse...";
 
-    button.className = "validate-btn";
-    button.textContent = "Valider";
 
-    button.addEventListener("click", checkFreeAnswer);
+    const button =
+        document.createElement("button");
 
-    input.addEventListener("keydown", event => {
+    button.className =
+        "validate-btn";
 
-        if (event.key === "Enter") {
-            checkFreeAnswer();
+    button.textContent =
+        "Valider";
+
+
+    button.addEventListener(
+        "click",
+        checkFreeAnswer
+    );
+
+
+    input.addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Enter") {
+                checkFreeAnswer();
+            }
+
         }
+    );
 
-    });
 
     wrapper.appendChild(input);
+
     wrapper.appendChild(button);
 
     container.appendChild(wrapper);
@@ -1321,29 +1588,44 @@ function createFreeQuestion(q) {
 
 
 /* =========================================================
-   VERIFICATION REPONSE LIBRE
+   VERIFICATION LIBRE
 ========================================================= */
 
 function checkFreeAnswer() {
 
     if (alreadyAnswered) return;
 
+
     const q = questions[currentQuestion];
+
 
     const input =
         document.querySelector(".free-answer input");
 
-    const userAnswer = normalize(input.value);
 
-    const correctAnswer = normalize(q.bonneReponse);
+    const userAnswer =
+        normalize(input.value);
 
-    const correct = userAnswer === correctAnswer;
+
+    const correctAnswer =
+        normalize(q.bonneReponse);
+
+
+    const correct =
+        userAnswer === correctAnswer;
+
 
     alreadyAnswered = true;
 
+
     input.disabled = true;
 
-    document.querySelector(".validate-btn").disabled = true;
+
+    document.querySelector(".free-answer .validate-btn")
+        .disabled = true;
+
+
+    registerScore(correct);
 
     showResult(correct);
 
@@ -1356,36 +1638,58 @@ function checkFreeAnswer() {
 
 function createTrueFalseQuestion(q) {
 
-    const container = document.getElementById("answers");
-
     document.getElementById("doubleClickHelp").textContent =
         "Clique une première fois pour sélectionner, puis une deuxième fois pour valider.";
 
-    const trueButton = document.createElement("button");
 
-    trueButton.textContent = "Vrai";
-
-    const falseButton = document.createElement("button");
-
-    falseButton.textContent = "Faux";
+    const container =
+        document.getElementById("answers");
 
 
-    trueButton.addEventListener("click", () => {
+    const wrapper =
+        document.createElement("div");
 
-        handleTrueFalseSelection(true, trueButton);
-
-    });
-
-
-    falseButton.addEventListener("click", () => {
-
-        handleTrueFalseSelection(false, falseButton);
-
-    });
+    wrapper.className =
+        "true-false";
 
 
-    container.appendChild(trueButton);
-    container.appendChild(falseButton);
+    const trueButton =
+        document.createElement("button");
+
+    trueButton.textContent =
+        "Vrai";
+
+
+    const falseButton =
+        document.createElement("button");
+
+    falseButton.textContent =
+        "Faux";
+
+
+    trueButton.addEventListener(
+        "click",
+        () => handleTrueFalseSelection(
+            true,
+            trueButton
+        )
+    );
+
+
+    falseButton.addEventListener(
+        "click",
+        () => handleTrueFalseSelection(
+            false,
+            falseButton
+        )
+    );
+
+
+    wrapper.appendChild(trueButton);
+
+    wrapper.appendChild(falseButton);
+
+    container.appendChild(wrapper);
 
 }
 
@@ -1394,41 +1698,41 @@ function createTrueFalseQuestion(q) {
    SELECTION VRAI / FAUX
 ========================================================= */
 
-function handleTrueFalseSelection(value, button) {
+function handleTrueFalseSelection(
+    value,
+    button
+) {
 
     if (alreadyAnswered) return;
 
 
     /*
-        PREMIER CLIC :
-        sélection
+        PREMIER CLIC
     */
 
     if (selectedAnswer !== value) {
 
         selectedAnswer = value;
 
-        document.querySelectorAll(".true-false button")
-            .forEach(btn => btn.classList.remove("selected"));
 
-        /*
-            Les boutons ne sont pas encore dans
-            .true-false : on utilise directement
-            le container.
-        */
+        document.querySelectorAll(
+            ".true-false button"
+        ).forEach(btn => {
 
-        document.querySelectorAll("#answers > button")
-            .forEach(btn => btn.classList.remove("selected"));
+            btn.classList.remove("selected");
+
+        });
+
 
         button.classList.add("selected");
 
         return;
+
     }
 
 
     /*
-        DEUXIEME CLIC :
-        validation
+        DEUXIEME CLIC
     */
 
     checkTrueFalse(value);
@@ -1444,37 +1748,53 @@ function checkTrueFalse(value) {
 
     if (alreadyAnswered) return;
 
+
     alreadyAnswered = true;
 
-    const q = questions[currentQuestion];
+
+    const q =
+        questions[currentQuestion];
+
 
     const buttons =
-        document.querySelectorAll("#answers > button");
+        document.querySelectorAll(
+            ".true-false button"
+        );
+
 
     buttons.forEach(button => {
-
         button.disabled = true;
-
     });
 
 
-    const correct = value === q.bonneReponse;
+    const correct =
+        value === q.bonneReponse;
+
 
     buttons.forEach(button => {
 
         const buttonValue =
             button.textContent === "Vrai";
 
-        if (buttonValue === q.bonneReponse) {
+
+        if (
+            buttonValue === q.bonneReponse
+        ) {
             button.classList.add("correct");
         }
 
-        if (buttonValue === value && !correct) {
+
+        if (
+            buttonValue === value &&
+            !correct
+        ) {
             button.classList.add("wrong");
         }
 
     });
 
+
+    registerScore(correct);
 
     showResult(correct);
 
@@ -1482,7 +1802,7 @@ function checkTrueFalse(value) {
 
 
 /* =========================================================
-   ORDRE — DRAG & DROP
+   ORDRE / DRAG & DROP
 ========================================================= */
 
 function createOrderQuestion(q) {
@@ -1490,7 +1810,10 @@ function createOrderQuestion(q) {
     document.getElementById("doubleClickHelp").textContent =
         "Fais glisser les éléments pour les remettre dans le bon ordre.";
 
-    orderList = [...q.reponses];
+
+    orderList =
+        [...q.reponses];
+
 
     renderOrderList();
 
@@ -1498,109 +1821,170 @@ function createOrderQuestion(q) {
 
 
 /* =========================================================
-   AFFICHER LA LISTE
+   AFFICHAGE ORDRE
 ========================================================= */
 
 function renderOrderList() {
 
-    const container = document.getElementById("answers");
+    const container =
+        document.getElementById("answers");
+
 
     container.innerHTML = "";
 
-    const list = document.createElement("div");
 
-    list.className = "order-list";
+    const list =
+        document.createElement("div");
+
+    list.className =
+        "order-list";
+
 
     orderList.forEach((item, index) => {
 
-        const element = document.createElement("div");
-
-        element.className = "order-item";
-
-        element.draggable = true;
-
-        element.dataset.index = index;
+        const element =
+            document.createElement("div");
 
 
-        const handle = document.createElement("div");
-
-        handle.className = "order-handle";
-
-        handle.textContent = "⋮⋮";
+        element.className =
+            "order-item";
 
 
-        const number = document.createElement("div");
-
-        number.className = "order-number";
-
-        number.textContent = index + 1;
+        element.draggable =
+            true;
 
 
-        const text = document.createElement("div");
+        element.dataset.index =
+            index;
 
-        text.className = "order-text";
 
-        text.textContent = item;
+        const handle =
+            document.createElement("div");
+
+        handle.className =
+            "order-handle";
+
+        handle.textContent =
+            "⋮⋮";
+
+
+        const number =
+            document.createElement("div");
+
+        number.className =
+            "order-number";
+
+        number.textContent =
+            index + 1;
+
+
+        const text =
+            document.createElement("div");
+
+        text.className =
+            "order-text";
+
+        text.textContent =
+            item;
 
 
         element.appendChild(handle);
+
         element.appendChild(number);
+
         element.appendChild(text);
 
 
         /* DRAG START */
 
-        element.addEventListener("dragstart", () => {
+        element.addEventListener(
+            "dragstart",
+            () => {
 
-            draggedIndex = index;
+                draggedIndex =
+                    index;
 
-            element.classList.add("dragging");
+                element.classList.add(
+                    "dragging"
+                );
 
-        });
+            }
+        );
 
 
         /* DRAG END */
 
-        element.addEventListener("dragend", () => {
+        element.addEventListener(
+            "dragend",
+            () => {
 
-            element.classList.remove("dragging");
+                element.classList.remove(
+                    "dragging"
+                );
 
-        });
+            }
+        );
 
 
         /* DRAG OVER */
 
-        element.addEventListener("dragover", event => {
+        element.addEventListener(
+            "dragover",
+            event => {
 
-            event.preventDefault();
+                event.preventDefault();
 
-        });
+            }
+        );
 
 
         /* DROP */
 
-        element.addEventListener("drop", event => {
+        element.addEventListener(
+            "drop",
+            event => {
 
-            event.preventDefault();
-
-            const targetIndex =
-                Number(element.dataset.index);
-
-            if (draggedIndex === null) return;
-
-            if (draggedIndex === targetIndex) return;
+                event.preventDefault();
 
 
-            const draggedItem =
-                orderList.splice(draggedIndex, 1)[0];
+                const targetIndex =
+                    Number(
+                        element.dataset.index
+                    );
 
-            orderList.splice(targetIndex, 0, draggedItem);
 
-            draggedIndex = null;
+                if (
+                    draggedIndex === null
+                ) return;
 
-            renderOrderList();
 
-        });
+                if (
+                    draggedIndex === targetIndex
+                ) return;
+
+
+                const draggedItem =
+                    orderList.splice(
+                        draggedIndex,
+                        1
+                    )[0];
+
+
+                orderList.splice(
+                    targetIndex,
+                    0,
+                    draggedItem
+                );
+
+
+                draggedIndex =
+                    null;
+
+
+                renderOrderList();
+
+            }
+        );
 
 
         list.appendChild(element);
@@ -1611,17 +1995,27 @@ function renderOrderList() {
     container.appendChild(list);
 
 
-    const validate = document.createElement("button");
+    const validate =
+        document.createElement("button");
 
-    validate.className = "validate-btn";
+
+    validate.className =
+        "validate-btn";
+
 
     validate.textContent =
         "Valider l'ordre";
 
-    validate.style.marginTop = "15px";
-    validate.style.padding = "14px 20px";
 
-    validate.addEventListener("click", checkOrder);
+    validate.style.marginTop =
+        "15px";
+
+
+    validate.addEventListener(
+        "click",
+        checkOrder
+    );
+
 
     container.appendChild(validate);
 
@@ -1636,17 +2030,33 @@ function checkOrder() {
 
     if (alreadyAnswered) return;
 
+
     alreadyAnswered = true;
 
-    const q = questions[currentQuestion];
+
+    const q =
+        questions[currentQuestion];
+
 
     const correct =
-        orderList.every((item, index) =>
-            item === q.ordreCorrect[index]
+        orderList.every(
+            (item, index) =>
+                item === q.ordreCorrect[index]
         );
 
 
-    document.querySelector(".validate-btn").disabled = true;
+    const button =
+        document.querySelector(
+            "#answers .validate-btn"
+        );
+
+
+    if (button) {
+        button.disabled = true;
+    }
+
+
+    registerScore(correct);
 
     showResult(correct);
 
@@ -1654,38 +2064,82 @@ function checkOrder() {
 
 
 /* =========================================================
-   AFFICHER RESULTAT + EXPLICATION
+   ENREGISTRER LE SCORE
+========================================================= */
+
+function registerScore(correct) {
+
+    const level =
+        questions[currentQuestion].niveau;
+
+
+    if (!scores[level]) {
+
+        scores[level] = {
+            correct: 0,
+            total: 0
+        };
+
+    }
+
+
+    scores[level].total++;
+
+
+    if (correct) {
+        scores[level].correct++;
+    }
+
+}
+
+
+/* =========================================================
+   RESULTAT QUESTION
 ========================================================= */
 
 function showResult(correct) {
 
-    const q = questions[currentQuestion];
+    const q =
+        questions[currentQuestion];
+
 
     const feedback =
         document.getElementById("feedback");
 
+
     const explanation =
         document.getElementById("explanation");
 
+
     if (correct) {
 
-        feedback.className = "feedback correct";
-        feedback.textContent = "Bonne réponse !";
+        feedback.className =
+            "feedback correct";
 
-    } else {
+        feedback.textContent =
+            "Bonne réponse !";
 
-        feedback.className = "feedback wrong";
-        feedback.textContent = "Mauvaise réponse.";
+    }
+
+    else {
+
+        feedback.className =
+            "feedback wrong";
+
+        feedback.textContent =
+            "Mauvaise réponse.";
 
     }
 
 
     /*
-        L'EXPLICATION EST TOUJOURS AFFICHÉE,
-        que la réponse soit bonne ou mauvaise.
+        EXPLICATION TOUJOURS VISIBLE
     */
 
-    if (q.explication && q.explication.trim() !== "") {
+    if (
+        q.explication &&
+        q.explication.trim() !== ""
+    ) {
 
         explanation.textContent =
             q.explication;
@@ -1697,19 +2151,21 @@ function showResult(correct) {
 
 
     /*
-        Pour les mauvaises réponses,
-        on peut afficher la bonne réponse
-        pour les modes concernés.
+        AFFICHER LA BONNE REPONSE
+        SI LA REPONSE EST FAUSSE
     */
 
     if (!correct) {
 
         let correctText = "";
 
+
         if (q.mode === "unique") {
 
             correctText =
-                `Bonne réponse : ${q.reponses[q.bonneReponse]}`;
+                `Bonne réponse : ${
+                    q.reponses[q.bonneReponse]
+                }`;
 
         }
 
@@ -1718,7 +2174,9 @@ function showResult(correct) {
             correctText =
                 "Bonnes réponses : " +
                 q.bonnesReponses
-                    .map(index => q.reponses[index])
+                    .map(index =>
+                        q.reponses[index]
+                    )
                     .join(", ");
 
         }
@@ -1726,21 +2184,29 @@ function showResult(correct) {
         else if (q.mode === "libre") {
 
             correctText =
-                `Bonne réponse : ${q.bonneReponse}`;
+                `Bonne réponse : ${
+                    q.bonneReponse
+                }`;
 
         }
 
         else if (q.mode === "vrai_faux") {
 
             correctText =
-                `Bonne réponse : ${q.bonneReponse ? "Vrai" : "Faux"}`;
+                `Bonne réponse : ${
+                    q.bonneReponse
+                        ? "Vrai"
+                        : "Faux"
+                }`;
 
         }
 
         else if (q.mode === "ordre") {
 
             correctText =
-                `Ordre correct : ${q.ordreCorrect.join(" → ")}`;
+                `Ordre correct : ${
+                    q.ordreCorrect.join(" → ")
+                }`;
 
         }
 
@@ -1750,30 +2216,46 @@ function showResult(correct) {
             const correctInfo =
                 document.createElement("div");
 
-            correctInfo.style.marginTop = "10px";
-            correctInfo.style.color = "#aaa";
-            correctInfo.style.fontSize = "14px";
 
-            correctInfo.textContent = correctText;
+            correctInfo.style.marginTop =
+                "10px";
 
-            explanation.appendChild(correctInfo);
+
+            correctInfo.style.color =
+                "#aaa";
+
+
+            correctInfo.style.fontSize =
+                "14px";
+
+
+            correctInfo.textContent =
+                correctText;
+
+
+            explanation.appendChild(
+                correctInfo
+            );
 
         }
 
     }
 
 
-    document.getElementById("doubleClickHelp").style.display =
-        "none";
+    document.getElementById(
+        "doubleClickHelp"
+    ).style.display = "none";
 
-    document.getElementById("nextBtn").style.display =
-        "block";
+
+    document.getElementById(
+        "nextBtn"
+    ).style.display = "block";
 
 }
 
 
 /* =========================================================
-   NORMALISATION REPONSE LIBRE
+   NORMALISATION
 ========================================================= */
 
 function normalize(text) {
@@ -1781,10 +2263,22 @@ function normalize(text) {
     return text
         .toLowerCase()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[’']/g, "")
-        .replace(/[^\w\s]/g, "")
-        .replace(/\s+/g, " ")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .replace(
+            /[’']/g,
+            ""
+        )
+        .replace(
+            /[^\w\s]/g,
+            ""
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
         .trim();
 
 }
@@ -1798,15 +2292,110 @@ function nextQuestion() {
 
     currentQuestion++;
 
-    if (currentQuestion >= questions.length) {
 
-        showScreen("result");
+    if (
+        currentQuestion >=
+        questions.length
+    ) {
+
+        showFinalResults();
 
         return;
 
     }
 
+
     loadQuestion();
+
+}
+
+
+/* =========================================================
+   RESULTATS FINAUX
+========================================================= */
+
+function showFinalResults() {
+
+    const container =
+        document.getElementById(
+            "scoreContainer"
+        );
+
+
+    container.innerHTML = "";
+
+
+    const levels = [
+        {
+            name: "EAST BLUE",
+            label: "Facile"
+        },
+
+        {
+            name: "GRAND LINE",
+            label: "Moyen"
+        },
+
+        {
+            name: "NOUVEAU MONDE",
+            label: "Dur"
+        },
+
+        {
+            name: "LAUGH TALE",
+            label: "Impossible"
+        }
+    ];
+
+
+    levels.forEach(level => {
+
+        const score =
+            scores[level.name];
+
+
+        const card =
+            document.createElement("div");
+
+
+        card.className =
+            "score-card";
+
+
+        const levelName =
+            document.createElement("div");
+
+
+        levelName.className =
+            "score-level";
+
+
+        levelName.textContent =
+            `${level.label} — ${level.name}`;
+
+
+        const value =
+            document.createElement("div");
+
+
+        value.className =
+            "score-value";
+
+
+        value.textContent =
+            `${score.correct} / ${score.total}`;
+
+
+        card.appendChild(levelName);
+
+        card.appendChild(value);
+
+        container.appendChild(card);
+
+    });
+
+
+    showScreen("result");
 
 }
 
@@ -1824,10 +2413,6 @@ function toggleSkipMenu() {
 }
 
 
-/* =========================================================
-   FERMER MENU
-========================================================= */
-
 function closeSkipMenu() {
 
     document
@@ -1838,17 +2423,23 @@ function closeSkipMenu() {
 
 
 /* =========================================================
-   ALLER A UNE DIFFICULTE
+   ALLER A UN NIVEAU
 ========================================================= */
 
 function goToLevel(level) {
 
     const index =
-        questions.findIndex(q => q.niveau === level);
+        questions.findIndex(
+            q => q.niveau === level
+        );
+
 
     if (index === -1) return;
 
-    currentQuestion = index;
+
+    currentQuestion =
+        index;
+
 
     closeSkipMenu();
 
@@ -1858,21 +2449,50 @@ function goToLevel(level) {
 
 
 /* =========================================================
-   CLIQUER AILLEURS = FERMER LE MENU
+   RETOUR MENU
 ========================================================= */
 
-document.addEventListener("click", event => {
+function returnHome() {
 
-    const skipContainer =
-        document.querySelector(".skip-container");
+    selectedStartLevel = null;
 
-    if (!skipContainer.contains(event.target)) {
+    document.querySelectorAll(".level")
+        .forEach(level => {
+            level.classList.remove("selected");
+        });
 
-        closeSkipMenu();
+
+    showScreen("home");
+
+}
+
+
+/* =========================================================
+   FERMER LE MENU PASSER
+========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const skipContainer =
+            document.querySelector(
+                ".skip-container"
+            );
+
+
+        if (
+            !skipContainer.contains(
+                event.target
+            )
+        ) {
+
+            closeSkipMenu();
+
+        }
 
     }
-
-});
+);
 
 </script>
 
