@@ -1,40 +1,57 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>One Piece Quiz</title>
+<title>Questions pour un Pirate</title>
 
 <style>
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* =========================================================
+   VARIABLES
+========================================================= */
 
 :root {
-    --bg: #080b12;
-    --panel: rgba(255,255,255,0.055);
-    --panel-hover: rgba(255,255,255,0.09);
-    --border: rgba(255,255,255,0.10);
 
-    --text: #f5f7ff;
-    --muted: #9ba3b7;
+    --bg: #050608;
+    --bg-2: #0b0d11;
 
-    --blue: #4da3ff;
-    --blue-light: #73c7ff;
+    --panel: rgba(255,255,255,0.045);
+    --panel-hover: rgba(255,255,255,0.075);
 
-    --green: #35d07f;
-    --red: #ff5c6c;
+    --border: rgba(255,255,255,0.09);
+
+    --text: #f5f5f7;
+    --muted: #9297a3;
+
+    --red: #e32935;
+    --red-light: #ff4a55;
+    --red-dark: #8f111a;
+
+    --green: #32d583;
+    --wrong: #ff5263;
+
 }
 
-/* =========================
-   BASE
-========================= */
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+
+    box-sizing: border-box;
+
+    margin: 0;
+    padding: 0;
+
+}
 
 body {
+
     min-height: 100vh;
 
     font-family:
@@ -48,295 +65,532 @@ body {
     color: var(--text);
 
     background:
+
         radial-gradient(
-            circle at 15% 15%,
-            rgba(77,163,255,0.15),
+            circle at 10% 10%,
+            rgba(227,41,53,0.16),
             transparent 30%
         ),
 
         radial-gradient(
-            circle at 85% 85%,
-            rgba(91,65,170,0.13),
+            circle at 90% 90%,
+            rgba(143,17,26,0.12),
             transparent 30%
         ),
 
         linear-gradient(
-            135deg,
-            #080b12,
-            #0b0f19
+            145deg,
+            #040506,
+            #0a0b0f
         );
 
     overflow-x: hidden;
+
 }
 
 button {
+
     font: inherit;
+
 }
 
+
+/* =========================================================
+   APP
+========================================================= */
+
 .app {
+
     width: min(1100px, 92%);
+
     min-height: 100vh;
 
     margin: auto;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
-    padding: 50px 0;
+    padding: 45px 0;
+
 }
 
-/* =========================
+
+/* =========================================================
    SCREENS
-========================= */
+========================================================= */
 
 .screen {
+
     width: 100%;
+
     display: none;
 
     animation: appear .35s ease;
+
 }
 
 .screen.active {
+
     display: block;
+
 }
 
 @keyframes appear {
 
     from {
+
         opacity: 0;
-        transform: translateY(12px);
+
+        transform:
+            translateY(12px);
+
     }
 
     to {
+
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
+
     }
 
 }
 
-/* =========================
+
+/* =========================================================
    HOME
-========================= */
+========================================================= */
 
 .home {
+
     text-align: center;
+
 }
 
+
+/* Logo */
+
 .logo {
-    width: 105px;
-    height: 105px;
 
-    margin: 0 auto 28px;
+    width: 92px;
+    height: 92px;
 
-    border-radius: 30px;
+    margin: 0 auto 25px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    font-size: 52px;
+    border-radius: 26px;
+
+    font-size: 46px;
 
     background:
+
         linear-gradient(
             145deg,
-            #17263a,
-            #101722
+            #210b0e,
+            #100608
         );
 
-    border: 1px solid rgba(255,255,255,0.12);
+    border:
+        1px solid rgba(227,41,53,0.35);
 
     box-shadow:
-        0 25px 70px rgba(0,0,0,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.06);
 
-    transform: rotate(-4deg);
+        0 20px 70px
+        rgba(0,0,0,.45),
+
+        0 0 50px
+        rgba(227,41,53,.10);
+
+    transform:
+        rotate(-4deg);
+
 }
 
-.home h1 {
-    font-size: clamp(45px, 8vw, 82px);
 
-    line-height: .95;
+/* Title */
+
+.home h1 {
+
+    font-size:
+        clamp(44px, 7vw, 78px);
+
+    line-height: .92;
 
     font-weight: 950;
 
     letter-spacing: -4px;
 
-    margin-bottom: 18px;
+    margin-bottom: 17px;
+
 }
 
 .home h1 span {
-    background:
-        linear-gradient(
-            90deg,
-            #ffffff,
-            #80c8ff
-        );
 
-    -webkit-background-clip: text;
-    background-clip: text;
+    color: var(--red);
 
-    color: transparent;
 }
 
+
+/* Subtitle */
+
 .home p {
+
     color: var(--muted);
 
     font-size: 17px;
 
-    margin-bottom: 38px;
+    margin-bottom: 35px;
+
 }
 
+
+/* Start */
+
 .start-btn {
-    border: 1px solid rgba(255,255,255,0.12);
+
+    border: 1px solid
+        rgba(255,255,255,.08);
 
     color: white;
 
     background:
+
         linear-gradient(
             135deg,
-            #237bc9,
-            #4da3ff
+            #9f1720,
+            #e32935
         );
 
-    padding: 17px 42px;
+    padding:
+        17px 42px;
 
-    border-radius: 15px;
+    border-radius: 14px;
 
     font-size: 17px;
 
-    font-weight: 800;
+    font-weight: 850;
 
     cursor: pointer;
 
     box-shadow:
-        0 15px 40px rgba(40,130,220,0.20);
+        0 15px 40px
+        rgba(227,41,53,.18);
 
     transition: .2s;
+
 }
 
 .start-btn:hover {
-    transform: translateY(-3px);
+
+    transform:
+        translateY(-3px);
 
     box-shadow:
-        0 20px 50px rgba(40,130,220,0.32);
+        0 20px 50px
+        rgba(227,41,53,.30);
+
 }
 
-.info {
-    margin-top: 30px;
 
-    display: flex;
+/* =========================================================
+   LEVELS
+========================================================= */
 
-    justify-content: center;
+.levels {
+
+    max-width: 850px;
+
+    margin: 55px auto 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
 
     gap: 10px;
 
-    flex-wrap: wrap;
 }
 
-.pill {
-    padding: 8px 14px;
 
-    border-radius: 100px;
+.level {
+
+    position: relative;
+
+    padding:
+        15px 10px;
+
+    border-radius: 13px;
 
     background:
-        rgba(255,255,255,0.045);
+        rgba(255,255,255,.035);
 
     border:
-        1px solid rgba(255,255,255,0.07);
+        1px solid
+        rgba(255,255,255,.07);
 
-    color: var(--muted);
+    text-align: center;
 
-    font-size: 13px;
+    overflow: hidden;
+
 }
 
-/* =========================
-   QUIZ HEADER
-========================= */
 
-.quiz-header {
+.level-number {
+
+    font-size: 11px;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing: 1.5px;
+
+    color:
+        var(--muted);
+
+    margin-bottom: 6px;
+
+}
+
+
+.level-name {
+
+    font-size: 14px;
+
+    font-weight: 850;
+
+}
+
+
+.level:first-child {
+
+    border-color:
+        rgba(255,255,255,.13);
+
+}
+
+
+.level:last-child {
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(227,41,53,.10),
+            rgba(255,255,255,.025)
+        );
+
+}
+
+
+/* =========================================================
+   QUIZ HEADER
+========================================================= */
+
+.quiz-top {
+
     display: flex;
 
     align-items: center;
 
-    justify-content: space-between;
+    justify-content:
+        space-between;
 
-    margin-bottom: 22px;
+    margin-bottom: 16px;
+
+    gap: 15px;
+
 }
 
-.progress-wrapper {
-    flex: 1;
-}
 
-.progress-text {
-    color: var(--muted);
+/* Level badge */
 
-    font-size: 13px;
+.current-level {
 
-    margin-bottom: 8px;
-}
+    display: flex;
 
-.progress {
-    width: 100%;
+    align-items: center;
 
-    height: 6px;
+    gap: 9px;
+
+    padding:
+        8px 13px;
+
+    border-radius: 10px;
 
     background:
-        rgba(255,255,255,0.07);
+        rgba(227,41,53,.10);
+
+    border:
+        1px solid
+        rgba(227,41,53,.22);
+
+}
+
+
+.level-dot {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background:
+        var(--red);
+
+    box-shadow:
+        0 0 12px
+        var(--red);
+
+}
+
+
+.current-level span {
+
+    font-size: 12px;
+
+    font-weight: 850;
+
+    letter-spacing: .5px;
+
+}
+
+
+/* Skip button */
+
+.skip-btn {
+
+    border:
+        1px solid
+        rgba(255,255,255,.07);
+
+    background:
+        rgba(255,255,255,.025);
+
+    color:
+        #777d89;
+
+    padding:
+        7px 11px;
+
+    border-radius: 9px;
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+}
+
+
+.skip-btn:hover {
+
+    color: white;
+
+    background:
+        rgba(255,255,255,.07);
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress-info {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    color:
+        var(--muted);
+
+    font-size: 12px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.progress {
+
+    width: 100%;
+
+    height: 5px;
+
+    background:
+        rgba(255,255,255,.06);
 
     border-radius: 20px;
 
     overflow: hidden;
+
+    margin-bottom: 22px;
+
 }
 
+
 .progress-bar {
+
     height: 100%;
 
     background:
         linear-gradient(
             90deg,
-            var(--blue),
-            var(--blue-light)
+            var(--red-dark),
+            var(--red-light)
         );
 
-    border-radius: inherit;
+    transition:
+        width .35s ease;
 
-    transition: width .35s ease;
 }
 
-/* =========================
+
+/* =========================================================
    QUESTION CARD
-========================= */
+========================================================= */
 
 .question-card {
 
     background:
         linear-gradient(
             145deg,
-            rgba(255,255,255,0.065),
-            rgba(255,255,255,0.035)
+            rgba(255,255,255,.055),
+            rgba(255,255,255,.025)
         );
 
     border:
-        1px solid var(--border);
+        1px solid
+        var(--border);
 
-    border-radius: 28px;
+    border-radius: 25px;
 
     overflow: hidden;
 
-    backdrop-filter: blur(20px);
-
     box-shadow:
-        0 30px 90px rgba(0,0,0,.30);
+        0 30px 90px
+        rgba(0,0,0,.38);
+
 }
 
-/* =========================
-   QUESTION VISUAL
-========================= */
+
+/* =========================================================
+   VISUAL
+========================================================= */
 
 .question-visual {
 
-    height: 190px;
+    height: 175px;
 
     position: relative;
 
@@ -349,15 +603,19 @@ button {
     overflow: hidden;
 
     border-bottom:
-        1px solid rgba(255,255,255,.08);
+        1px solid
+        rgba(255,255,255,.06);
 
     background:
+
         radial-gradient(
-            circle at center,
-            rgba(77,163,255,.18),
+            circle,
+            rgba(227,41,53,.13),
             transparent 55%
         );
+
 }
+
 
 .question-visual::before {
 
@@ -365,16 +623,20 @@ button {
 
     position: absolute;
 
-    width: 300px;
-    height: 300px;
+    width: 270px;
+    height: 270px;
 
     border-radius: 50%;
 
     border:
-        1px solid rgba(255,255,255,.06);
+        1px solid
+        rgba(227,41,53,.10);
 
-    animation: rotate 30s linear infinite;
+    animation:
+        spin 25s linear infinite;
+
 }
+
 
 .question-visual::after {
 
@@ -382,40 +644,40 @@ button {
 
     position: absolute;
 
-    width: 210px;
-    height: 210px;
+    width: 190px;
+    height: 190px;
 
     border-radius: 50%;
 
     border:
-        1px dashed rgba(255,255,255,.07);
+        1px dashed
+        rgba(255,255,255,.06);
 
-    animation: rotateReverse 20s linear infinite;
+    animation:
+        spinReverse 18s linear infinite;
+
 }
 
-@keyframes rotate {
 
-    from {
-        transform: rotate(0deg);
-    }
+@keyframes spin {
 
     to {
-        transform: rotate(360deg);
+        transform:
+            rotate(360deg);
     }
 
 }
 
-@keyframes rotateReverse {
 
-    from {
-        transform: rotate(360deg);
-    }
+@keyframes spinReverse {
 
     to {
-        transform: rotate(0deg);
+        transform:
+            rotate(-360deg);
     }
 
 }
+
 
 .visual-icon {
 
@@ -423,70 +685,74 @@ button {
 
     z-index: 2;
 
-    font-size: 78px;
+    font-size: 70px;
 
     filter:
         drop-shadow(
-            0 15px 25px rgba(0,0,0,.35)
+            0 12px 25px
+            rgba(0,0,0,.5)
         );
 
-    animation: float 3s ease-in-out infinite;
 }
 
-@keyframes float {
 
-    0%,100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-7px);
-    }
-
-}
-
-/* =========================
-   QUESTION CONTENT
-========================= */
+/* =========================================================
+   CONTENT
+========================================================= */
 
 .question-content {
 
     padding:
-        34px 40px 38px;
+        32px 38px 35px;
+
 }
+
 
 .category {
 
-    color: var(--blue-light);
+    color:
+        var(--red-light);
 
-    font-size: 12px;
+    font-size: 11px;
 
-    text-transform: uppercase;
+    text-transform:
+        uppercase;
 
-    letter-spacing: 2px;
+    letter-spacing:
+        2px;
 
-    font-weight: 850;
+    font-weight:
+        900;
 
-    margin-bottom: 13px;
+    margin-bottom:
+        13px;
+
 }
+
 
 .question {
 
     font-size:
-        clamp(27px, 4vw, 40px);
+        clamp(27px, 4vw, 39px);
 
-    line-height: 1.15;
+    line-height:
+        1.15;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
-    letter-spacing: -1.2px;
+    letter-spacing:
+        -1px;
 
-    margin-bottom: 30px;
+    margin-bottom:
+        28px;
+
 }
 
-/* =========================
+
+/* =========================================================
    ANSWERS
-========================= */
+========================================================= */
 
 .answers {
 
@@ -495,60 +761,76 @@ button {
     grid-template-columns:
         1fr 1fr;
 
-    gap: 12px;
+    gap: 11px;
+
 }
+
 
 .answer {
 
-    min-height: 72px;
+    min-height: 68px;
 
-    padding: 14px 18px;
+    padding:
+        13px 17px;
 
     border:
-        1px solid rgba(255,255,255,.08);
+        1px solid
+        rgba(255,255,255,.075);
 
-    border-radius: 15px;
+    border-radius:
+        14px;
 
     background:
-        rgba(255,255,255,.045);
+        rgba(255,255,255,.035);
 
-    color: white;
+    color:
+        white;
 
-    text-align: left;
+    text-align:
+        left;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    gap: 13px;
+    gap:
+        13px;
 
-    font-size: 15px;
+    font-size:
+        15px;
 
-    font-weight: 700;
+    font-weight:
+        700;
 
     transition:
-        transform .18s,
-        background .18s,
-        border .18s;
+        .18s;
+
 }
+
 
 .answer:hover:not(:disabled) {
 
-    transform: translateY(-2px);
+    transform:
+        translateY(-2px);
 
     background:
-        rgba(255,255,255,.085);
+        var(--panel-hover);
 
     border-color:
-        rgba(255,255,255,.17);
+        rgba(255,255,255,.16);
+
 }
+
 
 .answer-letter {
 
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
 
     flex-shrink: 0;
 
@@ -557,25 +839,34 @@ button {
     align-items: center;
     justify-content: center;
 
-    border-radius: 10px;
+    border-radius:
+        9px;
 
     background:
-        rgba(255,255,255,.075);
+        rgba(255,255,255,.065);
 
     color:
-        #b8c0d1;
+        #9da3b0;
 
-    font-weight: 900;
+    font-size:
+        13px;
+
+    font-weight:
+        900;
+
 }
+
 
 .answer.correct {
 
     background:
-        rgba(53,208,127,.13);
+        rgba(50,213,131,.11);
 
     border-color:
         var(--green);
+
 }
+
 
 .answer.correct .answer-letter {
 
@@ -584,465 +875,603 @@ button {
 
     color:
         #06130d;
+
 }
+
 
 .answer.wrong {
 
     background:
-        rgba(255,92,108,.13);
+        rgba(255,82,99,.11);
 
     border-color:
-        var(--red);
+        var(--wrong);
+
 }
+
 
 .answer.wrong .answer-letter {
 
     background:
-        var(--red);
+        var(--wrong);
 
-    color: white;
+    color:
+        white;
+
 }
+
 
 .answer:disabled {
-    cursor: default;
+
+    cursor:
+        default;
+
 }
 
-/* =========================
-   FEEDBACK
-========================= */
 
-.feedback {
+/* =========================================================
+   EXPLANATION
+========================================================= */
 
-    display: none;
+.explanation {
 
-    margin-top: 20px;
+    display:
+        none;
 
-    padding: 17px;
+    margin-top:
+        20px;
 
-    border-radius: 14px;
+    padding:
+        16px 18px;
+
+    border-radius:
+        13px;
 
     background:
-        rgba(255,255,255,.045);
+        rgba(255,255,255,.035);
 
     border:
-        1px solid rgba(255,255,255,.06);
+        1px solid
+        rgba(255,255,255,.07);
+
 }
 
-.feedback.show {
 
-    display: flex;
+.explanation.show {
 
-    align-items: center;
+    display:
+        block;
 
-    justify-content: space-between;
+    animation:
+        appear .25s ease;
 
-    gap: 15px;
 }
 
-.feedback-title {
 
-    font-weight: 900;
+.explanation-title {
+
+    font-size:
+        12px;
+
+    font-weight:
+        900;
+
+    color:
+        var(--red-light);
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        1px;
+
+    margin-bottom:
+        6px;
+
 }
 
-.feedback-subtitle {
 
-    color: var(--muted);
+.explanation-text {
 
-    font-size: 13px;
+    color:
+        #b0b5c0;
 
-    margin-top: 4px;
+    font-size:
+        13px;
+
+    line-height:
+        1.55;
+
 }
+
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+.next-wrapper {
+
+    display:
+        flex;
+
+    justify-content:
+        flex-end;
+
+    margin-top:
+        18px;
+
+}
+
 
 .next-btn {
 
-    border: 0;
+    border:
+        0;
 
     padding:
-        11px 18px;
+        12px 20px;
 
-    border-radius: 11px;
+    border-radius:
+        11px;
 
-    background: white;
+    background:
+        white;
 
-    color: #0c1018;
+    color:
+        #090a0d;
 
-    font-weight: 850;
+    font-weight:
+        850;
 
-    cursor: pointer;
+    cursor:
+        pointer;
+
 }
 
-/* =========================
+
+/* =========================================================
    RESULT
-========================= */
+========================================================= */
 
 .result {
 
-    text-align: center;
+    text-align:
+        center;
+
 }
+
 
 .result-icon {
 
-    font-size: 70px;
+    font-size:
+        70px;
 
-    margin-bottom: 18px;
+    margin-bottom:
+        18px;
+
 }
+
 
 .result h2 {
 
     font-size:
         clamp(40px, 6vw, 60px);
 
-    font-weight: 950;
+    font-weight:
+        950;
 
-    letter-spacing: -2px;
+    letter-spacing:
+        -2px;
+
 }
+
 
 .result p {
 
-    color: var(--muted);
+    color:
+        var(--muted);
 
-    margin-top: 10px;
+    margin:
+        10px 0 30px;
 
-    font-size: 17px;
 }
 
-.result-summary {
-
-    max-width: 650px;
-
-    margin: 35px auto;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 10px;
-}
-
-.summary-item {
-
-    padding: 16px;
-
-    border-radius: 13px;
-
-    background:
-        rgba(255,255,255,.045);
-
-    border:
-        1px solid rgba(255,255,255,.07);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    text-align: left;
-}
-
-.summary-item.correct {
-
-    border-color:
-        rgba(53,208,127,.35);
-}
-
-.summary-item.wrong {
-
-    border-color:
-        rgba(255,92,108,.35);
-}
 
 .restart-btn {
 
-    border: 0;
+    border:
+        0;
 
     background:
         linear-gradient(
             135deg,
-            #237bc9,
-            #4da3ff
+            #9f1720,
+            #e32935
         );
 
-    color: white;
+    color:
+        white;
 
     padding:
         15px 30px;
 
-    border-radius: 14px;
+    border-radius:
+        13px;
 
-    font-weight: 850;
+    font-weight:
+        850;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
-    transition: .2s;
 }
 
-.restart-btn:hover {
 
-    transform:
-        translateY(-2px);
-}
-
-/* =========================
+/* =========================================================
    MOBILE
-========================= */
+========================================================= */
 
 @media (max-width: 700px) {
+
+    .levels {
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
 
     .answers {
 
         grid-template-columns:
             1fr;
-    }
 
-    .question-visual {
-
-        height: 150px;
-    }
-
-    .visual-icon {
-
-        font-size: 65px;
     }
 
     .question-content {
 
         padding:
-            28px 22px 25px;
+            27px 21px 25px;
+
     }
 
-    .question-card {
+    .question-visual {
 
-        border-radius: 21px;
+        height:
+            145px;
+
     }
 
-    .feedback.show {
-
-        flex-direction:
-            column;
+    .quiz-top {
 
         align-items:
-            stretch;
+            center;
+
     }
 
-    .next-btn {
+    .skip-btn {
 
-        width: 100%;
+        padding:
+            7px 9px;
+
     }
 
 }
 
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="app">
 
-    <!-- =========================
-         ACCUEIL
-    ========================== -->
 
-    <section id="home" class="screen active home">
+<!-- =====================================================
+     ACCUEIL
+====================================================== -->
 
-        <div class="logo">
-            ☠️
+<section
+    id="home"
+    class="screen active home"
+>
+
+
+    <div class="logo">
+        ☠️
+    </div>
+
+
+    <h1>
+
+        <span>QUESTIONS</span>
+
+        <br>
+
+        POUR UN PIRATE
+
+    </h1>
+
+
+    <p>
+        Un quiz pour tester tes connaissances sur le monde de One Piece.
+    </p>
+
+
+    <button
+        class="start-btn"
+        onclick="startQuiz()"
+    >
+        Commencer l'aventure
+    </button>
+
+
+    <div class="levels">
+
+
+        <div class="level">
+
+            <div class="level-number">
+                Niveau I
+            </div>
+
+            <div class="level-name">
+                East Blue
+            </div>
+
         </div>
 
-        <h1>
-            <span>ONE PIECE</span>
-            <br>
-            QUIZ
-        </h1>
 
-        <p>
-            Jusqu'où vont tes connaissances sur Grand Line ?
-        </p>
+        <div class="level">
+
+            <div class="level-number">
+                Niveau II
+            </div>
+
+            <div class="level-name">
+                Grand Line
+            </div>
+
+        </div>
+
+
+        <div class="level">
+
+            <div class="level-number">
+                Niveau III
+            </div>
+
+            <div class="level-name">
+                Nouveau Monde
+            </div>
+
+        </div>
+
+
+        <div class="level">
+
+            <div class="level-number">
+                Niveau IV
+            </div>
+
+            <div class="level-name">
+                Laugh Tale
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+<!-- =====================================================
+     QUIZ
+====================================================== -->
+
+<section
+    id="quiz"
+    class="screen"
+>
+
+
+    <div class="quiz-top">
+
+
+        <div class="current-level">
+
+            <div class="level-dot"></div>
+
+            <span id="currentLevel">
+                EAST BLUE
+            </span>
+
+        </div>
+
 
         <button
-            class="start-btn"
-            onclick="startQuiz()"
+            class="skip-btn"
+            onclick="skipQuestion()"
         >
-            Commencer
+            Passer →
         </button>
 
-        <div class="info">
 
-            <div class="pill">
-                2 questions
-            </div>
-
-            <div class="pill">
-                Mode classique
-            </div>
-
-            <div class="pill">
-                Sans chrono
-            </div>
-
-        </div>
-
-    </section>
+    </div>
 
 
-    <!-- =========================
-         QUIZ
-    ========================== -->
+    <div class="progress-info">
 
-    <section id="quiz" class="screen">
-
-        <div class="quiz-header">
-
-            <div class="progress-wrapper">
-
-                <div class="progress-text">
-
-                    Question
-                    <span id="questionNumber">1</span>
-                    /
-                    <span id="totalQuestions">2</span>
-
-                </div>
-
-                <div class="progress">
-
-                    <div
-                        id="progressBar"
-                        class="progress-bar"
-                    ></div>
-
-                </div>
-
-            </div>
-
-        </div>
+        <span>
+            Question
+            <span id="questionNumber">
+                1
+            </span>
+            /
+            <span id="totalQuestions">
+                2
+            </span>
+        </span>
 
 
-        <div class="question-card">
+        <span id="difficulty">
+            Facile
+        </span>
 
-            <!-- VISUEL -->
-
-            <div class="question-visual">
-
-                <div
-                    id="visualIcon"
-                    class="visual-icon"
-                >
-                    ⚔️
-                </div>
-
-            </div>
+    </div>
 
 
-            <!-- CONTENU -->
-
-            <div class="question-content">
-
-                <div
-                    id="category"
-                    class="category"
-                >
-                    Équipage
-                </div>
-
-                <div
-                    id="question"
-                    class="question"
-                >
-                    Question...
-                </div>
-
-                <div
-                    id="answers"
-                    class="answers"
-                ></div>
-
-
-                <!-- FEEDBACK -->
-
-                <div
-                    id="feedback"
-                    class="feedback"
-                >
-
-                    <div>
-
-                        <div
-                            id="feedbackTitle"
-                            class="feedback-title"
-                        ></div>
-
-                        <div
-                            id="feedbackSubtitle"
-                            class="feedback-subtitle"
-                        ></div>
-
-                    </div>
-
-                    <button
-                        class="next-btn"
-                        onclick="nextQuestion()"
-                    >
-                        Continuer →
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =========================
-         RESULTAT
-    ========================== -->
-
-    <section
-        id="result"
-        class="screen result"
-    >
-
-        <div class="result-icon">
-            🏴‍☠️
-        </div>
-
-        <h2>
-            Quiz terminé
-        </h2>
-
-        <p>
-            Voici simplement le récapitulatif de tes réponses.
-        </p>
+    <div class="progress">
 
         <div
-            id="resultSummary"
-            class="result-summary"
+            id="progressBar"
+            class="progress-bar"
         ></div>
 
-        <button
-            class="restart-btn"
-            onclick="startQuiz()"
-        >
-            Recommencer
-        </button>
+    </div>
 
-    </section>
+
+    <div class="question-card">
+
+
+        <div class="question-visual">
+
+            <div
+                id="visualIcon"
+                class="visual-icon"
+            >
+                ⚔️
+            </div>
+
+        </div>
+
+
+        <div class="question-content">
+
+
+            <div
+                id="category"
+                class="category"
+            >
+                Équipage
+            </div>
+
+
+            <div
+                id="question"
+                class="question"
+            >
+                Question...
+            </div>
+
+
+            <div
+                id="answers"
+                class="answers"
+            ></div>
+
+
+            <div
+                id="explanation"
+                class="explanation"
+            >
+
+                <div
+                    class="explanation-title"
+                >
+                    À retenir
+                </div>
+
+                <div
+                    id="explanationText"
+                    class="explanation-text"
+                ></div>
+
+            </div>
+
+
+            <div
+                id="nextWrapper"
+                class="next-wrapper"
+            >
+
+                <button
+                    id="nextButton"
+                    class="next-btn"
+                    onclick="nextQuestion()"
+                >
+                    Question suivante →
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+<!-- =====================================================
+     FIN
+====================================================== -->
+
+<section
+    id="result"
+    class="screen result"
+>
+
+
+    <div class="result-icon">
+        🏴‍☠️
+    </div>
+
+
+    <h2>
+        Fin de l'aventure
+    </h2>
+
+
+    <p>
+        Tu peux recommencer le quiz ou modifier les questions.
+    </p>
+
+
+    <button
+        class="restart-btn"
+        onclick="startQuiz()"
+    >
+        Recommencer
+    </button>
+
+
+</section>
+
 
 </div>
 
 
 <script>
 
-/* =========================================
+
+/* =========================================================
    QUESTIONS
-========================================= */
+========================================================= */
 
 const questions = [
 
     {
-        category: "Équipage de Luffy",
+
+        level: "EAST BLUE",
+
+        difficulty: "Facile",
+
+        category: "Équipage",
 
         question:
             "Quel est le premier membre à rejoindre l'équipage de Luffy ?",
@@ -1051,16 +1480,31 @@ const questions = [
             "⚔️",
 
         answers: [
+
             "Nami",
+
             "Roronoa Zoro",
+
             "Usopp",
+
             "Sanji"
+
         ],
 
-        correct: 1
+        correct: 1,
+
+        explanation:
+            "Zoro est le premier membre à rejoindre officiellement Luffy. Il devient rapidement son premier compagnon et son sabreur."
+
     },
 
+
     {
+
+        level: "EAST BLUE",
+
+        difficulty: "Facile",
+
         category: "Navires",
 
         question:
@@ -1070,30 +1514,52 @@ const questions = [
             "⛵",
 
         answers: [
+
             "Red Force",
+
             "Thousand Sunny",
+
             "Oro Jackson",
+
             "Polar Tang"
+
         ],
 
-        correct: 1
+        correct: 1,
+
+        explanation:
+            "Le Thousand Sunny devient le second grand navire de l'équipage après le Vogue Merry."
+
     }
 
 ];
 
 
-/* =========================================
+/* =========================================================
    VARIABLES
-========================================= */
+========================================================= */
 
 let currentQuestion = 0;
 
-let userAnswers = [];
+
+/* =========================================================
+   START
+========================================================= */
+
+function startQuiz() {
+
+    currentQuestion = 0;
+
+    showScreen("quiz");
+
+    loadQuestion();
+
+}
 
 
-/* =========================================
-   AFFICHAGE DES ECRANS
-========================================= */
+/* =========================================================
+   SCREEN
+========================================================= */
 
 function showScreen(id) {
 
@@ -1105,31 +1571,17 @@ function showScreen(id) {
 
         });
 
+
     document
         .getElementById(id)
         .classList.add("active");
+
 }
 
 
-/* =========================================
-   DEMARRER
-========================================= */
-
-function startQuiz() {
-
-    currentQuestion = 0;
-
-    userAnswers = [];
-
-    showScreen("quiz");
-
-    loadQuestion();
-}
-
-
-/* =========================================
-   CHARGER QUESTION
-========================================= */
+/* =========================================================
+   LOAD QUESTION
+========================================================= */
 
 function loadQuestion() {
 
@@ -1147,6 +1599,18 @@ function loadQuestion() {
         .getElementById("totalQuestions")
         .textContent =
         questions.length;
+
+
+    document
+        .getElementById("currentLevel")
+        .textContent =
+        q.level;
+
+
+    document
+        .getElementById("difficulty")
+        .textContent =
+        q.difficulty;
 
 
     document
@@ -1170,12 +1634,15 @@ function loadQuestion() {
     document
         .getElementById("progressBar")
         .style.width =
-        ((currentQuestion + 1) /
-        questions.length * 100) + "%";
+        ((currentQuestion + 1)
+        / questions.length * 100)
+        + "%";
 
 
     const container =
-        document.getElementById("answers");
+        document.getElementById(
+            "answers"
+        );
 
 
     container.innerHTML = "";
@@ -1185,7 +1652,9 @@ function loadQuestion() {
         (answer, index) => {
 
             const button =
-                document.createElement("button");
+                document.createElement(
+                    "button"
+                );
 
 
             button.className =
@@ -1206,32 +1675,46 @@ function loadQuestion() {
 
 
             button.onclick =
-                () => selectAnswer(
-                    index,
-                    button
-                );
+                () =>
+                    selectAnswer(
+                        index,
+                        button
+                    );
 
 
-            container.appendChild(button);
+            container.appendChild(
+                button
+            );
 
         }
     );
 
 
     document
-        .getElementById("feedback")
+        .getElementById("explanation")
         .classList.remove("show");
+
+
+    document
+        .getElementById("nextWrapper")
+        .style.display = "none";
+
 }
 
 
-/* =========================================
-   REPONSE
-========================================= */
+/* =========================================================
+   ANSWER
+========================================================= */
 
 function selectAnswer(
     index,
     clickedButton
 ) {
+
+
+    const q =
+        questions[currentQuestion];
+
 
     const buttons =
         document.querySelectorAll(
@@ -1239,19 +1722,13 @@ function selectAnswer(
         );
 
 
-    buttons.forEach(button => {
+    buttons.forEach(
+        button => {
 
-        button.disabled = true;
+            button.disabled = true;
 
-    });
-
-
-    const q =
-        questions[currentQuestion];
-
-
-    userAnswers[currentQuestion] =
-        index;
+        }
+    );
 
 
     const correctButton =
@@ -1269,12 +1746,6 @@ function selectAnswer(
             "correct"
         );
 
-
-        showFeedback(
-            "Bonne réponse ! ✓",
-            "Exact."
-        );
-
     }
 
     else {
@@ -1283,48 +1754,72 @@ function selectAnswer(
             "wrong"
         );
 
+    }
 
-        showFeedback(
-            "Pas cette fois.",
-            "La bonne réponse était : " +
-            q.answers[q.correct]
-        );
+
+    /* Explication */
+
+    if (q.explanation) {
+
+        document
+            .getElementById(
+                "explanationText"
+            )
+            .textContent =
+            q.explanation;
+
+
+        document
+            .getElementById(
+                "explanation"
+            )
+            .classList.add(
+                "show"
+            );
+
+    }
+
+
+    document
+        .getElementById(
+            "nextWrapper"
+        )
+        .style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   SKIP
+========================================================= */
+
+function skipQuestion() {
+
+    currentQuestion++;
+
+
+    if (
+        currentQuestion >=
+        questions.length
+    ) {
+
+        finishQuiz();
+
+    }
+
+    else {
+
+        loadQuestion();
 
     }
 
 }
 
 
-/* =========================================
-   FEEDBACK
-========================================= */
-
-function showFeedback(
-    title,
-    subtitle
-) {
-
-    document
-        .getElementById("feedbackTitle")
-        .textContent =
-        title;
-
-
-    document
-        .getElementById("feedbackSubtitle")
-        .textContent =
-        subtitle;
-
-
-    document
-        .getElementById("feedback")
-        .classList.add("show");
-}
-
-
-/* =========================================
-   QUESTION SUIVANTE
-========================================= */
+/* =========================================================
+   NEXT
+========================================================= */
 
 function nextQuestion() {
 
@@ -1349,68 +1844,20 @@ function nextQuestion() {
 }
 
 
-/* =========================================
-   FIN
-========================================= */
+/* =========================================================
+   FINISH
+========================================================= */
 
 function finishQuiz() {
 
     showScreen("result");
 
-
-    const summary =
-        document.getElementById(
-            "resultSummary"
-        );
-
-
-    summary.innerHTML = "";
-
-
-    questions.forEach(
-        (question, index) => {
-
-            const item =
-                document.createElement("div");
-
-
-            const correct =
-                userAnswers[index] ===
-                question.correct;
-
-
-            item.className =
-                "summary-item " +
-                (correct
-                    ? "correct"
-                    : "wrong");
-
-
-            item.innerHTML = `
-
-                <span>
-                    Question ${index + 1}
-                </span>
-
-                <strong>
-                    ${
-                        correct
-                        ? "✓ Correcte"
-                        : "✕ Incorrecte"
-                    }
-                </strong>
-
-            `;
-
-
-            summary.appendChild(item);
-
-        }
-    );
-
 }
+
 
 </script>
 
+
 </body>
+
 </html>
