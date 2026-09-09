@@ -1,1920 +1,843 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Questions pour un Pirate</title>
 
 <style>
-
-/* =========================================================
-   VARIABLES DU DESIGN
-========================================================= */
-
-:root {
-
-    --bg: #050608;
-    --bg-2: #0a0b0f;
-
-    --panel: rgba(255,255,255,0.045);
-    --panel-hover: rgba(255,255,255,0.075);
-
-    --border: rgba(255,255,255,0.09);
-
-    --text: #f5f5f7;
-    --muted: #9297a3;
-
-    --red: #d92735;
-    --red-light: #ff4c58;
-    --red-dark: #80111a;
-
-    --green: #32d583;
-    --wrong: #ff5263;
-}
-
-
-/* =========================================================
-   RESET
-========================================================= */
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-
-    min-height: 100vh;
-
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    color: var(--text);
-
-    background:
-
-        radial-gradient(
-            circle at 10% 10%,
-            rgba(217,39,53,0.17),
-            transparent 30%
-        ),
-
-        radial-gradient(
-            circle at 90% 90%,
-            rgba(128,17,26,0.14),
-            transparent 32%
-        ),
-
-        linear-gradient(
-            145deg,
-            #030405,
-            #090a0e
-        );
-
-    overflow-x: hidden;
-}
-
-button,
-input {
-    font: inherit;
-}
-
-
-/* =========================================================
-   APP
-========================================================= */
-
-.app {
-
-    width: min(1100px, 92%);
-
-    min-height: 100vh;
-
-    margin: auto;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 45px 0;
-}
-
-
-/* =========================================================
-   SCREENS
-========================================================= */
-
-.screen {
-
-    width: 100%;
-
-    display: none;
-
-    animation: appear .35s ease;
-}
-
-.screen.active {
-    display: block;
-}
-
-@keyframes appear {
-
-    from {
-        opacity: 0;
-        transform: translateY(12px);
+    :root {
+        --red: #d92735;
+        --red-light: #ff4c58;
+        --red-dark: #80111a;
+        --black: #080808;
+        --dark: #111111;
+        --card: #171717;
+        --border: #2c2c2c;
+        --text: #f5f5f5;
+        --muted: #999999;
+        --selected: #383838;
+        --selected-light: #4a4a4a;
+        --green: #35b86b;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
     }
 
-}
-
-
-/* =========================================================
-   ACCUEIL
-========================================================= */
-
-.home {
-    text-align: center;
-}
-
-
-.logo {
-
-    width: 105px;
-    height: 105px;
-
-    margin: 0 auto 28px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 28px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #170709,
-            #0d0708
-        );
-
-    border:
-        1px solid
-        rgba(217,39,53,.30);
-
-    box-shadow:
-
-        0 25px 70px
-        rgba(0,0,0,.45),
-
-        0 0 50px
-        rgba(217,39,53,.10);
-
-    overflow: hidden;
-}
-
-
-.logo img {
-
-    width: 76px;
-    height: 76px;
-
-    object-fit: contain;
-}
-
-
-.home h1 {
-
-    font-size:
-        clamp(44px, 7vw, 78px);
-
-    line-height: .92;
-
-    font-weight: 950;
-
-    letter-spacing: -4px;
-}
-
-
-.home h1 span {
-    color: var(--red);
-}
-
-
-/* =========================================================
-   BOUTON COMMENCER
-   Même esprit que la première version
-========================================================= */
-
-.start-btn {
-
-    border: 0;
-
-    color: white;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--red),
-            #ef3f4b
-        );
-
-    padding:
-        18px 48px;
-
-    border-radius:
-        18px;
-
-    font-size:
-        18px;
-
-    font-weight:
-        800;
-
-    cursor:
-        pointer;
-
-    box-shadow:
-        0 15px 40px
-        rgba(217,39,53,.25);
-
-    transition:
-        .2s;
-}
-
-
-.start-btn:hover {
-
-    transform:
-        translateY(-4px)
-        scale(1.02);
-
-    box-shadow:
-        0 20px 50px
-        rgba(217,39,53,.40);
-}
-
-
-/* =========================================================
-   NIVEAUX
-========================================================= */
-
-.levels {
-
-    max-width: 850px;
-
-    margin:
-        50px auto 0;
-
-    display:
-        grid;
-
-    grid-template-columns:
-        repeat(4, 1fr);
-
-    gap:
-        10px;
-}
-
-
-.level {
-
-    padding:
-        16px 10px;
-
-    border-radius:
-        13px;
-
-    background:
-        rgba(255,255,255,.035);
-
-    border:
-        1px solid
-        rgba(255,255,255,.07);
-}
-
-
-.level-number {
-
-    font-size:
-        10px;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing:
-        1.5px;
-
-    color:
-        var(--muted);
-
-    margin-bottom:
-        7px;
-}
-
-
-.level-name {
-
-    font-size:
-        14px;
-
-    font-weight:
-        850;
-}
-
-
-.level:nth-child(1) {
-
-    border-color:
-        rgba(255,255,255,.13);
-}
-
-
-.level:nth-child(4) {
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(217,39,53,.10),
-            rgba(255,255,255,.025)
-        );
-}
-
-
-/* =========================================================
-   HAUT DU QUIZ
-========================================================= */
-
-.quiz-top {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        space-between;
-
-    margin-bottom:
-        16px;
-}
-
-
-.current-level {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        9px;
-
-    padding:
-        8px 13px;
-
-    border-radius:
-        10px;
-
-    background:
-        rgba(217,39,53,.10);
-
-    border:
-        1px solid
-        rgba(217,39,53,.22);
-}
-
-
-.level-dot {
-
-    width:
-        7px;
-
-    height:
-        7px;
-
-    border-radius:
-        50%;
-
-    background:
-        var(--red);
-
-    box-shadow:
-        0 0 12px
-        var(--red);
-}
-
-
-.current-level span {
-
-    font-size:
-        12px;
-
-    font-weight:
-        850;
-}
-
-
-/* =========================================================
-   BOUTON PASSER + MINI MENU
-========================================================= */
-
-.skip-container {
-
-    position:
-        relative;
-}
-
-
-.skip-btn {
-
-    border:
-        1px solid
-        rgba(255,255,255,.07);
-
-    background:
-        rgba(255,255,255,.025);
-
-    color:
-        #777d89;
-
-    padding:
-        7px 11px;
-
-    border-radius:
-        9px;
-
-    font-size:
-        11px;
-
-    cursor:
-        pointer;
-
-    transition:
-        .2s;
-}
-
-
-.skip-btn:hover {
-
-    color:
-        white;
-
-    background:
-        rgba(255,255,255,.07);
-}
-
-
-/* Menu caché */
-
-.skip-menu {
-
-    position:
-        absolute;
-
-    top:
-        calc(100% + 8px);
-
-    right:
-        0;
-
-    width:
-        190px;
-
-    padding:
-        7px;
-
-    background:
-        #111318;
-
-    border:
-        1px solid
-        rgba(255,255,255,.10);
-
-    border-radius:
-        13px;
-
-    box-shadow:
-        0 20px 50px
-        rgba(0,0,0,.45);
-
-    z-index:
-        20;
-
-    display:
-        none;
-}
-
-
-.skip-menu.show {
-    display:
-        block;
-
-    animation:
-        appear .18s ease;
-}
-
-
-.skip-menu-title {
-
-    padding:
-        8px 10px;
-
-    color:
-        #6f7480;
-
-    font-size:
-        10px;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing:
-        1.3px;
-
-    font-weight:
-        900;
-}
-
-
-.skip-option {
-
-    width:
-        100%;
-
-    padding:
-        10px;
-
-    border:
-        0;
-
-    border-radius:
-        9px;
-
-    background:
-        transparent;
-
-    color:
-        #c6c9d1;
-
-    text-align:
-        left;
-
-    cursor:
-        pointer;
-
-    font-size:
-        12px;
-
-    font-weight:
-        700;
-}
-
-
-.skip-option:hover {
-
-    background:
-        rgba(255,255,255,.07);
-
-    color:
-        white;
-}
-
-
-/* =========================================================
-   PROGRESSION
-========================================================= */
-
-.progress-info {
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    color:
-        var(--muted);
-
-    font-size:
-        12px;
-
-    margin-bottom:
-        7px;
-}
-
-
-.progress {
-
-    width:
-        100%;
-
-    height:
-        5px;
-
-    background:
-        rgba(255,255,255,.06);
-
-    border-radius:
-        20px;
-
-    overflow:
-        hidden;
-
-    margin-bottom:
-        22px;
-}
-
-
-.progress-bar {
-
-    height:
-        100%;
-
-    background:
-        linear-gradient(
-            90deg,
-            var(--red-dark),
-            var(--red-light)
-        );
-
-    transition:
-        width .35s ease;
-}
-
-
-/* =========================================================
-   CARTE QUESTION
-========================================================= */
-
-.question-card {
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.055),
-            rgba(255,255,255,.025)
-        );
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        25px;
-
-    overflow:
-        hidden;
-
-    box-shadow:
-        0 30px 90px
-        rgba(0,0,0,.38);
-}
-
-
-/* =========================================================
-   IMAGE
-========================================================= */
-
-.question-visual {
-
-    min-height:
-        175px;
-
-    position:
-        relative;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    overflow:
-        hidden;
-
-    border-bottom:
-        1px solid
-        rgba(255,255,255,.06);
-
-    background:
-
-        radial-gradient(
-            circle,
-            rgba(217,39,53,.13),
-            transparent 55%
-        );
-}
-
-
-.question-visual.has-image {
-
-    padding:
-        15px;
-}
-
-
-.visual-image {
-
-    position:
-        relative;
-
-    z-index:
-        3;
-
-    max-width:
-        90%;
-
-    max-height:
-        160px;
-
-    object-fit:
-        contain;
-
-    border-radius:
-        12px;
-
-    box-shadow:
-        0 15px 35px
-        rgba(0,0,0,.45);
-}
-
-
-/* =========================================================
-   CONTENU
-========================================================= */
-
-.question-content {
-
-    padding:
-        32px 38px 35px;
-}
-
-
-.category {
-
-    color:
-        var(--red-light);
-
-    font-size:
-        11px;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing:
-        2px;
-
-    font-weight:
-        900;
-
-    margin-bottom:
-        13px;
-}
-
-
-.question {
-
-    font-size:
-        clamp(27px, 4vw, 39px);
-
-    line-height:
-        1.15;
-
-    font-weight:
-        900;
-
-    letter-spacing:
-        -1px;
-
-    margin-bottom:
-        28px;
-}
-
-
-/* =========================================================
-   REPONSES
-========================================================= */
-
-.answers {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:
-        11px;
-}
-
-
-.answer {
-
-    min-height:
-        68px;
-
-    padding:
-        13px 17px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.075);
-
-    border-radius:
-        14px;
-
-    background:
-        rgba(255,255,255,.035);
-
-    color:
-        white;
-
-    text-align:
-        left;
-
-    cursor:
-        pointer;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        13px;
-
-    font-size:
-        15px;
-
-    font-weight:
-        700;
-
-    transition:
-        .18s;
-}
-
-
-.answer:hover:not(:disabled) {
-
-    transform:
-        translateY(-2px);
-
-    background:
-        var(--panel-hover);
-
-    border-color:
-        rgba(255,255,255,.16);
-}
-
-
-.answer-letter {
-
-    width:
-        34px;
-
-    height:
-        34px;
-
-    flex-shrink:
-        0;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    border-radius:
-        9px;
-
-    background:
-        rgba(255,255,255,.065);
-
-    color:
-        #9da3b0;
-
-    font-size:
-        13px;
-
-    font-weight:
-        900;
-}
-
-
-.answer.correct {
-
-    background:
-        rgba(50,213,131,.11);
-
-    border-color:
-        var(--green);
-}
-
-
-.answer.correct .answer-letter {
-
-    background:
-        var(--green);
-
-    color:
-        #06130d;
-}
-
-
-.answer.wrong {
-
-    background:
-        rgba(255,82,99,.11);
-
-    border-color:
-        var(--wrong);
-}
-
-
-.answer.wrong .answer-letter {
-
-    background:
-        var(--wrong);
-
-    color:
-        white;
-}
-
-
-.answer:disabled {
-    cursor:
-        default;
-}
-
-
-/* =========================================================
-   REPONSE MULTIPLE
-========================================================= */
-
-.answer.selected {
-
-    border-color:
-        var(--red);
-
-    background:
-        rgba(217,39,53,.10);
-}
-
-
-/* =========================================================
-   REPONSE LIBRE
-========================================================= */
-
-.free-answer {
-
-    display:
-        flex;
-
-    gap:
-        10px;
-}
-
-
-.free-answer input {
-
-    flex:
-        1;
-
-    min-height:
-        58px;
-
-    padding:
-        0 18px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.09);
-
-    border-radius:
-        13px;
-
-    outline:
-        none;
-
-    background:
-        rgba(255,255,255,.045);
-
-    color:
-        white;
-}
-
-
-.free-answer input:focus {
-
-    border-color:
-        rgba(217,39,53,.55);
-}
-
-
-.validate-btn {
-
-    border:
-        0;
-
-    padding:
-        0 22px;
-
-    border-radius:
-        13px;
-
-    background:
-        var(--red);
-
-    color:
-        white;
-
-    font-weight:
-        850;
-
-    cursor:
-        pointer;
-}
-
-
-/* =========================================================
-   ORDRE
-========================================================= */
-
-.order-list {
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    gap:
-        9px;
-}
-
-
-.order-item {
-
-    min-height:
-        55px;
-
-    padding:
-        12px 16px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.08);
-
-    border-radius:
-        12px;
-
-    background:
-        rgba(255,255,255,.035);
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        13px;
-}
-
-
-.order-number {
-
-    width:
-        28px;
-
-    height:
-        28px;
-
-    border-radius:
-        8px;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    background:
-        rgba(255,255,255,.07);
-
-    color:
-        var(--muted);
-
-    font-size:
-        12px;
-
-    font-weight:
-        900;
-}
-
-
-.order-buttons {
-
-    display:
-        flex;
-
-    gap:
-        7px;
-
-    margin-left:
-        auto;
-}
-
-
-.order-arrow {
-
-    width:
-        28px;
-
-    height:
-        28px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.08);
-
-    border-radius:
-        8px;
-
-    background:
-        rgba(255,255,255,.04);
-
-    color:
-        white;
-
-    cursor:
-        pointer;
-}
-
-
-/* =========================================================
-   RESULTAT IMMEDIAT
-========================================================= */
-
-.answer-result {
-
-    display:
-        none;
-
-    margin-top:
-        20px;
-
-    padding:
-        15px 17px;
-
-    border-radius:
-        13px;
-
-    font-weight:
-        800;
-}
-
-
-.answer-result.show {
-    display:
-        block;
-}
-
-
-.answer-result.correct {
-
-    background:
-        rgba(50,213,131,.10);
-
-    color:
-        var(--green);
-}
-
-
-.answer-result.wrong {
-
-    background:
-        rgba(255,82,99,.10);
-
-    color:
-        var(--wrong);
-}
-
-
-/* =========================================================
-   EXPLICATION
-========================================================= */
-
-.explanation {
-
-    display:
-        none;
-
-    margin-top:
-        12px;
-
-    padding:
-        16px 18px;
-
-    border-radius:
-        13px;
-
-    background:
-        rgba(255,255,255,.035);
-
-    border:
-        1px solid
-        rgba(255,255,255,.07);
-}
-
-
-.explanation.show {
-
-    display:
-        block;
-
-    animation:
-        appear .25s ease;
-}
-
-
-.explanation-title {
-
-    font-size:
-        11px;
-
-    font-weight:
-        900;
-
-    color:
-        var(--red-light);
-
-    text-transform:
-        uppercase;
-
-    letter-spacing:
-        1px;
-
-    margin-bottom:
-        6px;
-}
-
-
-.explanation-text {
-
-    color:
-        #b0b5c0;
-
-    font-size:
-        13px;
-
-    line-height:
-        1.55;
-}
-
-
-/* =========================================================
-   QUESTION SUIVANTE
-========================================================= */
-
-.next-wrapper {
-
-    display:
-        none;
-
-    justify-content:
-        flex-end;
-
-    margin-top:
-        18px;
-}
-
-
-.next-btn {
-
-    border:
-        0;
-
-    padding:
-        12px 20px;
-
-    border-radius:
-        11px;
-
-    background:
-        white;
-
-    color:
-        #090a0d;
-
-    font-weight:
-        850;
-
-    cursor:
-        pointer;
-}
-
-
-/* =========================================================
-   FIN
-========================================================= */
-
-.result {
-
-    text-align:
-        center;
-}
-
-
-.result-icon {
-
-    font-size:
-        70px;
-
-    margin-bottom:
-        18px;
-}
-
-
-.result h2 {
-
-    font-size:
-        clamp(40px, 6vw, 60px);
-
-    font-weight:
-        950;
-
-    letter-spacing:
-        -2px;
-}
-
-
-.result p {
-
-    color:
-        var(--muted);
-
-    margin:
-        10px 0 30px;
-}
-
-
-.restart-btn {
-
-    border:
-        0;
-
-    background:
-        linear-gradient(
-            135deg,
-            #8f111a,
-            #d92735
-        );
-
-    color:
-        white;
-
-    padding:
-        15px 30px;
-
-    border-radius:
-        13px;
-
-    font-weight:
-        850;
-
-    cursor:
-        pointer;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 700px) {
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background:
+            radial-gradient(circle at top, #351015 0%, #120709 35%, #050505 75%);
+        color: var(--text);
+        min-height: 100vh;
+    }
+
+    button,
+    input {
+        font-family: inherit;
+    }
+
+    .screen {
+        display: none;
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+
+    .screen.active {
+        display: flex;
+    }
+
+    /* =====================================================
+       MENU PRINCIPAL
+    ===================================================== */
+
+    .home {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .logo-container {
+        width: 170px;
+        height: 170px;
+        border-radius: 28px;
+        background: linear-gradient(145deg, #18090b, #090909);
+        border: 1px solid #40151a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+
+    .logo-container img {
+        max-width: 85%;
+        max-height: 85%;
+        object-fit: contain;
+    }
+
+    h1 {
+        font-size: clamp(38px, 7vw, 70px);
+        line-height: 0.95;
+        letter-spacing: -3px;
+        margin-bottom: 40px;
+    }
+
+    h1 span {
+        color: var(--red-light);
+    }
+
+    .difficulty-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        color: #eeeeee;
+    }
 
     .levels {
-
-        grid-template-columns:
-            1fr 1fr;
+        width: min(900px, 100%);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 35px;
     }
+
+    .level {
+        background: rgba(20, 20, 20, 0.9);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 22px 12px;
+        transition: 0.2s ease;
+    }
+
+    .level:hover {
+        transform: translateY(-4px);
+        border-color: var(--red-dark);
+        background: #1b1b1b;
+    }
+
+    .level .difficulty {
+        font-size: 13px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+
+    .level .name {
+        font-size: 21px;
+        font-weight: 800;
+    }
+
+    .start-btn {
+        border: none;
+        color: white;
+        font-size: 18px;
+        font-weight: 800;
+        padding: 16px 55px;
+        border-radius: 14px;
+        cursor: pointer;
+        background: linear-gradient(135deg, var(--red), var(--red-dark));
+        box-shadow: 0 10px 30px rgba(150, 0, 15, 0.3);
+        transition: 0.2s ease;
+    }
+
+    .start-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(150, 0, 15, 0.45);
+    }
+
+    /* =====================================================
+       QUIZ
+    ===================================================== */
+
+    #quiz {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .quiz-top {
+        width: min(900px, 100%);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .level-pill {
+        background: #191919;
+        border: 1px solid #303030;
+        padding: 8px 14px;
+        border-radius: 100px;
+        font-size: 13px;
+        color: #ddd;
+    }
+
+    .skip-container {
+        position: relative;
+    }
+
+    .skip-btn {
+        border: 1px solid #333;
+        background: #151515;
+        color: #aaa;
+        border-radius: 10px;
+        padding: 8px 13px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .skip-btn:hover {
+        color: white;
+        border-color: #555;
+    }
+
+    .skip-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 44px;
+        width: 210px;
+        background: #151515;
+        border: 1px solid #333;
+        border-radius: 13px;
+        padding: 8px;
+        z-index: 20;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    }
+
+    .skip-menu.open {
+        display: block;
+    }
+
+    .skip-menu button {
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: #ccc;
+        text-align: left;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .skip-menu button:hover {
+        background: #252525;
+        color: white;
+    }
+
+    .progress-container {
+        width: min(900px, 100%);
+        margin-bottom: 20px;
+    }
+
+    .progress-text {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .progress-bar {
+        height: 5px;
+        width: 100%;
+        background: #202020;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--red);
+        transition: width 0.3s ease;
+    }
+
+    .question-card {
+        width: min(900px, 100%);
+        background: rgba(18, 18, 18, 0.96);
+        border: 1px solid #292929;
+        border-radius: 24px;
+        padding: clamp(22px, 5vw, 42px);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    }
+
+    .question-category {
+        display: inline-block;
+        color: var(--red-light);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 14px;
+        font-weight: 700;
+    }
+
+    .question-image {
+        display: none;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .question-image img {
+        max-width: 100%;
+        max-height: 380px;
+        border-radius: 15px;
+        object-fit: contain;
+    }
+
+    .question-title {
+        font-size: clamp(23px, 4vw, 34px);
+        line-height: 1.2;
+        margin-bottom: 28px;
+    }
+
+    /* =====================================================
+       REPONSES
+    ===================================================== */
 
     .answers {
-
-        grid-template-columns:
-            1fr;
+        display: grid;
+        gap: 12px;
     }
 
-    .question-content {
-
-        padding:
-            27px 21px 25px;
+    .answer {
+        width: 100%;
+        border: 1px solid #303030;
+        background: #191919;
+        color: #eee;
+        padding: 17px 18px;
+        border-radius: 13px;
+        text-align: left;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.15s ease;
     }
 
-    .question-visual {
-
-        min-height:
-            145px;
+    .answer:hover:not(:disabled) {
+        background: #222;
+        border-color: #555;
+        transform: translateY(-1px);
     }
+
+    .answer.selected {
+        background: var(--selected);
+        border-color: #626262;
+    }
+
+    .answer.selected:hover {
+        background: var(--selected-light);
+    }
+
+    .answer.correct {
+        background: rgba(53, 184, 107, 0.15);
+        border-color: var(--green);
+        color: #b9ffd4;
+    }
+
+    .answer.wrong {
+        background: rgba(217, 39, 53, 0.15);
+        border-color: var(--red);
+        color: #ffb5bb;
+    }
+
+    .answer:disabled {
+        cursor: default;
+    }
+
+    /* =====================================================
+       TEXTE D'AIDE
+    ===================================================== */
+
+    .double-click-help {
+        margin-top: 12px;
+        color: #777;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    /* =====================================================
+       REPONSE LIBRE
+    ===================================================== */
 
     .free-answer {
+        display: flex;
+        gap: 10px;
+    }
 
-        flex-direction:
-            column;
+    .free-answer input {
+        flex: 1;
+        min-width: 0;
+        background: #101010;
+        color: white;
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 15px;
+        outline: none;
+        font-size: 16px;
+    }
+
+    .free-answer input:focus {
+        border-color: #666;
     }
 
     .validate-btn {
-
-        min-height:
-            52px;
+        border: none;
+        border-radius: 12px;
+        background: var(--red);
+        color: white;
+        padding: 0 20px;
+        font-weight: 700;
+        cursor: pointer;
     }
 
-}
+    /* =====================================================
+       VRAI / FAUX
+    ===================================================== */
 
+    .true-false {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .true-false button {
+        border: 1px solid #303030;
+        background: #191919;
+        color: white;
+        border-radius: 15px;
+        padding: 22px;
+        font-size: 19px;
+        cursor: pointer;
+        transition: 0.15s;
+    }
+
+    .true-false button:hover:not(:disabled) {
+        background: #222;
+        border-color: #555;
+    }
+
+    .true-false button.selected {
+        background: var(--selected);
+        border-color: #626262;
+    }
+
+    .true-false button.correct {
+        background: rgba(53, 184, 107, 0.15);
+        border-color: var(--green);
+    }
+
+    .true-false button.wrong {
+        background: rgba(217, 39, 53, 0.15);
+        border-color: var(--red);
+    }
+
+    /* =====================================================
+       ORDRE / DRAG & DROP
+    ===================================================== */
+
+    .order-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .order-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #191919;
+        border: 1px solid #303030;
+        border-radius: 13px;
+        padding: 16px;
+        cursor: grab;
+        user-select: none;
+        transition: 0.15s ease;
+    }
+
+    .order-item:hover {
+        background: #202020;
+        border-color: #4a4a4a;
+    }
+
+    .order-item:active {
+        cursor: grabbing;
+    }
+
+    .order-item.dragging {
+        opacity: 0.35;
+        border-color: var(--red);
+    }
+
+    .order-handle {
+        color: #777;
+        font-size: 20px;
+        letter-spacing: -3px;
+    }
+
+    .order-number {
+        color: #777;
+        min-width: 22px;
+        font-size: 13px;
+    }
+
+    .order-text {
+        flex: 1;
+    }
+
+    /* =====================================================
+       RESULTAT
+    ===================================================== */
+
+    .feedback {
+        display: none;
+        margin-top: 22px;
+        padding: 17px;
+        border-radius: 13px;
+        font-weight: 700;
+    }
+
+    .feedback.correct {
+        display: block;
+        background: rgba(53, 184, 107, 0.12);
+        border: 1px solid rgba(53, 184, 107, 0.5);
+        color: #a9f5c5;
+    }
+
+    .feedback.wrong {
+        display: block;
+        background: rgba(217, 39, 53, 0.12);
+        border: 1px solid rgba(217, 39, 53, 0.5);
+        color: #ffb3ba;
+    }
+
+    .explanation {
+        display: none;
+        margin-top: 12px;
+        background: #151515;
+        border-left: 3px solid #555;
+        border-radius: 8px;
+        padding: 15px;
+        color: #ccc;
+        line-height: 1.5;
+        font-size: 15px;
+    }
+
+    .explanation.visible {
+        display: block;
+    }
+
+    .next-btn {
+        display: none;
+        margin-top: 20px;
+        width: 100%;
+        border: none;
+        border-radius: 13px;
+        padding: 16px;
+        background: #242424;
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.15s;
+    }
+
+    .next-btn:hover {
+        background: #303030;
+    }
+
+    /* =====================================================
+       ECRAN FINAL
+    ===================================================== */
+
+    .result {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .result h2 {
+        font-size: clamp(35px, 7vw, 60px);
+        margin-bottom: 15px;
+    }
+
+    .result p {
+        color: #aaa;
+        margin-bottom: 30px;
+    }
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 700px) {
+        .levels {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .quiz-top {
+            align-items: flex-start;
+        }
+
+        .question-card {
+            border-radius: 18px;
+        }
+
+        .free-answer {
+            flex-direction: column;
+        }
+
+        .validate-btn {
+            padding: 14px;
+        }
+    }
+
+    @media (max-width: 450px) {
+        .screen {
+            padding: 25px 14px;
+        }
+
+        .levels {
+            gap: 10px;
+        }
+
+        .level {
+            padding: 17px 8px;
+        }
+
+        .level .name {
+            font-size: 17px;
+        }
+
+        .true-false {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
-
 </head>
-
 
 <body>
 
-
-<div class="app">
-
-
 <!-- =====================================================
-     ACCUEIL
-====================================================== -->
+     MENU PRINCIPAL
+===================================================== -->
 
-<section
-    id="home"
-    class="screen active home"
->
+<section id="home" class="screen active home">
 
-
-    <div class="logo">
-
-        <!--
-            Ton fichier est dans :
-
-            Quiz/logo.jpg
-
-            Si index.html est au même niveau que
-            le dossier Quiz, ce chemin est correct.
-        -->
-
-        <img
-            src="Quiz/logo.jpg"
-            alt="Logo des Mugiwara"
-        >
-
+    <div class="logo-container">
+        <img src="Quiz/logo.jpg" alt="Logo des Mugiwara">
     </div>
 
-
     <h1>
-
-        <span>QUESTIONS</span>
-
-        <br>
-
+        <span>QUESTIONS</span><br>
         POUR UN PIRATE
-
     </h1>
 
+    <div class="difficulty-title">
+        Il y a 4 difficultés :
+    </div>
 
     <div class="levels">
 
-
         <div class="level">
-
-            <div class="level-number">
-                Facile
-            </div>
-
-            <div class="level-name">
-                East Blue
-            </div>
-
+            <div class="difficulty">Facile</div>
+            <div class="name">East Blue</div>
         </div>
 
-
         <div class="level">
-
-            <div class="level-number">
-                Moyen
-            </div>
-
-            <div class="level-name">
-                Grand Line
-            </div>
-
+            <div class="difficulty">Moyen</div>
+            <div class="name">Grand Line</div>
         </div>
 
-
         <div class="level">
-
-            <div class="level-number">
-                Dur
-            </div>
-
-            <div class="level-name">
-                Nouveau Monde
-            </div>
-
+            <div class="difficulty">Dur</div>
+            <div class="name">Nouveau Monde</div>
         </div>
 
-
         <div class="level">
-
-            <div class="level-number">
-                Impossible
-            </div>
-
-            <div class="level-name">
-                Laugh Tale
-            </div>
-
+            <div class="difficulty">Impossible</div>
+            <div class="name">Laugh Tale</div>
         </div>
-
 
     </div>
 
-
-    <button
-        class="start-btn"
-        onclick="startQuiz()"
-        style="margin-top:35px;"
-    >
+    <button class="start-btn" onclick="startQuiz()">
         Commencer
     </button>
-
 
 </section>
 
 
 <!-- =====================================================
      QUIZ
-====================================================== -->
+===================================================== -->
 
-<section
-    id="quiz"
-    class="screen"
->
-
+<section id="quiz" class="screen">
 
     <div class="quiz-top">
 
-
-        <div class="current-level">
-
-            <div class="level-dot"></div>
-
-            <span id="currentLevel">
-                EAST BLUE
-            </span>
-
+        <div id="levelPill" class="level-pill">
+            EAST BLUE
         </div>
-
 
         <div class="skip-container">
 
-            <button
-                class="skip-btn"
-                onclick="toggleSkipMenu()"
-            >
+            <button class="skip-btn" onclick="toggleSkipMenu()">
                 Passer →
             </button>
 
+            <div id="skipMenu" class="skip-menu">
 
-            <div
-                id="skipMenu"
-                class="skip-menu"
-            >
-
-                <div class="skip-menu-title">
-                    Aller à...
-                </div>
-
-
-                <button
-                    class="skip-option"
-                    onclick="goToLevel('EAST BLUE')"
-                >
-                    🏝️ East Blue
+                <button onclick="goToLevel('EAST BLUE')">
+                    East Blue
                 </button>
 
-
-                <button
-                    class="skip-option"
-                    onclick="goToLevel('GRAND LINE')"
-                >
-                    🌊 Grand Line
+                <button onclick="goToLevel('GRAND LINE')">
+                    Grand Line
                 </button>
 
-
-                <button
-                    class="skip-option"
-                    onclick="goToLevel('NOUVEAU MONDE')"
-                >
-                    🔥 Nouveau Monde
+                <button onclick="goToLevel('NOUVEAU MONDE')">
+                    Nouveau Monde
                 </button>
 
-
-                <button
-                    class="skip-option"
-                    onclick="goToLevel('LAUGH TALE')"
-                >
-                    👑 Laugh Tale
+                <button onclick="goToLevel('LAUGH TALE')">
+                    Laugh Tale
                 </button>
 
             </div>
 
         </div>
 
-
     </div>
 
 
-    <div class="progress-info">
+    <div class="progress-container">
 
-        <span>
+        <div id="progressText" class="progress-text">
+            Question 1
+        </div>
 
-            Question
-            <span id="questionNumber">
-                1
-            </span>
-            /
-            <span id="totalQuestions">
-                2
-            </span>
-
-        </span>
-
-
-        <span id="difficulty">
-            Facile
-        </span>
-
-    </div>
-
-
-    <div class="progress">
-
-        <div
-            id="progressBar"
-            class="progress-bar"
-        ></div>
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
 
     </div>
 
 
     <div class="question-card">
 
-
-        <div
-            id="questionVisual"
-            class="question-visual"
-        >
+        <div id="questionImage" class="question-image">
+            <img id="questionImageElement" src="" alt="">
         </div>
 
-
-        <div class="question-content">
-
-
-            <div
-                id="category"
-                class="category"
-            >
-                Équipage
-            </div>
-
-
-            <div
-                id="question"
-                class="question"
-            >
-                Question...
-            </div>
-
-
-            <div
-                id="answers"
-                class="answers"
-            ></div>
-
-
-            <div
-                id="answerResult"
-                class="answer-result"
-            ></div>
-
-
-            <div
-                id="explanation"
-                class="explanation"
-            >
-
-                <div class="explanation-title">
-                    À retenir
-                </div>
-
-                <div
-                    id="explanationText"
-                    class="explanation-text"
-                ></div>
-
-            </div>
-
-
-            <div
-                id="nextWrapper"
-                class="next-wrapper"
-            >
-
-                <button
-                    class="next-btn"
-                    onclick="nextQuestion()"
-                >
-                    Question suivante →
-                </button>
-
-            </div>
-
-
+        <div id="questionCategory" class="question-category">
+            Catégorie
         </div>
+
+        <h2 id="questionTitle" class="question-title">
+            Question
+        </h2>
+
+        <div id="answers" class="answers"></div>
+
+        <div id="doubleClickHelp" class="double-click-help">
+            Clique une première fois pour sélectionner, puis une deuxième fois pour valider.
+        </div>
+
+        <div id="feedback" class="feedback"></div>
+
+        <div id="explanation" class="explanation"></div>
+
+        <button id="nextBtn" class="next-btn" onclick="nextQuestion()">
+            Question suivante →
+        </button>
 
     </div>
-
 
 </section>
 
 
 <!-- =====================================================
-     FIN
-====================================================== -->
+     RESULTAT FINAL
+===================================================== -->
 
-<section
-    id="result"
-    class="screen result"
->
+<section id="result" class="screen result">
 
-
-    <div class="result-icon">
-        🏴‍☠️
-    </div>
-
-
-    <h2>
-        Fin de l'aventure
-    </h2>
-
+    <h2>Fin de l'aventure</h2>
 
     <p>
-        Toutes les questions ont été parcourues.
+        Tu as terminé toutes les questions !
     </p>
 
-
-    <button
-        class="restart-btn"
-        onclick="startQuiz()"
-    >
+    <button class="start-btn" onclick="startQuiz()">
         Recommencer
     </button>
-
 
 </section>
 
 
-</div>
-
-
 <script>
 
-
 /* =========================================================
-   =========================================================
+   MES QUESTIONS
 
-                    MES QUESTIONS
-
-   =========================================================
-
-   C'EST LA SEULE PARTIE QUE TU AS BESOIN
-   DE MODIFIER POUR CREER TON QUIZ.
-
-   ---------------------------------------------------------
+   COPIE/COLLE UN BLOC POUR AJOUTER UNE QUESTION.
 
    MODES DISPONIBLES :
 
    "unique"
-   → une seule bonne réponse
+   → Une seule bonne réponse.
+   → 1 clic = sélection
+   → 2e clic = validation
 
    "multiple"
-   → plusieurs bonnes réponses
+   → Plusieurs bonnes réponses possibles.
 
    "libre"
-   → réponse écrite au clavier
+   → Le joueur écrit sa réponse.
 
    "vrai_faux"
-   → Vrai ou Faux
+   → Vrai ou Faux.
+   → 1 clic = sélection
+   → 2e clic = validation
 
    "ordre"
-   → remettre les éléments dans le bon ordre
-
-   ---------------------------------------------------------
-
-   IMAGE :
-
-   image: "Quiz/images/zoro.jpg"
-
-   ou
-
-   image: ""
-
-   Si image = "" → aucun visuel n'est affiché.
-
-   ---------------------------------------------------------
-
-   EXPLICATION :
-
-   explication:
-       "Ton explication ici."
-
-   Tu peux en mettre une à chaque question,
-   ou laisser :
-
-   explication: ""
-
-   =========================================================
-   =========================================================
-*/
-
+   → Le joueur déplace les éléments avec le drag & drop.
+========================================================= */
 
 const questions = [
-
 
     /* =====================================================
        EXEMPLE 1 — REPONSE UNIQUE
     ===================================================== */
 
     {
-
         niveau: "EAST BLUE",
-
         difficulte: "Facile",
-
         mode: "unique",
 
         categorie: "Équipage",
 
-        question:
-            "Quel est le premier membre à rejoindre l'équipage de Luffy ?",
+        question: "Quel est le premier membre à rejoindre l'équipage de Luffy ?",
 
-        image:
-            "OpeningImages/OnePieceWeAre4k.jpg",
+        image: "",
 
         reponses: [
-
             "Nami",
             "Roronoa Zoro",
             "Usopp",
             "Sanji"
-
         ],
 
-        bonneReponse:
-            1,
+        bonneReponse: 1,
 
         explication:
-            "Zoro est le premier membre à rejoindre officiellement l'équipage de Luffy."
-
+            "Roronoa Zoro est le premier membre à rejoindre officiellement l'équipage de Luffy."
     },
 
 
@@ -1923,11 +846,8 @@ const questions = [
     ===================================================== */
 
     {
-
         niveau: "GRAND LINE",
-
         difficulte: "Moyen",
-
         mode: "multiple",
 
         categorie: "Équipage",
@@ -1935,30 +855,24 @@ const questions = [
         question:
             "Lesquels de ces personnages font partie de l'équipage de Luffy ?",
 
-        image:
-            "",
+        image: "",
 
         reponses: [
-
             "Zoro",
             "Nami",
             "Trafalgar Law",
             "Sanji",
             "Shanks"
-
         ],
 
         bonnesReponses: [
-
             0,
             1,
             3
-
         ],
 
         explication:
-            "Zoro, Nami et Sanji sont membres de l'équipage de Luffy."
-
+            "Zoro, Nami et Sanji sont membres de l'équipage de Luffy. Trafalgar Law et Shanks ne font pas partie de son équipage."
     },
 
 
@@ -1967,11 +881,8 @@ const questions = [
     ===================================================== */
 
     {
-
         niveau: "GRAND LINE",
-
         difficulte: "Moyen",
-
         mode: "libre",
 
         categorie: "Personnage",
@@ -1979,17 +890,14 @@ const questions = [
         question:
             "Quel est le nom du médecin de l'équipage de Luffy ?",
 
-        image:
-            "",
+        image: "",
 
         reponses: [],
 
-        bonneReponse:
-            "Tony Tony Chopper",
+        bonneReponse: "Tony Tony Chopper",
 
         explication:
-            "Chopper est le médecin de l'équipage des Mugiwara."
-
+            "Tony Tony Chopper est le médecin de l'équipage des Mugiwara."
     },
 
 
@@ -1998,11 +906,8 @@ const questions = [
     ===================================================== */
 
     {
-
         niveau: "NOUVEAU MONDE",
-
         difficulte: "Dur",
-
         mode: "vrai_faux",
 
         categorie: "Personnage",
@@ -2010,28 +915,22 @@ const questions = [
         question:
             "Ace est le frère biologique de Luffy.",
 
-        image:
-            "",
+        image: "",
 
-        bonneReponse:
-            false,
+        bonneReponse: false,
 
         explication:
             "Ace et Luffy ne sont pas frères biologiques. Ils sont frères jurés."
-
     },
 
 
     /* =====================================================
-       EXEMPLE 5 — REMETTRE DANS L'ORDRE
+       EXEMPLE 5 — ORDRE / DRAG & DROP
     ===================================================== */
 
     {
-
         niveau: "LAUGH TALE",
-
         difficulte: "Impossible",
-
         mode: "ordre",
 
         categorie: "Aventure",
@@ -2039,38 +938,27 @@ const questions = [
         question:
             "Remets ces événements dans l'ordre chronologique.",
 
-        image:
-            "",
+        image: "",
 
         reponses: [
-
             "Départ de Luffy",
             "Entrée dans Grand Line",
             "Enies Lobby",
             "Marineford"
-
         ],
 
         ordreCorrect: [
-
             "Départ de Luffy",
             "Entrée dans Grand Line",
             "Enies Lobby",
             "Marineford"
-
         ],
 
         explication:
-            "Ces événements sont présentés ici dans l'ordre chronologique de l'aventure."
-
+            "Ces événements sont ici présentés dans leur ordre chronologique."
     }
 
 ];
-
-
-/* =========================================================
-   FIN DE LA ZONE "MES QUESTIONS"
-========================================================= */
 
 
 /* =========================================================
@@ -2078,558 +966,314 @@ const questions = [
 ========================================================= */
 
 let currentQuestion = 0;
-
-let answered = false;
-
-let currentOrder = [];
+let selectedAnswer = null;
+let alreadyAnswered = false;
+let orderList = [];
+let draggedIndex = null;
 
 
 /* =========================================================
-   ECRAN
+   AFFICHER UN ECRAN
 ========================================================= */
 
 function showScreen(id) {
 
-    document
-        .querySelectorAll(".screen")
-        .forEach(screen => {
+    document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+    });
 
-            screen.classList.remove("active");
-
-        });
-
-
-    document
-        .getElementById(id)
-        .classList.add("active");
-
+    document.getElementById(id).classList.add("active");
 }
 
 
 /* =========================================================
-   DEMARRER
+   COMMENCER
 ========================================================= */
 
 function startQuiz() {
 
     currentQuestion = 0;
+    selectedAnswer = null;
+    alreadyAnswered = false;
 
     showScreen("quiz");
 
     loadQuestion();
-
 }
 
 
 /* =========================================================
-   CHARGER QUESTION
+   CHARGER UNE QUESTION
 ========================================================= */
 
 function loadQuestion() {
 
-    answered = false;
+    const q = questions[currentQuestion];
 
-    const q =
-        questions[currentQuestion];
+    alreadyAnswered = false;
+    selectedAnswer = null;
 
-
-    document
-        .getElementById("questionNumber")
-        .textContent =
-        currentQuestion + 1;
-
-
-    document
-        .getElementById("totalQuestions")
-        .textContent =
-        questions.length;
-
-
-    document
-        .getElementById("currentLevel")
-        .textContent =
+    document.getElementById("levelPill").textContent =
         q.niveau;
 
+    document.getElementById("progressText").textContent =
+        `Question ${currentQuestion + 1} / ${questions.length}`;
 
-    document
-        .getElementById("difficulty")
-        .textContent =
-        q.difficulte;
+    document.getElementById("progressFill").style.width =
+        `${((currentQuestion + 1) / questions.length) * 100}%`;
 
-
-    document
-        .getElementById("category")
-        .textContent =
+    document.getElementById("questionCategory").textContent =
         q.categorie;
 
-
-    document
-        .getElementById("question")
-        .textContent =
+    document.getElementById("questionTitle").textContent =
         q.question;
 
 
-    document
-        .getElementById("progressBar")
-        .style.width =
-        (
-            (currentQuestion + 1)
-            /
-            questions.length
-            *
-            100
-        ) + "%";
+    /* IMAGE */
 
+    const imageContainer = document.getElementById("questionImage");
+    const imageElement = document.getElementById("questionImageElement");
 
-    /* -----------------------------------------------------
-       IMAGE
-    ----------------------------------------------------- */
+    if (q.image && q.image.trim() !== "") {
 
-    const visual =
-        document.getElementById(
-            "questionVisual"
-        );
+        imageContainer.style.display = "block";
+        imageElement.src = q.image;
+        imageElement.alt = "Illustration de la question";
 
+    } else {
 
-    visual.innerHTML = "";
-
-    visual.classList.remove(
-        "has-image"
-    );
-
-
-    if (
-        q.image &&
-        q.image.trim() !== ""
-    ) {
-
-        const img =
-            document.createElement(
-                "img"
-            );
-
-
-        img.src =
-            q.image;
-
-
-        img.alt =
-            "Illustration de la question";
-
-
-        img.className =
-            "visual-image";
-
-
-        visual.classList.add(
-            "has-image"
-        );
-
-
-        visual.appendChild(
-            img
-        );
+        imageContainer.style.display = "none";
+        imageElement.src = "";
 
     }
 
 
-    /* -----------------------------------------------------
-       RESET
-    ----------------------------------------------------- */
+    /* RESET */
 
-    document
-        .getElementById("answers")
-        .innerHTML = "";
+    document.getElementById("answers").innerHTML = "";
 
+    document.getElementById("feedback").className =
+        "feedback";
 
-    document
-        .getElementById("explanation")
-        .classList.remove(
-            "show"
-        );
+    document.getElementById("feedback").textContent = "";
 
+    document.getElementById("explanation").className =
+        "explanation";
 
-    document
-        .getElementById("answerResult")
-        .className =
-        "answer-result";
+    document.getElementById("explanation").textContent = "";
 
-
-    document
-        .getElementById("answerResult")
-        .textContent =
-        "";
-
-
-    document
-        .getElementById("nextWrapper")
-        .style.display =
+    document.getElementById("nextBtn").style.display =
         "none";
 
 
-    closeSkipMenu();
+    /* MODE */
 
+    if (q.mode === "unique") {
+        createUniqueQuestion(q);
+    }
 
-    /* -----------------------------------------------------
-       MODE
-    ----------------------------------------------------- */
+    else if (q.mode === "multiple") {
+        createMultipleQuestion(q);
+    }
 
-    switch(q.mode) {
+    else if (q.mode === "libre") {
+        createFreeQuestion(q);
+    }
 
-        case "unique":
+    else if (q.mode === "vrai_faux") {
+        createTrueFalseQuestion(q);
+    }
 
-            createUniqueQuestion(q);
-
-            break;
-
-
-        case "multiple":
-
-            createMultipleQuestion(q);
-
-            break;
-
-
-        case "libre":
-
-            createFreeQuestion(q);
-
-            break;
-
-
-        case "vrai_faux":
-
-            createTrueFalseQuestion(q);
-
-            break;
-
-
-        case "ordre":
-
-            createOrderQuestion(q);
-
-            break;
-
-
-        default:
-
-            console.error(
-                "Mode inconnu :",
-                q.mode
-            );
-
+    else if (q.mode === "ordre") {
+        createOrderQuestion(q);
     }
 
 }
 
 
 /* =========================================================
-   UNIQUE
+   REPONSE UNIQUE
 ========================================================= */
 
 function createUniqueQuestion(q) {
 
-    const container =
-        document.getElementById(
-            "answers"
-        );
+    const container = document.getElementById("answers");
 
+    q.reponses.forEach((answer, index) => {
 
-    q.reponses.forEach(
-        (answer, index) => {
+        const button = document.createElement("button");
 
-            const button =
-                document.createElement(
-                    "button"
-                );
+        button.className = "answer";
+        button.textContent = answer;
 
+        button.addEventListener("click", () => {
 
-            button.className =
-                "answer";
+            if (alreadyAnswered) return;
 
+            /*
+                PREMIER CLIC :
+                sélection uniquement
+            */
 
-            button.innerHTML = `
+            if (selectedAnswer !== index) {
 
-                <span class="answer-letter">
-                    ${String.fromCharCode(65 + index)}
-                </span>
+                selectedAnswer = index;
 
-                <span>
-                    ${answer}
-                </span>
+                document.querySelectorAll(".answer").forEach(btn => {
+                    btn.classList.remove("selected");
+                });
 
-            `;
+                button.classList.add("selected");
 
+                return;
+            }
 
-            button.onclick =
-                () =>
-                    checkUnique(
-                        index,
-                        button
-                    );
+            /*
+                DEUXIEME CLIC :
+                validation
+            */
 
+            checkUnique(index);
 
-            container.appendChild(
-                button
-            );
+        });
 
-        }
-    );
+        container.appendChild(button);
+
+    });
 
 }
 
 
 /* =========================================================
-   VERIFIER UNIQUE
+   VERIFICATION REPONSE UNIQUE
 ========================================================= */
 
-function checkUnique(
-    index,
-    clickedButton
-) {
+function checkUnique(index) {
 
-    if (answered)
-        return;
+    if (alreadyAnswered) return;
 
+    alreadyAnswered = true;
 
-    answered = true;
+    const q = questions[currentQuestion];
 
+    const buttons = document.querySelectorAll(".answer");
 
-    const q =
-        questions[currentQuestion];
+    buttons.forEach((button, i) => {
 
+        button.disabled = true;
 
-    const buttons =
-        document.querySelectorAll(
-            ".answer"
-        );
+        if (i === q.bonneReponse) {
+            button.classList.add("correct");
+        }
 
+        if (i === index && i !== q.bonneReponse) {
+            button.classList.add("wrong");
+        }
 
-    buttons.forEach(
-        button =>
-            button.disabled = true
-    );
+    });
 
+    const correct = index === q.bonneReponse;
 
-    buttons[q.bonneReponse]
-        .classList
-        .add("correct");
-
-
-    if (
-        index ===
-        q.bonneReponse
-    ) {
-
-        clickedButton
-            .classList
-            .add("correct");
-
-
-        showResult(
-            true,
-            "Bonne réponse ! ✓"
-        );
-
-    }
-
-    else {
-
-        clickedButton
-            .classList
-            .add("wrong");
-
-
-        showResult(
-            false,
-            "Mauvaise réponse."
-        );
-
-    }
+    showResult(correct);
 
 }
 
 
 /* =========================================================
-   MULTIPLE
+   REPONSES MULTIPLES
 ========================================================= */
 
 function createMultipleQuestion(q) {
 
-    const container =
-        document.getElementById(
-            "answers"
-        );
+    const container = document.getElementById("answers");
+
+    document.getElementById("doubleClickHelp").textContent =
+        "Sélectionne toutes les réponses que tu veux, puis valide.";
+
+    q.reponses.forEach((answer, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "answer";
+        button.textContent = answer;
+
+        button.addEventListener("click", () => {
+
+            if (alreadyAnswered) return;
+
+            button.classList.toggle("selected");
+
+        });
+
+        container.appendChild(button);
+
+    });
 
 
-    q.reponses.forEach(
-        (answer, index) => {
+    const validate = document.createElement("button");
 
-            const button =
-                document.createElement(
-                    "button"
-                );
+    validate.className = "validate-btn";
+    validate.textContent = "Valider les réponses";
 
+    validate.style.marginTop = "15px";
+    validate.style.padding = "14px 20px";
 
-            button.className =
-                "answer";
+    validate.addEventListener("click", checkMultiple);
 
-
-            button.innerHTML = `
-
-                <span class="answer-letter">
-                    ${String.fromCharCode(65 + index)}
-                </span>
-
-                <span>
-                    ${answer}
-                </span>
-
-            `;
-
-
-            button.onclick =
-                () => {
-
-                    if (answered)
-                        return;
-
-                    button.classList.toggle(
-                        "selected"
-                    );
-
-                };
-
-
-            container.appendChild(
-                button
-            );
-
-        }
-    );
-
-
-    const validate =
-        document.createElement(
-            "button"
-        );
-
-
-    validate.className =
-        "validate-btn";
-
-
-    validate.textContent =
-        "Valider les réponses";
-
-
-    validate.style.marginTop =
-        "15px";
-
-
-    validate.onclick =
-        checkMultiple;
-
-
-    container.appendChild(
-        validate
-    );
+    container.appendChild(validate);
 
 }
 
 
 /* =========================================================
-   VERIFIER MULTIPLE
+   VERIFICATION MULTIPLE
 ========================================================= */
 
 function checkMultiple() {
 
-    if (answered)
-        return;
+    if (alreadyAnswered) return;
 
+    alreadyAnswered = true;
 
-    answered = true;
-
-
-    const q =
-        questions[currentQuestion];
-
+    const q = questions[currentQuestion];
 
     const buttons =
-        document.querySelectorAll(
-            ".answer"
-        );
-
+        document.querySelectorAll("#answers .answer");
 
     const selected = [];
 
+    buttons.forEach((button, index) => {
 
-    buttons.forEach(
-        (button, index) => {
-
-            if (
-                button.classList.contains(
-                    "selected"
-                )
-            ) {
-
-                selected.push(index);
-
-            }
-
+        if (button.classList.contains("selected")) {
+            selected.push(index);
         }
-    );
+
+        button.disabled = true;
+
+    });
 
 
     const correct =
-        [...selected]
-            .sort()
-            .join(",") ===
-
-        [...q.bonnesReponses]
-            .sort()
-            .join(",");
+        selected.length === q.bonnesReponses.length &&
+        selected.every(index =>
+            q.bonnesReponses.includes(index)
+        );
 
 
-    buttons.forEach(
-        (button, index) => {
+    buttons.forEach((button, index) => {
 
-            button.disabled = true;
-
-
-            if (
-                q.bonnesReponses
-                    .includes(index)
-            ) {
-
-                button.classList.add(
-                    "correct"
-                );
-
-            }
-
-            else if (
-                button.classList.contains(
-                    "selected"
-                )
-            ) {
-
-                button.classList.add(
-                    "wrong"
-                );
-
-            }
-
+        if (q.bonnesReponses.includes(index)) {
+            button.classList.add("correct");
         }
-    );
+
+        else if (button.classList.contains("selected")) {
+            button.classList.add("wrong");
+        }
+
+    });
 
 
-    showResult(
-        correct,
-        correct
-            ? "Toutes les bonnes réponses ! ✓"
-            : "La sélection n'est pas correcte."
-    );
+    showResult(correct);
 
 }
 
@@ -2640,139 +1284,68 @@ function checkMultiple() {
 
 function createFreeQuestion(q) {
 
-    const container =
-        document.getElementById(
-            "answers"
-        );
+    document.getElementById("doubleClickHelp").textContent = "";
 
+    const container = document.getElementById("answers");
 
-    const wrapper =
-        document.createElement(
-            "div"
-        );
+    const wrapper = document.createElement("div");
 
+    wrapper.className = "free-answer";
 
-    wrapper.className =
-        "free-answer";
+    const input = document.createElement("input");
 
+    input.type = "text";
+    input.placeholder = "Écris ta réponse...";
 
-    const input =
-        document.createElement(
-            "input"
-        );
+    const button = document.createElement("button");
 
+    button.className = "validate-btn";
+    button.textContent = "Valider";
 
-    input.placeholder =
-        "Écris ta réponse...";
+    button.addEventListener("click", checkFreeAnswer);
 
+    input.addEventListener("keydown", event => {
 
-    input.id =
-        "freeInput";
-
-
-    const button =
-        document.createElement(
-            "button"
-        );
-
-
-    button.className =
-        "validate-btn";
-
-
-    button.textContent =
-        "Valider";
-
-
-    button.onclick =
-        checkFreeAnswer;
-
-
-    input.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key ===
-                "Enter"
-            ) {
-
-                checkFreeAnswer();
-
-            }
-
+        if (event.key === "Enter") {
+            checkFreeAnswer();
         }
-    );
 
+    });
 
-    wrapper.appendChild(
-        input
-    );
+    wrapper.appendChild(input);
+    wrapper.appendChild(button);
 
-
-    wrapper.appendChild(
-        button
-    );
-
-
-    container.appendChild(
-        wrapper
-    );
+    container.appendChild(wrapper);
 
 }
 
 
 /* =========================================================
-   VERIFIER LIBRE
+   VERIFICATION REPONSE LIBRE
 ========================================================= */
 
 function checkFreeAnswer() {
 
-    if (answered)
-        return;
+    if (alreadyAnswered) return;
 
-
-    answered = true;
-
-
-    const q =
-        questions[currentQuestion];
-
+    const q = questions[currentQuestion];
 
     const input =
-        document.getElementById(
-            "freeInput"
-        );
+        document.querySelector(".free-answer input");
 
+    const userAnswer = normalize(input.value);
 
-    const userAnswer =
-        normalize(
-            input.value
-        );
+    const correctAnswer = normalize(q.bonneReponse);
 
+    const correct = userAnswer === correctAnswer;
 
-    const correctAnswer =
-        normalize(
-            q.bonneReponse
-        );
+    alreadyAnswered = true;
 
+    input.disabled = true;
 
-    const correct =
-        userAnswer ===
-        correctAnswer;
+    document.querySelector(".validate-btn").disabled = true;
 
-
-    input.disabled =
-        true;
-
-
-    showResult(
-        correct,
-        correct
-            ? "Bonne réponse ! ✓"
-            : "Mauvaise réponse. Réponse attendue : "
-              + q.bonneReponse
-    );
+    showResult(correct);
 
 }
 
@@ -2783,448 +1356,435 @@ function checkFreeAnswer() {
 
 function createTrueFalseQuestion(q) {
 
-    const container =
-        document.getElementById(
-            "answers"
-        );
+    const container = document.getElementById("answers");
+
+    document.getElementById("doubleClickHelp").textContent =
+        "Clique une première fois pour sélectionner, puis une deuxième fois pour valider.";
+
+    const trueButton = document.createElement("button");
+
+    trueButton.textContent = "Vrai";
+
+    const falseButton = document.createElement("button");
+
+    falseButton.textContent = "Faux";
 
 
-    ["Vrai", "Faux"].forEach(
-        (answer, index) => {
+    trueButton.addEventListener("click", () => {
 
-            const button =
-                document.createElement(
-                    "button"
-                );
+        handleTrueFalseSelection(true, trueButton);
+
+    });
 
 
-            button.className =
-                "answer";
+    falseButton.addEventListener("click", () => {
+
+        handleTrueFalseSelection(false, falseButton);
+
+    });
 
 
-            button.innerHTML = `
-
-                <span class="answer-letter">
-                    ${index === 0 ? "V" : "F"}
-                </span>
-
-                <span>
-                    ${answer}
-                </span>
-
-            `;
-
-
-            button.onclick =
-                () =>
-                    checkTrueFalse(
-                        index === 0,
-                        button
-                    );
-
-
-            container.appendChild(
-                button
-            );
-
-        }
-    );
+    container.appendChild(trueButton);
+    container.appendChild(falseButton);
 
 }
 
 
 /* =========================================================
-   VERIFIER VRAI / FAUX
+   SELECTION VRAI / FAUX
 ========================================================= */
 
-function checkTrueFalse(
-    value,
-    clickedButton
-) {
+function handleTrueFalseSelection(value, button) {
 
-    if (answered)
+    if (alreadyAnswered) return;
+
+
+    /*
+        PREMIER CLIC :
+        sélection
+    */
+
+    if (selectedAnswer !== value) {
+
+        selectedAnswer = value;
+
+        document.querySelectorAll(".true-false button")
+            .forEach(btn => btn.classList.remove("selected"));
+
+        /*
+            Les boutons ne sont pas encore dans
+            .true-false : on utilise directement
+            le container.
+        */
+
+        document.querySelectorAll("#answers > button")
+            .forEach(btn => btn.classList.remove("selected"));
+
+        button.classList.add("selected");
+
         return;
-
-
-    answered = true;
-
-
-    const q =
-        questions[currentQuestion];
-
-
-    const buttons =
-        document.querySelectorAll(
-            ".answer"
-        );
-
-
-    buttons.forEach(
-        button =>
-            button.disabled = true
-    );
-
-
-    const correctIndex =
-        q.bonneReponse
-            ? 0
-            : 1;
-
-
-    buttons[correctIndex]
-        .classList
-        .add("correct");
-
-
-    if (
-        value ===
-        q.bonneReponse
-    ) {
-
-        clickedButton
-            .classList
-            .add("correct");
-
-
-        showResult(
-            true,
-            "Bonne réponse ! ✓"
-        );
-
     }
 
-    else {
 
-        clickedButton
-            .classList
-            .add("wrong");
+    /*
+        DEUXIEME CLIC :
+        validation
+    */
 
-
-        showResult(
-            false,
-            "Mauvaise réponse."
-        );
-
-    }
+    checkTrueFalse(value);
 
 }
 
 
 /* =========================================================
-   ORDRE
+   VERIFICATION VRAI / FAUX
+========================================================= */
+
+function checkTrueFalse(value) {
+
+    if (alreadyAnswered) return;
+
+    alreadyAnswered = true;
+
+    const q = questions[currentQuestion];
+
+    const buttons =
+        document.querySelectorAll("#answers > button");
+
+    buttons.forEach(button => {
+
+        button.disabled = true;
+
+    });
+
+
+    const correct = value === q.bonneReponse;
+
+    buttons.forEach(button => {
+
+        const buttonValue =
+            button.textContent === "Vrai";
+
+        if (buttonValue === q.bonneReponse) {
+            button.classList.add("correct");
+        }
+
+        if (buttonValue === value && !correct) {
+            button.classList.add("wrong");
+        }
+
+    });
+
+
+    showResult(correct);
+
+}
+
+
+/* =========================================================
+   ORDRE — DRAG & DROP
 ========================================================= */
 
 function createOrderQuestion(q) {
 
-    const container =
-        document.getElementById(
-            "answers"
-        );
+    document.getElementById("doubleClickHelp").textContent =
+        "Fais glisser les éléments pour les remettre dans le bon ordre.";
+
+    orderList = [...q.reponses];
+
+    renderOrderList();
+
+}
 
 
-    currentOrder =
-        [...q.reponses];
+/* =========================================================
+   AFFICHER LA LISTE
+========================================================= */
+
+function renderOrderList() {
+
+    const container = document.getElementById("answers");
+
+    container.innerHTML = "";
+
+    const list = document.createElement("div");
+
+    list.className = "order-list";
+
+    orderList.forEach((item, index) => {
+
+        const element = document.createElement("div");
+
+        element.className = "order-item";
+
+        element.draggable = true;
+
+        element.dataset.index = index;
 
 
-    const list =
-        document.createElement(
-            "div"
-        );
+        const handle = document.createElement("div");
+
+        handle.className = "order-handle";
+
+        handle.textContent = "⋮⋮";
 
 
-    list.className =
-        "order-list";
+        const number = document.createElement("div");
+
+        number.className = "order-number";
+
+        number.textContent = index + 1;
 
 
-    renderOrderList(
-        list
-    );
+        const text = document.createElement("div");
+
+        text.className = "order-text";
+
+        text.textContent = item;
 
 
-    container.appendChild(
-        list
-    );
+        element.appendChild(handle);
+        element.appendChild(number);
+        element.appendChild(text);
 
 
-    const validate =
-        document.createElement(
-            "button"
-        );
+        /* DRAG START */
+
+        element.addEventListener("dragstart", () => {
+
+            draggedIndex = index;
+
+            element.classList.add("dragging");
+
+        });
 
 
-    validate.className =
-        "validate-btn";
+        /* DRAG END */
 
+        element.addEventListener("dragend", () => {
+
+            element.classList.remove("dragging");
+
+        });
+
+
+        /* DRAG OVER */
+
+        element.addEventListener("dragover", event => {
+
+            event.preventDefault();
+
+        });
+
+
+        /* DROP */
+
+        element.addEventListener("drop", event => {
+
+            event.preventDefault();
+
+            const targetIndex =
+                Number(element.dataset.index);
+
+            if (draggedIndex === null) return;
+
+            if (draggedIndex === targetIndex) return;
+
+
+            const draggedItem =
+                orderList.splice(draggedIndex, 1)[0];
+
+            orderList.splice(targetIndex, 0, draggedItem);
+
+            draggedIndex = null;
+
+            renderOrderList();
+
+        });
+
+
+        list.appendChild(element);
+
+    });
+
+
+    container.appendChild(list);
+
+
+    const validate = document.createElement("button");
+
+    validate.className = "validate-btn";
 
     validate.textContent =
         "Valider l'ordre";
 
+    validate.style.marginTop = "15px";
+    validate.style.padding = "14px 20px";
 
-    validate.style.marginTop =
-        "15px";
+    validate.addEventListener("click", checkOrder);
 
-
-    validate.onclick =
-        () =>
-            checkOrder(list);
-
-
-    container.appendChild(
-        validate
-    );
+    container.appendChild(validate);
 
 }
 
 
 /* =========================================================
-   AFFICHER ORDRE
-========================================================= */
-
-function renderOrderList(list) {
-
-    list.innerHTML = "";
-
-
-    currentOrder.forEach(
-        (item, index) => {
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-
-            row.className =
-                "order-item";
-
-
-            row.innerHTML = `
-
-                <span class="order-number">
-                    ${index + 1}
-                </span>
-
-                <span>
-                    ${item}
-                </span>
-
-                <div class="order-buttons">
-
-                    <button
-                        class="order-arrow"
-                        onclick="moveOrder(${index}, -1)"
-                    >
-                        ↑
-                    </button>
-
-                    <button
-                        class="order-arrow"
-                        onclick="moveOrder(${index}, 1)"
-                    >
-                        ↓
-                    </button>
-
-                </div>
-
-            `;
-
-
-            list.appendChild(
-                row
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   BOUGER ORDRE
-========================================================= */
-
-function moveOrder(
-    index,
-    direction
-) {
-
-    if (answered)
-        return;
-
-
-    const newIndex =
-        index + direction;
-
-
-    if (
-        newIndex < 0 ||
-        newIndex >= currentOrder.length
-    ) {
-
-        return;
-
-    }
-
-
-    [
-        currentOrder[index],
-        currentOrder[newIndex]
-
-    ] = [
-
-        currentOrder[newIndex],
-        currentOrder[index]
-
-    ];
-
-
-    const list =
-        document.querySelector(
-            ".order-list"
-        );
-
-
-    renderOrderList(
-        list
-    );
-
-}
-
-
-/* =========================================================
-   VERIFIER ORDRE
+   VERIFICATION ORDRE
 ========================================================= */
 
 function checkOrder() {
 
-    if (answered)
-        return;
+    if (alreadyAnswered) return;
 
+    alreadyAnswered = true;
 
-    answered = true;
-
-
-    const q =
-        questions[currentQuestion];
-
+    const q = questions[currentQuestion];
 
     const correct =
-        JSON.stringify(
-            currentOrder
-        ) ===
-
-        JSON.stringify(
-            q.ordreCorrect
+        orderList.every((item, index) =>
+            item === q.ordreCorrect[index]
         );
 
 
-    document
-        .querySelectorAll(
-            ".order-arrow"
-        )
-        .forEach(
-            button =>
-                button.disabled = true
-        );
+    document.querySelector(".validate-btn").disabled = true;
 
-
-    showResult(
-        correct,
-        correct
-            ? "Ordre correct ! ✓"
-            : "L'ordre n'est pas correct."
-    );
+    showResult(correct);
 
 }
 
 
 /* =========================================================
-   RESULTAT IMMEDIAT
+   AFFICHER RESULTAT + EXPLICATION
 ========================================================= */
 
-function showResult(
-    correct,
-    message
-) {
+function showResult(correct) {
 
-    const result =
-        document.getElementById(
-            "answerResult"
-        );
+    const q = questions[currentQuestion];
 
+    const feedback =
+        document.getElementById("feedback");
 
-    result.textContent =
-        message;
+    const explanation =
+        document.getElementById("explanation");
 
+    if (correct) {
 
-    result.className =
-        "answer-result show " +
-        (
-            correct
-                ? "correct"
-                : "wrong"
-        );
+        feedback.className = "feedback correct";
+        feedback.textContent = "Bonne réponse !";
 
+    } else {
 
-    const q =
-        questions[currentQuestion];
-
-
-    if (
-        q.explanation &&
-        q.explanation.trim() !== ""
-    ) {
-
-        document
-            .getElementById(
-                "explanationText"
-            )
-            .textContent =
-            q.explanation;
-
-
-        document
-            .getElementById(
-                "explanation"
-            )
-            .classList
-            .add("show");
+        feedback.className = "feedback wrong";
+        feedback.textContent = "Mauvaise réponse.";
 
     }
 
 
-    document
-        .getElementById(
-            "nextWrapper"
-        )
-        .style.display =
-        "flex";
+    /*
+        L'EXPLICATION EST TOUJOURS AFFICHÉE,
+        que la réponse soit bonne ou mauvaise.
+    */
+
+    if (q.explication && q.explication.trim() !== "") {
+
+        explanation.textContent =
+            q.explication;
+
+        explanation.className =
+            "explanation visible";
+
+    }
+
+
+    /*
+        Pour les mauvaises réponses,
+        on peut afficher la bonne réponse
+        pour les modes concernés.
+    */
+
+    if (!correct) {
+
+        let correctText = "";
+
+        if (q.mode === "unique") {
+
+            correctText =
+                `Bonne réponse : ${q.reponses[q.bonneReponse]}`;
+
+        }
+
+        else if (q.mode === "multiple") {
+
+            correctText =
+                "Bonnes réponses : " +
+                q.bonnesReponses
+                    .map(index => q.reponses[index])
+                    .join(", ");
+
+        }
+
+        else if (q.mode === "libre") {
+
+            correctText =
+                `Bonne réponse : ${q.bonneReponse}`;
+
+        }
+
+        else if (q.mode === "vrai_faux") {
+
+            correctText =
+                `Bonne réponse : ${q.bonneReponse ? "Vrai" : "Faux"}`;
+
+        }
+
+        else if (q.mode === "ordre") {
+
+            correctText =
+                `Ordre correct : ${q.ordreCorrect.join(" → ")}`;
+
+        }
+
+
+        if (correctText !== "") {
+
+            const correctInfo =
+                document.createElement("div");
+
+            correctInfo.style.marginTop = "10px";
+            correctInfo.style.color = "#aaa";
+            correctInfo.style.fontSize = "14px";
+
+            correctInfo.textContent = correctText;
+
+            explanation.appendChild(correctInfo);
+
+        }
+
+    }
+
+
+    document.getElementById("doubleClickHelp").style.display =
+        "none";
+
+    document.getElementById("nextBtn").style.display =
+        "block";
 
 }
 
 
 /* =========================================================
-   NORMALISER UNE REPONSE
+   NORMALISATION REPONSE LIBRE
 ========================================================= */
 
 function normalize(text) {
 
     return text
-
         .toLowerCase()
-
         .normalize("NFD")
-
-        .replace(
-            /[\u0300-\u036f]/g,
-            ""
-        )
-
-        .replace(
-            /[^a-z0-9]/g,
-            ""
-        )
-
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[’']/g, "")
+        .replace(/[^\w\s]/g, "")
+        .replace(/\s+/g, " ")
         .trim();
 
 }
@@ -3238,23 +1798,15 @@ function nextQuestion() {
 
     currentQuestion++;
 
+    if (currentQuestion >= questions.length) {
 
-    if (
-        currentQuestion >=
-        questions.length
-    ) {
+        showScreen("result");
 
-        showScreen(
-            "result"
-        );
+        return;
 
     }
 
-    else {
-
-        loadQuestion();
-
-    }
+    loadQuestion();
 
 }
 
@@ -3266,54 +1818,37 @@ function nextQuestion() {
 function toggleSkipMenu() {
 
     document
-        .getElementById(
-            "skipMenu"
-        )
-        .classList
-        .toggle("show");
-
-}
-
-
-function closeSkipMenu() {
-
-    document
-        .getElementById(
-            "skipMenu"
-        )
-        .classList
-        .remove("show");
+        .getElementById("skipMenu")
+        .classList.toggle("open");
 
 }
 
 
 /* =========================================================
-   ALLER A UN NIVEAU
+   FERMER MENU
+========================================================= */
+
+function closeSkipMenu() {
+
+    document
+        .getElementById("skipMenu")
+        .classList.remove("open");
+
+}
+
+
+/* =========================================================
+   ALLER A UNE DIFFICULTE
 ========================================================= */
 
 function goToLevel(level) {
 
     const index =
-        questions.findIndex(
-            question =>
-                question.niveau === level
-        );
+        questions.findIndex(q => q.niveau === level);
 
+    if (index === -1) return;
 
-    if (index === -1) {
-
-        alert(
-            "Aucune question de ce niveau pour le moment."
-        );
-
-        return;
-
-    }
-
-
-    currentQuestion =
-        index;
-
+    currentQuestion = index;
 
     closeSkipMenu();
 
@@ -3323,35 +1858,23 @@ function goToLevel(level) {
 
 
 /* =========================================================
-   FERME LE MENU SI ON CLIQUE AILLEURS
+   CLIQUER AILLEURS = FERMER LE MENU
 ========================================================= */
 
-document.addEventListener(
-    "click",
-    event => {
+document.addEventListener("click", event => {
 
-        const container =
-            document.querySelector(
-                ".skip-container"
-            );
+    const skipContainer =
+        document.querySelector(".skip-container");
 
+    if (!skipContainer.contains(event.target)) {
 
-        if (
-            container &&
-            !container.contains(
-                event.target
-            )
-        ) {
-
-            closeSkipMenu();
-
-        }
+        closeSkipMenu();
 
     }
-);
+
+});
 
 </script>
 
 </body>
-
 </html>
