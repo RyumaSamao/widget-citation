@@ -33,7 +33,6 @@
 
     --green: #32d583;
     --wrong: #ff5263;
-
 }
 
 
@@ -82,14 +81,11 @@ body {
         );
 
     overflow-x: hidden;
-
 }
 
 button,
 input {
-
     font: inherit;
-
 }
 
 
@@ -108,11 +104,9 @@ input {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     padding: 45px 0;
-
 }
 
 
@@ -127,32 +121,22 @@ input {
     display: none;
 
     animation: appear .35s ease;
-
 }
 
 .screen.active {
     display: block;
 }
 
-
 @keyframes appear {
 
     from {
-
         opacity: 0;
-
-        transform:
-            translateY(12px);
-
+        transform: translateY(12px);
     }
 
     to {
-
         opacity: 1;
-
-        transform:
-            translateY(0);
-
+        transform: translateY(0);
     }
 
 }
@@ -163,13 +147,9 @@ input {
 ========================================================= */
 
 .home {
-
     text-align: center;
-
 }
 
-
-/* Logo Mugiwara */
 
 .logo {
 
@@ -205,30 +185,17 @@ input {
         rgba(217,39,53,.10);
 
     overflow: hidden;
-
 }
 
 
 .logo img {
 
-    width: 72px;
-    height: 72px;
+    width: 76px;
+    height: 76px;
 
     object-fit: contain;
-
 }
 
-
-/* Si le fichier logo n'existe pas */
-
-.logo-fallback {
-
-    font-size: 48px;
-
-}
-
-
-/* Titre */
 
 .home h1 {
 
@@ -240,15 +207,65 @@ input {
     font-weight: 950;
 
     letter-spacing: -4px;
-
 }
 
 
 .home h1 span {
+    color: var(--red);
+}
 
-    color:
-        var(--red);
 
+/* =========================================================
+   BOUTON COMMENCER
+   Même esprit que la première version
+========================================================= */
+
+.start-btn {
+
+    border: 0;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--red),
+            #ef3f4b
+        );
+
+    padding:
+        18px 48px;
+
+    border-radius:
+        18px;
+
+    font-size:
+        18px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 15px 40px
+        rgba(217,39,53,.25);
+
+    transition:
+        .2s;
+}
+
+
+.start-btn:hover {
+
+    transform:
+        translateY(-4px)
+        scale(1.02);
+
+    box-shadow:
+        0 20px 50px
+        rgba(217,39,53,.40);
 }
 
 
@@ -263,13 +280,14 @@ input {
     margin:
         50px auto 0;
 
-    display: grid;
+    display:
+        grid;
 
     grid-template-columns:
         repeat(4, 1fr);
 
-    gap: 10px;
-
+    gap:
+        10px;
 }
 
 
@@ -287,7 +305,6 @@ input {
     border:
         1px solid
         rgba(255,255,255,.07);
-
 }
 
 
@@ -307,7 +324,6 @@ input {
 
     margin-bottom:
         7px;
-
 }
 
 
@@ -318,11 +334,11 @@ input {
 
     font-weight:
         850;
-
 }
 
 
 .level:nth-child(1) {
+
     border-color:
         rgba(255,255,255,.13);
 }
@@ -336,12 +352,11 @@ input {
             rgba(217,39,53,.10),
             rgba(255,255,255,.025)
         );
-
 }
 
 
 /* =========================================================
-   QUIZ TOP
+   HAUT DU QUIZ
 ========================================================= */
 
 .quiz-top {
@@ -357,7 +372,6 @@ input {
 
     margin-bottom:
         16px;
-
 }
 
 
@@ -384,16 +398,19 @@ input {
     border:
         1px solid
         rgba(217,39,53,.22);
-
 }
 
 
 .level-dot {
 
-    width: 7px;
-    height: 7px;
+    width:
+        7px;
 
-    border-radius: 50%;
+    height:
+        7px;
+
+    border-radius:
+        50%;
 
     background:
         var(--red);
@@ -401,7 +418,6 @@ input {
     box-shadow:
         0 0 12px
         var(--red);
-
 }
 
 
@@ -412,11 +428,19 @@ input {
 
     font-weight:
         850;
-
 }
 
 
-/* Bouton passer */
+/* =========================================================
+   BOUTON PASSER + MINI MENU
+========================================================= */
+
+.skip-container {
+
+    position:
+        relative;
+}
+
 
 .skip-btn {
 
@@ -444,7 +468,6 @@ input {
 
     transition:
         .2s;
-
 }
 
 
@@ -455,7 +478,122 @@ input {
 
     background:
         rgba(255,255,255,.07);
+}
 
+
+/* Menu caché */
+
+.skip-menu {
+
+    position:
+        absolute;
+
+    top:
+        calc(100% + 8px);
+
+    right:
+        0;
+
+    width:
+        190px;
+
+    padding:
+        7px;
+
+    background:
+        #111318;
+
+    border:
+        1px solid
+        rgba(255,255,255,.10);
+
+    border-radius:
+        13px;
+
+    box-shadow:
+        0 20px 50px
+        rgba(0,0,0,.45);
+
+    z-index:
+        20;
+
+    display:
+        none;
+}
+
+
+.skip-menu.show {
+    display:
+        block;
+
+    animation:
+        appear .18s ease;
+}
+
+
+.skip-menu-title {
+
+    padding:
+        8px 10px;
+
+    color:
+        #6f7480;
+
+    font-size:
+        10px;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        1.3px;
+
+    font-weight:
+        900;
+}
+
+
+.skip-option {
+
+    width:
+        100%;
+
+    padding:
+        10px;
+
+    border:
+        0;
+
+    border-radius:
+        9px;
+
+    background:
+        transparent;
+
+    color:
+        #c6c9d1;
+
+    text-align:
+        left;
+
+    cursor:
+        pointer;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+}
+
+
+.skip-option:hover {
+
+    background:
+        rgba(255,255,255,.07);
+
+    color:
+        white;
 }
 
 
@@ -479,15 +617,16 @@ input {
 
     margin-bottom:
         7px;
-
 }
 
 
 .progress {
 
-    width: 100%;
+    width:
+        100%;
 
-    height: 5px;
+    height:
+        5px;
 
     background:
         rgba(255,255,255,.06);
@@ -500,13 +639,13 @@ input {
 
     margin-bottom:
         22px;
-
 }
 
 
 .progress-bar {
 
-    height: 100%;
+    height:
+        100%;
 
     background:
         linear-gradient(
@@ -517,7 +656,6 @@ input {
 
     transition:
         width .35s ease;
-
 }
 
 
@@ -547,12 +685,11 @@ input {
     box-shadow:
         0 30px 90px
         rgba(0,0,0,.38);
-
 }
 
 
 /* =========================================================
-   IMAGE / VISUEL
+   IMAGE
 ========================================================= */
 
 .question-visual {
@@ -586,85 +723,13 @@ input {
             rgba(217,39,53,.13),
             transparent 55%
         );
-
 }
 
 
-.question-visual::before {
+.question-visual.has-image {
 
-    content: "";
-
-    position: absolute;
-
-    width: 270px;
-    height: 270px;
-
-    border-radius:
-        50%;
-
-    border:
-        1px solid
-        rgba(217,39,53,.10);
-
-    animation:
-        spin 25s linear infinite;
-
-}
-
-
-.question-visual::after {
-
-    content: "";
-
-    position: absolute;
-
-    width: 190px;
-    height: 190px;
-
-    border-radius:
-        50%;
-
-    border:
-        1px dashed
-        rgba(255,255,255,.06);
-
-    animation:
-        spinReverse 18s linear infinite;
-
-}
-
-
-@keyframes spin {
-
-    to {
-        transform:
-            rotate(360deg);
-    }
-
-}
-
-
-@keyframes spinReverse {
-
-    to {
-        transform:
-            rotate(-360deg);
-    }
-
-}
-
-
-.visual-icon {
-
-    position:
-        relative;
-
-    z-index:
-        2;
-
-    font-size:
-        70px;
-
+    padding:
+        15px;
 }
 
 
@@ -677,10 +742,10 @@ input {
         3;
 
     max-width:
-        85%;
+        90%;
 
     max-height:
-        155px;
+        160px;
 
     object-fit:
         contain;
@@ -691,19 +756,17 @@ input {
     box-shadow:
         0 15px 35px
         rgba(0,0,0,.45);
-
 }
 
 
 /* =========================================================
-   CONTENU QUESTION
+   CONTENU
 ========================================================= */
 
 .question-content {
 
     padding:
         32px 38px 35px;
-
 }
 
 
@@ -726,7 +789,6 @@ input {
 
     margin-bottom:
         13px;
-
 }
 
 
@@ -746,7 +808,6 @@ input {
 
     margin-bottom:
         28px;
-
 }
 
 
@@ -764,7 +825,6 @@ input {
 
     gap:
         11px;
-
 }
 
 
@@ -812,7 +872,6 @@ input {
 
     transition:
         .18s;
-
 }
 
 
@@ -826,7 +885,6 @@ input {
 
     border-color:
         rgba(255,255,255,.16);
-
 }
 
 
@@ -864,7 +922,6 @@ input {
 
     font-weight:
         900;
-
 }
 
 
@@ -875,7 +932,6 @@ input {
 
     border-color:
         var(--green);
-
 }
 
 
@@ -886,7 +942,6 @@ input {
 
     color:
         #06130d;
-
 }
 
 
@@ -897,7 +952,6 @@ input {
 
     border-color:
         var(--wrong);
-
 }
 
 
@@ -908,15 +962,12 @@ input {
 
     color:
         white;
-
 }
 
 
 .answer:disabled {
-
     cursor:
         default;
-
 }
 
 
@@ -931,7 +982,6 @@ input {
 
     background:
         rgba(217,39,53,.10);
-
 }
 
 
@@ -946,7 +996,6 @@ input {
 
     gap:
         10px;
-
 }
 
 
@@ -976,7 +1025,6 @@ input {
 
     color:
         white;
-
 }
 
 
@@ -984,7 +1032,6 @@ input {
 
     border-color:
         rgba(217,39,53,.55);
-
 }
 
 
@@ -1010,7 +1057,6 @@ input {
 
     cursor:
         pointer;
-
 }
 
 
@@ -1028,7 +1074,6 @@ input {
 
     gap:
         9px;
-
 }
 
 
@@ -1058,10 +1103,6 @@ input {
 
     gap:
         13px;
-
-    cursor:
-        grab;
-
 }
 
 
@@ -1096,7 +1137,6 @@ input {
 
     font-weight:
         900;
-
 }
 
 
@@ -1110,7 +1150,6 @@ input {
 
     margin-left:
         auto;
-
 }
 
 
@@ -1137,7 +1176,55 @@ input {
 
     cursor:
         pointer;
+}
 
+
+/* =========================================================
+   RESULTAT IMMEDIAT
+========================================================= */
+
+.answer-result {
+
+    display:
+        none;
+
+    margin-top:
+        20px;
+
+    padding:
+        15px 17px;
+
+    border-radius:
+        13px;
+
+    font-weight:
+        800;
+}
+
+
+.answer-result.show {
+    display:
+        block;
+}
+
+
+.answer-result.correct {
+
+    background:
+        rgba(50,213,131,.10);
+
+    color:
+        var(--green);
+}
+
+
+.answer-result.wrong {
+
+    background:
+        rgba(255,82,99,.10);
+
+    color:
+        var(--wrong);
 }
 
 
@@ -1151,7 +1238,7 @@ input {
         none;
 
     margin-top:
-        20px;
+        12px;
 
     padding:
         16px 18px;
@@ -1165,7 +1252,6 @@ input {
     border:
         1px solid
         rgba(255,255,255,.07);
-
 }
 
 
@@ -1176,7 +1262,6 @@ input {
 
     animation:
         appear .25s ease;
-
 }
 
 
@@ -1199,7 +1284,6 @@ input {
 
     margin-bottom:
         6px;
-
 }
 
 
@@ -1213,66 +1297,11 @@ input {
 
     line-height:
         1.55;
-
 }
 
 
 /* =========================================================
-   RESULTAT REPONSE
-========================================================= */
-
-.answer-result {
-
-    display:
-        none;
-
-    margin-top:
-        20px;
-
-    padding:
-        15px 17px;
-
-    border-radius:
-        13px;
-
-    font-weight:
-        800;
-
-}
-
-
-.answer-result.show {
-
-    display:
-        block;
-
-}
-
-
-.answer-result.correct {
-
-    background:
-        rgba(50,213,131,.10);
-
-    color:
-        var(--green);
-
-}
-
-
-.answer-result.wrong {
-
-    background:
-        rgba(255,82,99,.10);
-
-    color:
-        var(--wrong);
-
-}
-
-
-/* =========================================================
-   BOUTON SUIVANT
+   QUESTION SUIVANTE
 ========================================================= */
 
 .next-wrapper {
@@ -1285,7 +1314,6 @@ input {
 
     margin-top:
         18px;
-
 }
 
 
@@ -1311,7 +1339,6 @@ input {
 
     cursor:
         pointer;
-
 }
 
 
@@ -1323,7 +1350,6 @@ input {
 
     text-align:
         center;
-
 }
 
 
@@ -1334,7 +1360,6 @@ input {
 
     margin-bottom:
         18px;
-
 }
 
 
@@ -1348,7 +1373,6 @@ input {
 
     letter-spacing:
         -2px;
-
 }
 
 
@@ -1359,7 +1383,6 @@ input {
 
     margin:
         10px 0 30px;
-
 }
 
 
@@ -1389,7 +1412,6 @@ input {
 
     cursor:
         pointer;
-
 }
 
 
@@ -1403,42 +1425,36 @@ input {
 
         grid-template-columns:
             1fr 1fr;
-
     }
 
     .answers {
 
         grid-template-columns:
             1fr;
-
     }
 
     .question-content {
 
         padding:
             27px 21px 25px;
-
     }
 
     .question-visual {
 
         min-height:
             145px;
-
     }
 
     .free-answer {
 
         flex-direction:
             column;
-
     }
 
     .validate-btn {
 
         min-height:
             52px;
-
     }
 
 }
@@ -1467,28 +1483,18 @@ input {
     <div class="logo">
 
         <!--
-            IMPORTANT :
-            Mets le logo des Mugiwara dans ton dépôt
-            sous le nom :
+            Ton fichier est dans :
 
-            logo-mugiwara.png
+            Quiz/logo.jpg
 
-            Il doit être au même endroit que index.html.
+            Si index.html est au même niveau que
+            le dossier Quiz, ce chemin est correct.
         -->
 
         <img
-            src="logo-mugiwara.png"
+            src="Quiz/logo.jpg"
             alt="Logo des Mugiwara"
-            onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';"
         >
-
-        <span
-            id="logoFallback"
-            class="logo-fallback"
-            style="display:none;"
-        >
-            ☠️
-        </span>
 
     </div>
 
@@ -1567,7 +1573,7 @@ input {
         onclick="startQuiz()"
         style="margin-top:35px;"
     >
-        Commencer l'aventure
+        Commencer
     </button>
 
 
@@ -1598,12 +1604,60 @@ input {
         </div>
 
 
-        <button
-            class="skip-btn"
-            onclick="skipQuestion()"
-        >
-            Passer →
-        </button>
+        <div class="skip-container">
+
+            <button
+                class="skip-btn"
+                onclick="toggleSkipMenu()"
+            >
+                Passer →
+            </button>
+
+
+            <div
+                id="skipMenu"
+                class="skip-menu"
+            >
+
+                <div class="skip-menu-title">
+                    Aller à...
+                </div>
+
+
+                <button
+                    class="skip-option"
+                    onclick="goToLevel('EAST BLUE')"
+                >
+                    🏝️ East Blue
+                </button>
+
+
+                <button
+                    class="skip-option"
+                    onclick="goToLevel('GRAND LINE')"
+                >
+                    🌊 Grand Line
+                </button>
+
+
+                <button
+                    class="skip-option"
+                    onclick="goToLevel('NOUVEAU MONDE')"
+                >
+                    🔥 Nouveau Monde
+                </button>
+
+
+                <button
+                    class="skip-option"
+                    onclick="goToLevel('LAUGH TALE')"
+                >
+                    👑 Laugh Tale
+                </button>
+
+            </div>
+
+        </div>
 
 
     </div>
@@ -1614,9 +1668,13 @@ input {
         <span>
 
             Question
-            <span id="questionNumber">1</span>
+            <span id="questionNumber">
+                1
+            </span>
             /
-            <span id="totalQuestions">2</span>
+            <span id="totalQuestions">
+                2
+            </span>
 
         </span>
 
@@ -1645,14 +1703,6 @@ input {
             id="questionVisual"
             class="question-visual"
         >
-
-            <div
-                id="visualIcon"
-                class="visual-icon"
-            >
-                ⚔️
-            </div>
-
         </div>
 
 
@@ -1682,6 +1732,12 @@ input {
 
 
             <div
+                id="answerResult"
+                class="answer-result"
+            ></div>
+
+
+            <div
                 id="explanation"
                 class="explanation"
             >
@@ -1696,12 +1752,6 @@ input {
                 ></div>
 
             </div>
-
-
-            <div
-                id="answerResult"
-                class="answer-result"
-            ></div>
 
 
             <div
@@ -1771,35 +1821,57 @@ input {
 
 /* =========================================================
    =========================================================
-   
-                  MES QUESTIONS
-                  
+
+                    MES QUESTIONS
+
    =========================================================
-   
-   C'EST CETTE PARTIE QUE TU MODIFIERAS.
-   
-   Pour ajouter une question :
-   → copie un bloc
-   → modifie les informations
-   → ajoute une virgule entre les blocs
-   
+
+   C'EST LA SEULE PARTIE QUE TU AS BESOIN
+   DE MODIFIER POUR CREER TON QUIZ.
+
+   ---------------------------------------------------------
+
    MODES DISPONIBLES :
-   
+
    "unique"
-   → une seule bonne réponse parmi plusieurs
-   
+   → une seule bonne réponse
+
    "multiple"
    → plusieurs bonnes réponses
-   
+
    "libre"
    → réponse écrite au clavier
-   
-   "ordre"
-   → remettre les éléments dans le bon ordre
-   
+
    "vrai_faux"
    → Vrai ou Faux
-   
+
+   "ordre"
+   → remettre les éléments dans le bon ordre
+
+   ---------------------------------------------------------
+
+   IMAGE :
+
+   image: "Quiz/images/zoro.jpg"
+
+   ou
+
+   image: ""
+
+   Si image = "" → aucun visuel n'est affiché.
+
+   ---------------------------------------------------------
+
+   EXPLICATION :
+
+   explication:
+       "Ton explication ici."
+
+   Tu peux en mettre une à chaque question,
+   ou laisser :
+
+   explication: ""
+
    =========================================================
    =========================================================
 */
@@ -1807,10 +1879,10 @@ input {
 
 const questions = [
 
-    /* -----------------------------------------------------
-       QUESTION 1
-       REPONSE UNIQUE
-    ----------------------------------------------------- */
+
+    /* =====================================================
+       EXEMPLE 1 — REPONSE UNIQUE
+    ===================================================== */
 
     {
 
@@ -1827,9 +1899,6 @@ const questions = [
 
         image:
             "",
-
-        icone:
-            "⚔️",
 
         reponses: [
 
@@ -1849,55 +1918,10 @@ const questions = [
     },
 
 
-    /* -----------------------------------------------------
-       QUESTION 2
-       REPONSE UNIQUE
-    ----------------------------------------------------- */
+    /* =====================================================
+       EXEMPLE 2 — REPONSES MULTIPLES
+    ===================================================== */
 
-    {
-
-        niveau: "EAST BLUE",
-
-        difficulte: "Facile",
-
-        mode: "unique",
-
-        categorie: "Navires",
-
-        question:
-            "Comment s'appelle le navire de l'équipage de Luffy après le Vogue Merry ?",
-
-        image:
-            "",
-
-        icone:
-            "⛵",
-
-        reponses: [
-
-            "Red Force",
-            "Thousand Sunny",
-            "Oro Jackson",
-            "Polar Tang"
-
-        ],
-
-        bonneReponse:
-            1,
-
-        explication:
-            "Le Thousand Sunny devient le second grand navire de l'équipage après le Vogue Merry."
-
-    },
-
-
-    /* -----------------------------------------------------
-       EXEMPLE REPONSE MULTIPLE
-       
-       Tu peux le décommenter pour le tester.
-    ----------------------------------------------------- */
-
-    /*
     {
 
         niveau: "GRAND LINE",
@@ -1914,14 +1938,11 @@ const questions = [
         image:
             "",
 
-        icone:
-            "🏴‍☠️",
-
         reponses: [
 
             "Zoro",
             "Nami",
-            "Law",
+            "Trafalgar Law",
             "Sanji",
             "Shanks"
 
@@ -1939,14 +1960,12 @@ const questions = [
             "Zoro, Nami et Sanji sont membres de l'équipage de Luffy."
 
     },
-    */
 
 
-    /* -----------------------------------------------------
-       EXEMPLE REPONSE LIBRE
-    ----------------------------------------------------- */
+    /* =====================================================
+       EXEMPLE 3 — REPONSE LIBRE
+    ===================================================== */
 
-    /*
     {
 
         niveau: "GRAND LINE",
@@ -1963,9 +1982,6 @@ const questions = [
         image:
             "",
 
-        icone:
-            "🩺",
-
         reponses: [],
 
         bonneReponse:
@@ -1975,14 +1991,12 @@ const questions = [
             "Chopper est le médecin de l'équipage des Mugiwara."
 
     },
-    */
 
 
-    /* -----------------------------------------------------
-       EXEMPLE VRAI / FAUX
-    ----------------------------------------------------- */
+    /* =====================================================
+       EXEMPLE 4 — VRAI / FAUX
+    ===================================================== */
 
-    /*
     {
 
         niveau: "NOUVEAU MONDE",
@@ -1991,16 +2005,13 @@ const questions = [
 
         mode: "vrai_faux",
 
-        categorie: "One Piece",
+        categorie: "Personnage",
 
         question:
             "Ace est le frère biologique de Luffy.",
 
         image:
             "",
-
-        icone:
-            "🔥",
 
         bonneReponse:
             false,
@@ -2009,14 +2020,12 @@ const questions = [
             "Ace et Luffy ne sont pas frères biologiques. Ils sont frères jurés."
 
     },
-    */
 
 
-    /* -----------------------------------------------------
-       EXEMPLE REMETTRE DANS L'ORDRE
-    ----------------------------------------------------- */
+    /* =====================================================
+       EXEMPLE 5 — REMETTRE DANS L'ORDRE
+    ===================================================== */
 
-    /*
     {
 
         niveau: "LAUGH TALE",
@@ -2025,16 +2034,13 @@ const questions = [
 
         mode: "ordre",
 
-        categorie: "Aventures",
+        categorie: "Aventure",
 
         question:
             "Remets ces événements dans l'ordre chronologique.",
 
         image:
             "",
-
-        icone:
-            "🗺️",
 
         reponses: [
 
@@ -2055,22 +2061,20 @@ const questions = [
         ],
 
         explication:
-            "Ces événements suivent la progression de l'aventure de Luffy."
+            "Ces événements sont présentés ici dans l'ordre chronologique de l'aventure."
 
     }
-
-    */
 
 ];
 
 
 /* =========================================================
-   FIN DE LA ZONE QUESTIONS
+   FIN DE LA ZONE "MES QUESTIONS"
 ========================================================= */
 
 
 /* =========================================================
-   VARIABLES DU QUIZ
+   VARIABLES
 ========================================================= */
 
 let currentQuestion = 0;
@@ -2081,7 +2085,7 @@ let currentOrder = [];
 
 
 /* =========================================================
-   AFFICHER UN ECRAN
+   ECRAN
 ========================================================= */
 
 function showScreen(id) {
@@ -2178,7 +2182,7 @@ function loadQuestion() {
 
 
     /* -----------------------------------------------------
-       VISUEL
+       IMAGE
     ----------------------------------------------------- */
 
     const visual =
@@ -2189,44 +2193,42 @@ function loadQuestion() {
 
     visual.innerHTML = "";
 
+    visual.classList.remove(
+        "has-image"
+    );
 
-    if (q.image && q.image.trim() !== "") {
+
+    if (
+        q.image &&
+        q.image.trim() !== ""
+    ) {
 
         const img =
-            document.createElement("img");
+            document.createElement(
+                "img"
+            );
 
 
         img.src =
             q.image;
 
 
-        img.className =
-            "visual-image";
-
-
         img.alt =
             "Illustration de la question";
 
 
-        visual.appendChild(img);
-
-    }
-
-    else {
-
-        const icon =
-            document.createElement("div");
+        img.className =
+            "visual-image";
 
 
-        icon.className =
-            "visual-icon";
+        visual.classList.add(
+            "has-image"
+        );
 
 
-        icon.textContent =
-            q.icone || "🏴‍☠️";
-
-
-        visual.appendChild(icon);
+        visual.appendChild(
+            img
+        );
 
     }
 
@@ -2242,7 +2244,9 @@ function loadQuestion() {
 
     document
         .getElementById("explanation")
-        .classList.remove("show");
+        .classList.remove(
+            "show"
+        );
 
 
     document
@@ -2253,13 +2257,17 @@ function loadQuestion() {
 
     document
         .getElementById("answerResult")
-        .textContent = "";
+        .textContent =
+        "";
 
 
     document
         .getElementById("nextWrapper")
         .style.display =
         "none";
+
+
+    closeSkipMenu();
 
 
     /* -----------------------------------------------------
@@ -2316,7 +2324,7 @@ function loadQuestion() {
 
 
 /* =========================================================
-   REPONSE UNIQUE
+   UNIQUE
 ========================================================= */
 
 function createUniqueQuestion(q) {
@@ -2408,7 +2416,10 @@ function checkUnique(
         .add("correct");
 
 
-    if (index === q.bonneReponse) {
+    if (
+        index ===
+        q.bonneReponse
+    ) {
 
         clickedButton
             .classList
@@ -2440,7 +2451,7 @@ function checkUnique(
 
 
 /* =========================================================
-   REPONSE MULTIPLE
+   MULTIPLE
 ========================================================= */
 
 function createMultipleQuestion(q) {
@@ -2572,12 +2583,12 @@ function checkMultiple() {
 
     const correct =
         [...selected]
-        .sort()
-        .join(",") ===
+            .sort()
+            .join(",") ===
 
         [...q.bonnesReponses]
-        .sort()
-        .join(",");
+            .sort()
+            .join(",");
 
 
     buttons.forEach(
@@ -2682,7 +2693,8 @@ function createFreeQuestion(q) {
         event => {
 
             if (
-                event.key === "Enter"
+                event.key ===
+                "Enter"
             ) {
 
                 checkFreeAnswer();
@@ -2711,7 +2723,7 @@ function createFreeQuestion(q) {
 
 
 /* =========================================================
-   VERIFIER REPONSE LIBRE
+   VERIFIER LIBRE
 ========================================================= */
 
 function checkFreeAnswer() {
@@ -2750,7 +2762,8 @@ function checkFreeAnswer() {
         correctAnswer;
 
 
-    input.disabled = true;
+    input.disabled =
+        true;
 
 
     showResult(
@@ -2898,7 +2911,7 @@ function checkTrueFalse(
 
 
 /* =========================================================
-   REMETTRE DANS L'ORDRE
+   ORDRE
 ========================================================= */
 
 function createOrderQuestion(q) {
@@ -3027,7 +3040,7 @@ function renderOrderList(list) {
 
 
 /* =========================================================
-   BOUGER ELEMENT
+   BOUGER ORDRE
 ========================================================= */
 
 function moveOrder(
@@ -3082,7 +3095,7 @@ function moveOrder(
    VERIFIER ORDRE
 ========================================================= */
 
-function checkOrder(list) {
+function checkOrder() {
 
     if (answered)
         return;
@@ -3157,7 +3170,10 @@ function showResult(
         questions[currentQuestion];
 
 
-    if (q.explanation) {
+    if (
+        q.explanation &&
+        q.explanation.trim() !== ""
+    ) {
 
         document
             .getElementById(
@@ -3188,7 +3204,7 @@ function showResult(
 
 
 /* =========================================================
-   NORMALISER TEXTE
+   NORMALISER UNE REPONSE
 ========================================================= */
 
 function normalize(text) {
@@ -3244,34 +3260,98 @@ function nextQuestion() {
 
 
 /* =========================================================
-   PASSER UNE QUESTION
+   MENU PASSER
 ========================================================= */
 
-function skipQuestion() {
+function toggleSkipMenu() {
 
-    currentQuestion++;
-
-
-    if (
-        currentQuestion >=
-        questions.length
-    ) {
-
-        showScreen(
-            "result"
-        );
-
-    }
-
-    else {
-
-        loadQuestion();
-
-    }
+    document
+        .getElementById(
+            "skipMenu"
+        )
+        .classList
+        .toggle("show");
 
 }
+
+
+function closeSkipMenu() {
+
+    document
+        .getElementById(
+            "skipMenu"
+        )
+        .classList
+        .remove("show");
+
+}
+
+
+/* =========================================================
+   ALLER A UN NIVEAU
+========================================================= */
+
+function goToLevel(level) {
+
+    const index =
+        questions.findIndex(
+            question =>
+                question.niveau === level
+        );
+
+
+    if (index === -1) {
+
+        alert(
+            "Aucune question de ce niveau pour le moment."
+        );
+
+        return;
+
+    }
+
+
+    currentQuestion =
+        index;
+
+
+    closeSkipMenu();
+
+    loadQuestion();
+
+}
+
+
+/* =========================================================
+   FERME LE MENU SI ON CLIQUE AILLEURS
+========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const container =
+            document.querySelector(
+                ".skip-container"
+            );
+
+
+        if (
+            container &&
+            !container.contains(
+                event.target
+            )
+        ) {
+
+            closeSkipMenu();
+
+        }
+
+    }
+);
 
 </script>
 
 </body>
+
 </html>
