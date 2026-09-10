@@ -208,9 +208,12 @@
 
     .skip-container {
         position: relative;
+        display: flex;
+        gap: 8px;
     }
 
-    .skip-btn {
+    .skip-btn,
+    .difficulty-btn {
         border: 1px solid #333;
         background: #151515;
         color: #aaa;
@@ -220,7 +223,8 @@
         transition: 0.2s;
     }
 
-    .skip-btn:hover {
+    .skip-btn:hover,
+    .difficulty-btn:hover {
         color: white;
         border-color: #555;
     }
@@ -795,8 +799,12 @@
 
         <div class="skip-container">
 
-            <button class="skip-btn" onclick="toggleSkipMenu()">
+            <button class="skip-btn" onclick="skipQuestion()">
                 Passer →
+            </button>
+
+            <button class="difficulty-btn" onclick="toggleSkipMenu()">
+                Difficulté ▾
             </button>
 
             <div id="skipMenu" class="skip-menu">
@@ -2495,6 +2503,18 @@ function showFinalResults() {
 /* =========================================================
    MENU PASSER
 ========================================================= */
+
+function skipQuestion() {
+
+    // Si la question a déjà reçu une réponse, on ne la recompte pas.
+    if (alreadyAnswered) return;
+
+    // Une question passée compte comme une mauvaise réponse.
+    registerScore(false);
+
+    nextQuestion();
+}
+
 
 function toggleSkipMenu() {
 
