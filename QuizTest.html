@@ -1757,12 +1757,16 @@ function checkFreeAnswer() {
         normalize(input.value);
 
 
-    const correctAnswer =
-        normalize(q.bonneReponse);
+    const correctAnswers =
+        Array.isArray(q.bonneReponse)
+            ? q.bonneReponse
+            : [q.bonneReponse];
 
 
     const correct =
-        userAnswer === correctAnswer;
+        correctAnswers.some(answer =>
+            userAnswer === normalize(answer)
+        );
 
 
     alreadyAnswered = true;
@@ -2333,9 +2337,14 @@ function showResult(correct) {
 
         else if (q.mode === "libre") {
 
+            const answers =
+                Array.isArray(q.bonneReponse)
+                    ? q.bonneReponse
+                    : [q.bonneReponse];
+
             correctText =
                 `Bonne réponse : ${
-                    q.bonneReponse
+                    answers.join(" / ")
                 }`;
 
         }
