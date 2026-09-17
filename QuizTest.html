@@ -35,6 +35,27 @@
             radial-gradient(circle at top, #351015 0%, #120709 35%, #050505 75%);
         color: var(--text);
         min-height: 100vh;
+        transition: background 0.35s ease;
+    }
+
+    body.level-east-blue {
+        background:
+            radial-gradient(circle at top, #102a4a 0%, #07121f 35%, #050505 75%);
+    }
+
+    body.level-grand-line {
+        background:
+            radial-gradient(circle at top, #10351f 0%, #07160d 35%, #050505 75%);
+    }
+
+    body.level-new-world {
+        background:
+            radial-gradient(circle at top, #403b0d 0%, #171505 35%, #050505 75%);
+    }
+
+    body.level-laugh-tale {
+        background:
+            radial-gradient(circle at top, #351015 0%, #120709 35%, #050505 75%);
     }
 
     button,
@@ -197,6 +218,12 @@
         position: relative;
     }
 
+    .quiz-level-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
     .level-pill {
         background: #191919;
         border: 1px solid #303030;
@@ -204,6 +231,21 @@
         border-radius: 100px;
         font-size: 13px;
         color: #ddd;
+    }
+
+    .menu-btn {
+        border: 1px solid #333;
+        background: #151515;
+        color: #aaa;
+        border-radius: 10px;
+        padding: 8px 13px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .menu-btn:hover {
+        color: white;
+        border-color: #555;
     }
 
     .skip-container {
@@ -223,21 +265,6 @@
         transition: 0.2s;
     }
 
-.menu-btn {
-    border: 1px solid #333;
-    background: #151515;
-    color: #aaa;
-    border-radius: 10px;
-    padding: 8px 13px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.menu-btn:hover {
-    color: white;
-    border-color: #555;
-}
-    
     .skip-btn:hover,
     .difficulty-btn:hover {
         color: white;
@@ -683,6 +710,11 @@
 
         .quiz-top {
             align-items: flex-start;
+            gap: 10px;
+        }
+
+        .quiz-level-info {
+            flex-wrap: wrap;
         }
 
         .question-card {
@@ -808,8 +840,14 @@
 
     <div class="quiz-top">
 
-        <div id="levelPill" class="level-pill">
-            EAST BLUE
+        <div class="quiz-level-info">
+            <div id="levelPill" class="level-pill">
+                EAST BLUE
+            </div>
+
+            <button class="menu-btn" onclick="returnHome()">
+                Retour menu
+            </button>
         </div>
 
         <div class="skip-container">
@@ -822,10 +860,6 @@
                 Difficulté ▾
             </button>
 
-            <button class="menu-btn" onclick="returnHome()">
-                Retour menu
-            </button>
-            
             <div id="skipMenu" class="skip-menu">
 
                 <button onclick="goToLevel('EAST BLUE')">
@@ -924,6 +958,26 @@
 /* =========================================================
    MES QUESTIONS
 ========================================================= */
+
+function updateLevelTheme(level) {
+    document.body.classList.remove(
+        "level-east-blue",
+        "level-grand-line",
+        "level-new-world",
+        "level-laugh-tale"
+    );
+
+    if (level === "EAST BLUE") {
+        document.body.classList.add("level-east-blue");
+    } else if (level === "GRAND LINE") {
+        document.body.classList.add("level-grand-line");
+    } else if (level === "NOUVEAU MONDE") {
+        document.body.classList.add("level-new-world");
+    } else if (level === "LAUGH TALE") {
+        document.body.classList.add("level-laugh-tale");
+    }
+}
+
 
 const questions = [
 
@@ -1354,6 +1408,8 @@ function loadQuestion() {
 
     document.getElementById("levelPill").textContent =
         q.niveau;
+
+    updateLevelTheme(q.niveau);
 
 
     document.getElementById("progressText").textContent =
@@ -2645,6 +2701,13 @@ function goToLevel(level) {
 function returnHome() {
 
     selectedStartLevel = null;
+
+    document.body.classList.remove(
+        "level-east-blue",
+        "level-grand-line",
+        "level-new-world",
+        "level-laugh-tale"
+    );
 
     document.querySelectorAll(".level")
         .forEach(level => {
