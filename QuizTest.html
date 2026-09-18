@@ -36,6 +36,21 @@
         color: var(--text);
         min-height: 100vh;
         transition: background 0.35s ease;
+        overflow-x: hidden;
+    }
+
+    .theme-fade {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.65s ease;
+        background: radial-gradient(circle at top, #102a4a 0%, #07121f 35%, #050505 75%);
+    }
+
+    .theme-fade.visible {
+        opacity: 1;
     }
 
     body.level-east-blue {
@@ -780,6 +795,7 @@
 
 
 <body>
+<div id="themeFade" class="theme-fade"></div>
 
 
 <!-- =====================================================
@@ -826,7 +842,7 @@
     </div>
 
     <button class="start-btn" onclick="startQuiz()">
-        Commencer
+        commencer
     </button>
 
 </section>
@@ -952,6 +968,13 @@
 </section>
 
 
+<div id="musicPlayer" aria-hidden="true" style="position:fixed;width:1px;height:1px;left:-10px;bottom:-10px;opacity:0;pointer-events:none;overflow:hidden;">
+    <iframe id="youtubeMusic" width="1" height="1"
+        src="https://www.youtube.com/embed/n6scuIRL5jk?autoplay=1&loop=1&playlist=n6scuIRL5jk&controls=0&rel=0&playsinline=1"
+        title="Musique One Piece" frameborder="0"
+        allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+
 <script>
 
 
@@ -960,22 +983,31 @@
 ========================================================= */
 
 function updateLevelTheme(level) {
-    document.body.classList.remove(
-        "level-east-blue",
-        "level-grand-line",
-        "level-new-world",
-        "level-laugh-tale"
-    );
+    const themes = {
+        "EAST BLUE": "radial-gradient(circle at top, #102a4a 0%, #07121f 35%, #050505 75%)",
+        "GRAND LINE": "radial-gradient(circle at top, #10351f 0%, #07160d 35%, #050505 75%)",
+        "NOUVEAU MONDE": "radial-gradient(circle at top, #403b0d 0%, #171505 35%, #050505 75%)",
+        "LAUGH TALE": "radial-gradient(circle at top, #351015 0%, #120709 35%, #050505 75%)"
+    };
 
-    if (level === "EAST BLUE") {
-        document.body.classList.add("level-east-blue");
-    } else if (level === "GRAND LINE") {
-        document.body.classList.add("level-grand-line");
-    } else if (level === "NOUVEAU MONDE") {
-        document.body.classList.add("level-new-world");
-    } else if (level === "LAUGH TALE") {
-        document.body.classList.add("level-laugh-tale");
-    }
+    const layer = document.getElementById("themeFade");
+    const background = themes[level] || themes["EAST BLUE"];
+
+    // On crée une nouvelle couche puis on la fait apparaître progressivement.
+    const newLayer = document.createElement("div");
+    newLayer.className = "theme-fade";
+    newLayer.style.background = background;
+    document.body.appendChild(newLayer);
+
+    requestAnimationFrame(() => {
+        newLayer.classList.add("visible");
+    });
+
+    setTimeout(() => {
+        document.querySelectorAll(".theme-fade").forEach(item => {
+            if (item !== newLayer) item.remove();
+        });
+    }, 700);
 }
 
 
@@ -1343,7 +1375,16 @@ function showScreen(id) {
    COMMENCER LE QUIZ
 ========================================================= */
 
+function startMusic() {
+    const iframe = document.getElementById("youtubeMusic");
+    if (!iframe) return;
+    const base = "https://www.youtube.com/embed/n6scuIRL5jk";
+    iframe.src = base + "?autoplay=1&loop=1&playlist=n6scuIRL5jk&controls=0&rel=0&playsinline=1";
+}
+
 function startQuiz() {
+
+    startMusic();
 
     /*
         Si aucun niveau n'est sélectionné :
