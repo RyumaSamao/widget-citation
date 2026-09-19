@@ -46,7 +46,30 @@
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.65s ease;
-        background: radial-gradient(circle at top, #102a4a 0%, #07121f 35%, #050505 75%);
+        background: radial-gradient(circle at top, #351015 0%, #120709 35%, #050505 75%);
+    }
+
+    .quiz-level-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .music-btn {
+        border: 1px solid #333;
+        background: #151515;
+        color: #aaa;
+        border-radius: 10px;
+        padding: 8px 13px;
+        cursor: pointer;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+    .music-btn:hover {
+        color: white;
+        border-color: #555;
+        background: #1c1c1c;
     }
 
     .theme-fade.visible {
@@ -231,12 +254,6 @@
         align-items: center;
         margin-bottom: 20px;
         position: relative;
-    }
-
-    .quiz-level-info {
-        display: flex;
-        align-items: center;
-        gap: 8px;
     }
 
     .level-pill {
@@ -864,6 +881,10 @@
             <button class="menu-btn" onclick="returnHome()">
                 Retour menu
             </button>
+
+            <button id="musicToggle" class="music-btn" onclick="toggleMusic()">
+                Musique : ON
+            </button>
         </div>
 
         <div class="skip-container">
@@ -970,7 +991,7 @@
 
 <div id="musicPlayer" aria-hidden="true" style="position:fixed;width:1px;height:1px;left:-10px;bottom:-10px;opacity:0;pointer-events:none;overflow:hidden;">
     <iframe id="youtubeMusic" width="1" height="1"
-        src="https://www.youtube.com/embed/n6scuIRL5jk?autoplay=1&loop=1&playlist=n6scuIRL5jk&controls=0&rel=0&playsinline=1"
+        src="about:blank"
         title="Musique One Piece" frameborder="0"
         allow="autoplay; encrypted-media" allowfullscreen></iframe>
 </div>
@@ -990,10 +1011,8 @@ function updateLevelTheme(level) {
         "LAUGH TALE": "radial-gradient(circle at top, #351015 0%, #120709 35%, #050505 75%)"
     };
 
-    const layer = document.getElementById("themeFade");
     const background = themes[level] || themes["EAST BLUE"];
 
-    // On crée une nouvelle couche puis on la fait apparaître progressivement.
     const newLayer = document.createElement("div");
     newLayer.className = "theme-fade";
     newLayer.style.background = background;
@@ -1011,104 +1030,32 @@ function updateLevelTheme(level) {
 }
 
 
+function resetHomeTheme() {
+    const homeBackground =
+        "radial-gradient(circle at top, #351015 0%, #120709 35%, #050505 75%)";
+
+    // On fait apparaître le rouge par-dessus la couleur de la difficulté.
+    const redLayer = document.createElement("div");
+    redLayer.className = "theme-fade";
+    redLayer.style.background = homeBackground;
+    document.body.appendChild(redLayer);
+
+    requestAnimationFrame(() => {
+        redLayer.classList.add("visible");
+    });
+
+    setTimeout(() => {
+        document.querySelectorAll(".theme-fade").forEach(item => item.remove());
+        document.body.style.background = homeBackground;
+    }, 700);
+}
+
+
+
 const questions = [
 
 
-{
-        niveau: "EAST BLUE",
-        difficulte: "Facile",
-        mode: "unique",
-
-        categorie: "Histoire",
-
-        question:
-            "Quel est le titre du chapitre où Gol.D Roger se fait exécuter ?",
-
-        image: "Quiz/chapitre.jpg",
-
-        reponses: [
-            "La Mort du Roi des Pirates",
-            "À la Recherche du One Piece",
-            "Romance Dawn - à l'aube d'une grande aventure",
-            "Mon Trésor ? Je vous le laisse si vous voulez !"
-        ],
-
-        bonneReponse: 2,
-
-    },
-
     
- {
-        niveau: "EAST BLUE",
-        difficulte: "Facile",
-        mode: "vrai_faux",
-
-        categorie: "Personnage",
-
-        question:
-            "Le véritable nom de Franky est Cutty Flam.",
-
-        image: "Quiz/Franky.jpg",
-
-        bonneReponse: true,
-
-        explication:
-            "Le vrai nom de Franky est bien Cutty Flam. Icebarg l'a renommé comme ça quand ils étaient encore apprentis car il trouvait son nom étrange et ça l'a aussi aidé plus tard à se cacher du gouvernement."
-    },
-
-    
-{
-        niveau: "EAST BLUE",
-        difficulte: "Moyen",
-        mode: "libre",
-
-        categorie: "Arme",
-
-        question:
-            "Comment s'appelle le katana de Kuina ?",
-
-        image: "Quiz/Wado.jpg",
-
-        reponses: [],
-
-        bonneReponse: [
-            "Wado Ichimonji",
-            "Wadô Ichimonji",
-            "Wadō Ichimonji",
-            "WadoIchimonji",
-            "WadôIchimonji",
-            "WadōIchimonji"
-            
-        ],
-
-        explication:
-            "Le katana de Kuina s'appelle le 'Wado Ichimonji'. C'est une des 21 Grandes Lames (owazamono), que Zoro a récupéré et c'est le seul que Mihawk n'a pas brisé durant son combat contre lui."
-    },
-            
-    {
-        niveau: "EAST BLUE",
-        difficulte: "Facile",
-        mode: "libre",
-
-        categorie: "Personnage",
-
-        question:
-            "Quel est le nom complet du médecin de bord des mugiwaras ?",
-
-        image: "Quiz/chopper.jpg",
-
-        reponses: [],
-
-        bonneReponse: [
-            "Tony Tony Chopper",
-            "Chopper Tony Tony"
-            
-        ],
-
-        explication:
-            "Le nom complet du médecin de bord est Tony Tony Chopper, qui lui a été donné par le docteur Hiluluk."
-    },
-            
 {
         niveau: "EAST BLUE",
         difficulte: "Facile",
@@ -1119,7 +1066,7 @@ const questions = [
         question:
             "Quel était le nom de code de Vivi chez baroque works ?",
 
-        image: "Quiz/viviworks.jpg",
+        image: "viviworks.jpg",
 
         reponses: [
             "Miss All Sunday",
@@ -1131,7 +1078,7 @@ const questions = [
         bonneReponse: 3,
 
         explication:
-            "Le nom de code Vivi était Miss Wednesday. Elle faisait équipe avec Igaram qui se faisait appeler Mister 8."
+            "Le nom de code Vivi était Miss Wednesday. Elle faisait équipe avec Igaram qui se faisait appeler Mister 8"
     },
     
     {
@@ -1396,6 +1343,12 @@ let draggedIndex = null;
 
 let selectedStartLevel = null;
 
+let pausedQuizState = null;
+
+let lastAnswerCorrect = null;
+
+let musicEnabled = true;
+
 
 /*
    SCORE PAR NIVEAU
@@ -1445,6 +1398,11 @@ document.querySelectorAll(".level").forEach(level => {
         selectedStartLevel =
             level.dataset.level;
 
+        const startButton = document.querySelector("#home .start-btn");
+        if (startButton) {
+            startButton.textContent = "commencer";
+        }
+
     });
 
 });
@@ -1471,19 +1429,77 @@ function showScreen(id) {
 
 function startMusic() {
     const iframe = document.getElementById("youtubeMusic");
-    if (!iframe) return;
+    if (!iframe || !musicEnabled) return;
+
     const base = "https://www.youtube.com/embed/n6scuIRL5jk";
     iframe.src = base + "?autoplay=1&loop=1&playlist=n6scuIRL5jk&controls=0&rel=0&playsinline=1";
 }
 
+
+function stopMusic() {
+    const iframe = document.getElementById("youtubeMusic");
+    if (!iframe) return;
+
+    iframe.src = "about:blank";
+}
+
+
+function toggleMusic() {
+    musicEnabled = !musicEnabled;
+
+    const button = document.getElementById("musicToggle");
+
+    if (musicEnabled) {
+        startMusic();
+        if (button) button.textContent = "Musique : ON";
+    }
+    else {
+        stopMusic();
+        if (button) button.textContent = "Musique : OFF";
+    }
+}
+
+
+function updateMusicButton() {
+    const button = document.getElementById("musicToggle");
+    if (button) {
+        button.textContent = musicEnabled
+            ? "Musique : ON"
+            : "Musique : OFF";
+    }
+}
+
+
 function startQuiz() {
 
-    startMusic();
+    // Si on revient au menu après un missclick, on reprend exactement
+    // la partie mise en pause, sauf si un nouveau niveau a été choisi.
+    if (pausedQuizState && selectedStartLevel === null) {
 
-    /*
-        Si aucun niveau n'est sélectionné :
-        EAST BLUE par défaut.
-    */
+        currentQuestion = pausedQuizState.currentQuestion;
+        scores = pausedQuizState.scores;
+        alreadyAnswered = pausedQuizState.alreadyAnswered;
+        selectedAnswer = pausedQuizState.selectedAnswer;
+        orderList = pausedQuizState.orderList || [];
+        draggedIndex = null;
+        lastAnswerCorrect = pausedQuizState.lastAnswerCorrect;
+
+        pausedQuizState = null;
+
+        updateMusicButton();
+        if (musicEnabled) startMusic();
+
+        showScreen("quiz");
+        loadQuestion({
+            alreadyAnswered,
+            selectedAnswer,
+            lastAnswerCorrect
+        });
+
+        return;
+    }
+
+    startMusic();
 
     const startLevel =
         selectedStartLevel || "EAST BLUE";
@@ -1498,33 +1514,21 @@ function startQuiz() {
 
     selectedAnswer = null;
     alreadyAnswered = false;
+    lastAnswerCorrect = null;
+    orderList = [];
+    draggedIndex = null;
+    pausedQuizState = null;
 
     scores = {
-        "EAST BLUE": {
-            correct: 0,
-            total: 0
-        },
-
-        "GRAND LINE": {
-            correct: 0,
-            total: 0
-        },
-
-        "NOUVEAU MONDE": {
-            correct: 0,
-            total: 0
-        },
-
-        "LAUGH TALE": {
-            correct: 0,
-            total: 0
-        }
+        "EAST BLUE": { correct: 0, total: 0 },
+        "GRAND LINE": { correct: 0, total: 0 },
+        "NOUVEAU MONDE": { correct: 0, total: 0 },
+        "LAUGH TALE": { correct: 0, total: 0 }
     };
 
+    updateMusicButton();
     showScreen("quiz");
-
     loadQuestion();
-
 }
 
 
@@ -1532,13 +1536,15 @@ function startQuiz() {
    CHARGER UNE QUESTION
 ========================================================= */
 
-function loadQuestion() {
+function loadQuestion(restoreState = null) {
 
     const q = questions[currentQuestion];
 
     alreadyAnswered = false;
 
     selectedAnswer = null;
+
+    lastAnswerCorrect = null;
 
 
     document.getElementById("levelPill").textContent =
@@ -1639,6 +1645,28 @@ function loadQuestion() {
         createOrderQuestion(q);
     }
 
+    // Si la question avait déjà été validée avant le retour au menu,
+    // on la remet en état "répondue" sans recompter les points.
+    if (restoreState && restoreState.alreadyAnswered) {
+        alreadyAnswered = true;
+        selectedAnswer = restoreState.selectedAnswer;
+        lastAnswerCorrect = restoreState.lastAnswerCorrect;
+        disableCurrentQuestionControls();
+        showResult(lastAnswerCorrect);
+    }
+
+}
+
+
+function disableCurrentQuestionControls() {
+    document.querySelectorAll(
+        "#answers .answer, #answers .validate-btn, #answers input, #answers .order-item"
+    ).forEach(element => {
+        if ("disabled" in element) element.disabled = true;
+        element.style.pointerEvents = "none";
+    });
+
+    document.getElementById("doubleClickHelp").style.display = "none";
 }
 
 
@@ -2463,6 +2491,8 @@ function registerScore(correct) {
 
 function showResult(correct) {
 
+    lastAnswerCorrect = correct;
+
     const q =
         questions[currentQuestion];
 
@@ -2764,6 +2794,12 @@ function showFinalResults() {
     });
 
 
+    pausedQuizState = null;
+    selectedStartLevel = null;
+
+    const startButton = document.querySelector("#home .start-btn");
+    if (startButton) startButton.textContent = "commencer";
+
     showScreen("result");
 
 }
@@ -2835,24 +2871,35 @@ function goToLevel(level) {
 
 function returnHome() {
 
+    // On garde toute la partie en mémoire pour pouvoir reprendre
+    // exactement où on était après un retour au menu.
+    pausedQuizState = {
+        currentQuestion,
+        scores: JSON.parse(JSON.stringify(scores)),
+        alreadyAnswered,
+        selectedAnswer,
+        orderList: [...orderList],
+        lastAnswerCorrect
+    };
+
     selectedStartLevel = null;
 
-    document.body.classList.remove(
-        "level-east-blue",
-        "level-grand-line",
-        "level-new-world",
-        "level-laugh-tale"
-    );
+    closeSkipMenu();
+    resetHomeTheme();
 
     document.querySelectorAll(".level")
         .forEach(level => {
             level.classList.remove("selected");
         });
 
+    const startButton = document.querySelector("#home .start-btn");
+    if (startButton) {
+        startButton.textContent = "reprendre";
+    }
 
     showScreen("home");
-
 }
+
 
 
 /* =========================================================
