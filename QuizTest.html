@@ -993,7 +993,8 @@
     <iframe id="youtubeMusic" width="1" height="1"
         src="about:blank"
         title="Musique One Piece" frameborder="0"
-        allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen></iframe>
 </div>
 
 <script>
@@ -1055,7 +1056,101 @@ function resetHomeTheme() {
 const questions = [
 
 
+{
+        niveau: "EAST BLUE",
+        difficulte: "Facile",
+        mode: "unique",
+
+        categorie: "Histoire",
+
+        question:
+            "Quel est le titre du chapitre où Gol.D Roger se fait exécuter ?",
+
+        image: "Quiz/chapitre.jpg",
+
+        reponses: [
+            "La Mort du Roi des Pirates",
+            "À la Recherche du One Piece",
+            "Romance Dawn - à l'aube d'une grande aventure",
+            "Mon Trésor ? Je vous le laisse si vous voulez !"
+        ],
+
+        bonneReponse: 2,
+
+    },
+
     
+ {
+        niveau: "EAST BLUE",
+        difficulte: "Facile",
+        mode: "vrai_faux",
+
+        categorie: "Personnage",
+
+        question:
+            "Le véritable nom de Franky est Cutty Flam.",
+
+        image: "Quiz/Franky.jpg",
+
+        bonneReponse: true,
+
+        explication:
+            "Le vrai nom de Franky est bien Cutty Flam. Icebarg l'a renommé comme ça quand ils étaient encore apprentis car il trouvait son nom étrange et ça l'a aussi aidé plus tard à se cacher du gouvernement."
+    },
+
+    
+{
+        niveau: "EAST BLUE",
+        difficulte: "Moyen",
+        mode: "libre",
+
+        categorie: "Arme",
+
+        question:
+            "Comment s'appelle le katana de Kuina ?",
+
+        image: "Quiz/Wado.jpg",
+
+        reponses: [],
+
+        bonneReponse: [
+            "Wado Ichimonji",
+            "Wadô Ichimonji",
+            "Wadō Ichimonji",
+            "WadoIchimonji",
+            "WadôIchimonji",
+            "WadōIchimonji"
+            
+        ],
+
+        explication:
+            "Le katana de Kuina s'appelle le 'Wado Ichimonji'. C'est une des 21 Grandes Lames (owazamono), que Zoro a récupéré et c'est le seul que Mihawk n'a pas brisé durant son combat contre lui."
+    },
+            
+    {
+        niveau: "EAST BLUE",
+        difficulte: "Facile",
+        mode: "libre",
+
+        categorie: "Personnage",
+
+        question:
+            "Quel est le nom complet du médecin de bord des mugiwaras ?",
+
+        image: "Quiz/chopper.jpg",
+
+        reponses: [],
+
+        bonneReponse: [
+            "Tony Tony Chopper",
+            "Chopper Tony Tony"
+            
+        ],
+
+        explication:
+            "Le nom complet du médecin de bord est Tony Tony Chopper, qui lui a été donné par le docteur Hiluluk."
+    },
+            
 {
         niveau: "EAST BLUE",
         difficulte: "Facile",
@@ -1066,7 +1161,7 @@ const questions = [
         question:
             "Quel était le nom de code de Vivi chez baroque works ?",
 
-        image: "viviworks.jpg",
+        image: "Quiz/viviworks.jpg",
 
         reponses: [
             "Miss All Sunday",
@@ -1078,7 +1173,7 @@ const questions = [
         bonneReponse: 3,
 
         explication:
-            "Le nom de code Vivi était Miss Wednesday. Elle faisait équipe avec Igaram qui se faisait appeler Mister 8"
+            "Le nom de code Vivi était Miss Wednesday. Elle faisait équipe avec Igaram qui se faisait appeler Mister 8."
     },
     
     {
@@ -1427,20 +1522,60 @@ function showScreen(id) {
    COMMENCER LE QUIZ
 ========================================================= */
 
+let musicStarted = false;
+
+function sendYouTubeCommand(func) {
+    const iframe = document.getElementById("youtubeMusic");
+    if (!iframe || !iframe.contentWindow) return;
+
+    try {
+        iframe.contentWindow.postMessage(
+            JSON.stringify({
+                event: "command",
+                func,
+                args: []
+            }),
+            "https://www.youtube.com"
+        );
+    } catch (error) {
+        // Le navigateur peut bloquer le contrôle de l'iframe.
+    }
+}
+
+
 function startMusic() {
     const iframe = document.getElementById("youtubeMusic");
     if (!iframe || !musicEnabled) return;
 
-    const base = "https://www.youtube.com/embed/n6scuIRL5jk";
-    iframe.src = base + "?autoplay=1&loop=1&playlist=n6scuIRL5jk&controls=0&rel=0&playsinline=1";
+    // Première lecture : on charge YouTube une seule fois.
+    // Les fois suivantes, on utilise simplement playVideo() pour
+    // reprendre exactement à l'endroit où la musique était en pause.
+    if (!musicStarted) {
+        const origin = window.location.origin;
+        const base = "https://www.youtube.com/embed/n6scuIRL5jk";
+        const src = base +
+            "?autoplay=1&loop=1&playlist=n6scuIRL5jk" +
+            "&controls=0&rel=0&playsinline=1" +
+            "&enablejsapi=1&origin=" + encodeURIComponent(origin);
+
+        iframe.onload = () => {
+            musicStarted = true;
+            sendYouTubeCommand("playVideo");
+        };
+
+        iframe.src = src;
+        musicStarted = true;
+        return;
+    }
+
+    sendYouTubeCommand("playVideo");
 }
 
 
 function stopMusic() {
-    const iframe = document.getElementById("youtubeMusic");
-    if (!iframe) return;
-
-    iframe.src = "about:blank";
+    // IMPORTANT : on ne recharge surtout pas l'iframe.
+    // pauseVideo() conserve la position actuelle de la musique.
+    sendYouTubeCommand("pauseVideo");
 }
 
 
@@ -1487,7 +1622,6 @@ function startQuiz() {
         pausedQuizState = null;
 
         updateMusicButton();
-        if (musicEnabled) startMusic();
 
         showScreen("quiz");
         loadQuestion({
