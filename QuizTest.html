@@ -1060,7 +1060,7 @@ const questions = [
 {
         niveau: "EAST BLUE",
         difficulte: "Facile",
-        mode: "multiple",
+        mode: "unique",
 
         categorie: "Île",
 
@@ -1078,10 +1078,10 @@ const questions = [
             "L'Arbre d'Ève"
         ],
 
-        bonneReponses: [
+        bonneReponse: [
             2,
             3
-            ],
+        ],
 
         explication:
             "Le Capitaine de l'unité secrète de la marine des 'SWORD' est officiellement X Drake, qui était en infiltration chez les pirates comme par exemple chez Kaido en étant membre des Tobi Roppo."
@@ -2011,28 +2011,33 @@ function checkUnique(index) {
         document.querySelectorAll("#answers .answer");
 
 
+    // En mode unique, une seule réponse est sélectionnable,
+    // mais plusieurs réponses peuvent être considérées comme correctes.
+    const correctAnswers =
+        Array.isArray(q.bonneReponse)
+            ? q.bonneReponse
+            : [q.bonneReponse];
+
+    const correct =
+        correctAnswers.includes(index);
+
+
     buttons.forEach((button, i) => {
 
         button.disabled = true;
 
-
-        if (i === q.bonneReponse) {
+        if (correctAnswers.includes(i)) {
             button.classList.add("correct");
         }
 
-
         if (
             i === index &&
-            i !== q.bonneReponse
+            !correctAnswers.includes(i)
         ) {
             button.classList.add("wrong");
         }
 
     });
-
-
-    const correct =
-        index === q.bonneReponse;
 
 
     registerScore(correct);
@@ -2810,9 +2815,16 @@ function showResult(correct) {
 
         if (q.mode === "unique") {
 
+            const correctAnswers =
+                Array.isArray(q.bonneReponse)
+                    ? q.bonneReponse
+                    : [q.bonneReponse];
+
             correctText =
                 `Bonne réponse : ${
-                    q.reponses[q.bonneReponse]
+                    correctAnswers
+                        .map(index => q.reponses[index])
+                        .join(" / ")
                 }`;
 
         }
