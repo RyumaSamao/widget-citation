@@ -1342,7 +1342,7 @@ const questions = [
         bonneReponse: 2,
 
         explication:
-            "Roger est né à LogueTown, c'est aussi le lieu symbolique de sa mor, où il a été exécuté en publique par la marine pour montrer leur puissance militaire."
+            "Roger est né à LogueTown, c'est aussi le lieu symbolique de sa mort, où il a été exécuté en publique par la marine pour montrer leur puissance militaire."
     },
 
         {
@@ -2793,110 +2793,6 @@ function showResult(correct) {
 
         explanation.className =
             "explanation visible";
-
-    }
-
-
-    /*
-        AFFICHER LA BONNE REPONSE
-        SI LA REPONSE EST FAUSSE
-    */
-
-    if (!correct) {
-
-        let correctText = "";
-
-
-        if (q.mode === "unique") {
-
-            const correctAnswers =
-                Array.isArray(q.bonneReponse)
-                    ? q.bonneReponse
-                    : [q.bonneReponse];
-
-            correctText =
-                `Bonne réponse : ${
-                    correctAnswers
-                        .map(index => q.reponses[index])
-                        .join(" / ")
-                }`;
-
-        }
-
-        else if (q.mode === "multiple") {
-
-            correctText =
-                "Bonnes réponses : " +
-                q.bonnesReponses
-                    .map(index =>
-                        q.reponses[index]
-                    )
-                    .join(", ");
-
-        }
-
-        else if (q.mode === "libre") {
-
-            const answers =
-                Array.isArray(q.bonneReponse)
-                    ? q.bonneReponse
-                    : [q.bonneReponse];
-
-            correctText =
-                `Bonne réponse : ${
-                    answers.join(" / ")
-                }`;
-
-        }
-
-        else if (q.mode === "vrai_faux") {
-
-            correctText =
-                `Bonne réponse : ${
-                    q.bonneReponse
-                        ? "Vrai"
-                        : "Faux"
-                }`;
-
-        }
-
-        else if (q.mode === "ordre") {
-
-            correctText =
-                `Ordre correct : ${
-                    q.ordreCorrect.join(" → ")
-                }`;
-
-        }
-
-
-        if (correctText !== "") {
-
-            const correctInfo =
-                document.createElement("div");
-
-
-            correctInfo.style.marginTop =
-                "10px";
-
-
-            correctInfo.style.color =
-                "#aaa";
-
-
-            correctInfo.style.fontSize =
-                "14px";
-
-
-            correctInfo.textContent =
-                correctText;
-
-
-            explanation.appendChild(
-                correctInfo
-            );
-
-        }
 
     }
 
