@@ -1117,20 +1117,11 @@ function updateLevelTheme(level) {
 
     const background = themes[level] || themes["EAST BLUE"];
 
-    const newLayer = document.createElement("div");
-    newLayer.className = "theme-fade";
-    newLayer.style.background = background;
-    document.body.appendChild(newLayer);
-
-    requestAnimationFrame(() => {
-        newLayer.classList.add("visible");
-    });
-
-    setTimeout(() => {
-        document.querySelectorAll(".theme-fade").forEach(item => {
-            if (item !== newLayer) item.remove();
-        });
-    }, 700);
+    // On applique directement le nouveau fond au body.
+    // Cela évite que plusieurs animations de fond se chevauchent
+    // si on clique très rapidement sur "Suivant".
+    document.querySelectorAll(".theme-fade").forEach(layer => layer.remove());
+    document.body.style.background = background;
 }
 
 
@@ -1138,20 +1129,10 @@ function resetHomeTheme() {
     const homeBackground =
         "radial-gradient(circle at top, #351015 0%, #120709 35%, #050505 75%)";
 
-    // On fait apparaître le rouge par-dessus la couleur de la difficulté.
-    const redLayer = document.createElement("div");
-    redLayer.className = "theme-fade";
-    redLayer.style.background = homeBackground;
-    document.body.appendChild(redLayer);
-
-    requestAnimationFrame(() => {
-        redLayer.classList.add("visible");
-    });
-
-    setTimeout(() => {
-        document.querySelectorAll(".theme-fade").forEach(item => item.remove());
-        document.body.style.background = homeBackground;
-    }, 700);
+    // Même principe : un seul fond actif, sans anciennes animations
+    // qui pourraient revenir après un clic rapide.
+    document.querySelectorAll(".theme-fade").forEach(layer => layer.remove());
+    document.body.style.background = homeBackground;
 }
 
 
