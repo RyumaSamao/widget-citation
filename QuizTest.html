@@ -731,6 +731,43 @@
 
 
     /* =====================================================
+       NAVIGATION DU QUIZ
+    ===================================================== */
+
+    .quiz-top-left,
+    .quiz-top-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .quiz-top-right {
+        position: relative;
+    }
+
+    .previous-btn {
+        border: 1px solid #333;
+        background: #151515;
+        color: #aaa;
+        border-radius: 10px;
+        padding: 8px 13px;
+        cursor: pointer;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+    .previous-btn:hover:not(:disabled) {
+        color: white;
+        border-color: #555;
+        background: #1c1c1c;
+    }
+
+    .previous-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+    }
+
+    /* =====================================================
        MOBILE
     ===================================================== */
 
@@ -741,12 +778,61 @@
         }
 
         .quiz-top {
-            align-items: flex-start;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
+            align-items: stretch;
         }
 
-        .quiz-level-info {
-            flex-wrap: wrap;
+        .quiz-top-left,
+        .quiz-top-right {
+            display: contents;
+        }
+
+        .level-pill,
+        .previous-btn,
+        .menu-btn {
+            width: 100%;
+        }
+
+        .level-pill {
+            grid-column: 1;
+            grid-row: 1;
+            text-align: center;
+        }
+
+        .difficulty-btn {
+            grid-column: 2;
+            grid-row: 1;
+            width: 100%;
+        }
+
+        .previous-btn {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .skip-btn {
+            grid-column: 2;
+            grid-row: 2;
+            width: 100%;
+        }
+
+        .menu-btn {
+            grid-column: 1;
+            grid-row: 3;
+        }
+
+        .music-btn {
+            grid-column: 2;
+            grid-row: 3;
+            width: 100%;
+        }
+
+        .skip-menu {
+            top: 100%;
+            right: 0;
+            margin-top: 5px;
         }
 
         .question-card {
@@ -791,6 +877,20 @@
 
         .level .name {
             font-size: 17px;
+        }
+
+        .quiz-top {
+            gap: 8px;
+        }
+
+        .level-pill,
+        .previous-btn,
+        .skip-btn,
+        .difficulty-btn,
+        .menu-btn,
+        .music-btn {
+            padding: 8px 7px;
+            font-size: 12px;
         }
 
         .true-false {
@@ -873,7 +973,7 @@
 
     <div class="quiz-top">
 
-        <div class="quiz-level-info">
+        <div class="quiz-top-left">
             <div id="levelPill" class="level-pill">
                 EAST BLUE
             </div>
@@ -887,10 +987,13 @@
             </button>
         </div>
 
-        <div class="skip-container">
+        <div class="quiz-top-right">
+            <button id="previousBtn" class="previous-btn" onclick="previousQuestion()">
+                ← Précédent
+            </button>
 
             <button class="skip-btn" onclick="skipQuestion()">
-                Passer →
+                Suivant →
             </button>
 
             <button class="difficulty-btn" onclick="toggleSkipMenu()">
@@ -1843,6 +1946,10 @@ let selectedStartLevel = null;
 
 let pausedQuizState = null;
 
+// État de chaque question : permet de revenir en arrière sans perdre
+// les réponses et sans compter deux fois une même question.
+let questionStates = {};
+
 let lastAnswerCorrect = null;
 
 let musicEnabled = true;
@@ -2010,28 +2117,20 @@ function updateMusicButton() {
 
 function startQuiz() {
 
-    // Si on revient au menu après un missclick, on reprend exactement
-    // la partie mise en pause, sauf si un nouveau niveau a été choisi.
+    // Si on revient au menu, on reprend exactement la partie en pause.
     if (pausedQuizState && selectedStartLevel === null) {
 
         currentQuestion = pausedQuizState.currentQuestion;
-        scores = pausedQuizState.scores;
-        alreadyAnswered = pausedQuizState.alreadyAnswered;
-        selectedAnswer = pausedQuizState.selectedAnswer;
-        orderList = pausedQuizState.orderList || [];
+        questionStates = JSON.parse(
+            JSON.stringify(pausedQuizState.questionStates || {})
+        );
         draggedIndex = null;
-        lastAnswerCorrect = pausedQuizState.lastAnswerCorrect;
-
         pausedQuizState = null;
 
         updateMusicButton();
 
         showScreen("quiz");
-        loadQuestion({
-            alreadyAnswered,
-            selectedAnswer,
-            lastAnswerCorrect
-        });
+        loadQuestion();
 
         return;
     }
@@ -2055,6 +2154,7 @@ function startQuiz() {
     orderList = [];
     draggedIndex = null;
     pausedQuizState = null;
+    questionStates = {};
 
     scores = {
         "EAST BLUE": { correct: 0, total: 0 },
@@ -2073,38 +2173,42 @@ function startQuiz() {
    CHARGER UNE QUESTION
 ========================================================= */
 
-function loadQuestion(restoreState = null) {
+function loadQuestion() {
 
     const q = questions[currentQuestion];
+    const state = questionStates[currentQuestion] || null;
 
-    alreadyAnswered = false;
-
-    selectedAnswer = null;
-
-    lastAnswerCorrect = null;
-
+    alreadyAnswered = !!(state && state.answered);
+    selectedAnswer =
+        state && state.selectedAnswer !== undefined
+            ? state.selectedAnswer
+            : null;
+    lastAnswerCorrect =
+        state && state.correct !== undefined
+            ? state.correct
+            : null;
+    orderList =
+        state && Array.isArray(state.orderList)
+            ? [...state.orderList]
+            : [];
+    draggedIndex = null;
 
     document.getElementById("levelPill").textContent =
         q.niveau;
 
     updateLevelTheme(q.niveau);
 
-
     document.getElementById("progressText").textContent =
         `Question ${currentQuestion + 1} / ${questions.length}`;
-
 
     document.getElementById("progressFill").style.width =
         `${((currentQuestion + 1) / questions.length) * 100}%`;
 
-
     document.getElementById("questionCategory").textContent =
         q.categorie;
 
-
     document.getElementById("questionTitle").textContent =
         q.question;
-
 
     /* IMAGE */
 
@@ -2114,84 +2218,149 @@ function loadQuestion(restoreState = null) {
     const imageElement =
         document.getElementById("questionImageElement");
 
-
     if (q.image && q.image.trim() !== "") {
-
         imageContainer.style.display = "block";
-
         imageElement.src = q.image;
-
-    } else {
-
-        imageContainer.style.display = "none";
-
-        imageElement.src = "";
-
     }
-
+    else {
+        imageContainer.style.display = "none";
+        imageElement.src = "";
+    }
 
     /* RESET */
 
     document.getElementById("answers").innerHTML = "";
+    document.getElementById("answers").className = "answers";
 
-    document.getElementById("answers").className =
-        "answers";
+    document.getElementById("feedback").className = "feedback";
+    document.getElementById("feedback").textContent = "";
 
+    document.getElementById("explanation").className = "explanation";
+    document.getElementById("explanation").innerHTML = "";
 
-    document.getElementById("feedback").className =
-        "feedback";
-
-    document.getElementById("feedback").textContent =
-        "";
-
-
-    document.getElementById("explanation").className =
-        "explanation";
-
-    document.getElementById("explanation").innerHTML =
-        "";
-
-
-    document.getElementById("nextBtn").style.display =
-        "none";
-
-
-    document.getElementById("doubleClickHelp").style.display =
-        "block";
-
+    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("doubleClickHelp").style.display = "block";
 
     /* MODE */
 
     if (q.mode === "unique") {
         createUniqueQuestion(q);
     }
-
     else if (q.mode === "multiple") {
         createMultipleQuestion(q);
     }
-
     else if (q.mode === "libre") {
         createFreeQuestion(q);
     }
-
     else if (q.mode === "vrai_faux") {
         createTrueFalseQuestion(q);
     }
-
     else if (q.mode === "ordre") {
         createOrderQuestion(q);
     }
 
-    // Si la question avait déjà été validée avant le retour au menu,
-    // on la remet en état "répondue" sans recompter les points.
-    if (restoreState && restoreState.alreadyAnswered) {
-        alreadyAnswered = true;
-        selectedAnswer = restoreState.selectedAnswer;
-        lastAnswerCorrect = restoreState.lastAnswerCorrect;
-        disableCurrentQuestionControls();
-        showResult(lastAnswerCorrect);
+    restoreQuestionState(state);
+    updatePreviousButton();
+}
+
+
+function restoreQuestionState(state) {
+
+    if (!state) return;
+
+    const q = questions[currentQuestion];
+
+    if (q.mode === "unique" && state.selectedAnswer !== null && state.selectedAnswer !== undefined) {
+        const buttons = document.querySelectorAll("#answers .answer");
+        const button = buttons[state.selectedAnswer];
+        if (button) button.classList.add("selected");
     }
 
+    else if (q.mode === "multiple" && Array.isArray(state.multipleSelected)) {
+        const buttons = document.querySelectorAll("#answers .answer");
+        state.multipleSelected.forEach(index => {
+            if (buttons[index]) buttons[index].classList.add("selected");
+        });
+    }
+
+    else if (q.mode === "libre") {
+        const input = document.querySelector(".free-answer input");
+        if (input && typeof state.freeAnswer === "string") {
+            input.value = state.freeAnswer;
+        }
+    }
+
+    else if (q.mode === "vrai_faux" && typeof state.selectedAnswer === "boolean") {
+        const buttons = document.querySelectorAll(".true-false button");
+        buttons.forEach(button => {
+            const value = button.textContent === "Vrai";
+            button.classList.toggle("selected", value === state.selectedAnswer);
+        });
+    }
+
+    else if (q.mode === "ordre" && Array.isArray(state.orderList)) {
+        orderList = [...state.orderList];
+        renderOrderList();
+    }
+
+    if (!state.answered) return;
+
+    alreadyAnswered = true;
+    lastAnswerCorrect = state.correct;
+    applyAnsweredVisuals(state);
+    disableCurrentQuestionControls();
+    showResult(state.correct);
+}
+
+
+function applyAnsweredVisuals(state) {
+
+    const q = questions[currentQuestion];
+
+    if (q.mode === "unique") {
+        const buttons = document.querySelectorAll("#answers .answer");
+        const correctAnswers =
+            Array.isArray(q.bonneReponse)
+                ? q.bonneReponse
+                : [q.bonneReponse];
+
+        buttons.forEach((button, index) => {
+            if (correctAnswers.includes(index)) {
+                button.classList.add("correct");
+            }
+            if (index === state.selectedAnswer && !correctAnswers.includes(index)) {
+                button.classList.add("wrong");
+            }
+        });
+    }
+
+    else if (q.mode === "multiple") {
+        const buttons = document.querySelectorAll("#answers .answer");
+        const selected = Array.isArray(state.multipleSelected)
+            ? state.multipleSelected
+            : [];
+
+        buttons.forEach((button, index) => {
+            if (selected.includes(index)) button.classList.add("selected");
+            if (q.bonnesReponses.includes(index)) {
+                button.classList.add("correct");
+            }
+            else if (selected.includes(index)) {
+                button.classList.add("wrong");
+            }
+        });
+    }
+
+    else if (q.mode === "vrai_faux") {
+        const buttons = document.querySelectorAll(".true-false button");
+        buttons.forEach(button => {
+            const value = button.textContent === "Vrai";
+            if (value === q.bonneReponse) button.classList.add("correct");
+            if (value === state.selectedAnswer && value !== q.bonneReponse) {
+                button.classList.add("wrong");
+            }
+        });
+    }
 }
 
 
@@ -2201,9 +2370,56 @@ function disableCurrentQuestionControls() {
     ).forEach(element => {
         if ("disabled" in element) element.disabled = true;
         element.style.pointerEvents = "none";
+        element.draggable = false;
     });
 
     document.getElementById("doubleClickHelp").style.display = "none";
+}
+
+
+function updatePreviousButton() {
+    const button = document.getElementById("previousBtn");
+    if (button) {
+        button.disabled = currentQuestion <= 0;
+    }
+}
+
+
+/* =========================================================
+   SAUVEGARDER L'ETAT COURANT
+========================================================= */
+
+function captureCurrentQuestionState() {
+
+    if (!questions[currentQuestion]) return;
+
+    const existing = questionStates[currentQuestion] || {};
+    const q = questions[currentQuestion];
+    const state = {
+        ...existing,
+        answered: !!alreadyAnswered
+    };
+
+    if (q.mode === "unique" || q.mode === "vrai_faux") {
+        state.selectedAnswer = selectedAnswer;
+    }
+
+    if (q.mode === "multiple") {
+        state.multipleSelected = [...document.querySelectorAll("#answers .answer")]
+            .map((button, index) => button.classList.contains("selected") ? index : null)
+            .filter(index => index !== null);
+    }
+
+    if (q.mode === "libre") {
+        const input = document.querySelector(".free-answer input");
+        state.freeAnswer = input ? input.value : (state.freeAnswer || "");
+    }
+
+    if (q.mode === "ordre") {
+        state.orderList = [...orderList];
+    }
+
+    questionStates[currentQuestion] = state;
 }
 
 
@@ -3003,27 +3219,58 @@ function checkOrder() {
 
 function registerScore(correct) {
 
-    const level =
-        questions[currentQuestion].niveau;
+    const index = currentQuestion;
+    const existing = questionStates[index] || {};
 
+    // Une question déjà validée ne peut jamais être comptée une seconde fois.
+    if (existing.answered) return;
 
-    if (!scores[level]) {
+    const q = questions[index];
+    const state = {
+        ...existing,
+        answered: true,
+        correct: !!correct,
+        selectedAnswer,
+        orderList: [...orderList]
+    };
 
-        scores[level] = {
-            correct: 0,
-            total: 0
-        };
-
+    if (q.mode === "multiple") {
+        state.multipleSelected = [...document.querySelectorAll("#answers .answer")]
+            .map((button, i) => button.classList.contains("selected") ? i : null)
+            .filter(i => i !== null);
     }
 
-
-    scores[level].total++;
-
-
-    if (correct) {
-        scores[level].correct++;
+    if (q.mode === "libre") {
+        const input = document.querySelector(".free-answer input");
+        state.freeAnswer = input ? input.value : "";
     }
 
+    questionStates[index] = state;
+    recalculateScores();
+}
+
+
+function recalculateScores() {
+
+    scores = {
+        "EAST BLUE": { correct: 0, total: 0 },
+        "GRAND LINE": { correct: 0, total: 0 },
+        "NOUVEAU MONDE": { correct: 0, total: 0 },
+        "LAUGH TALE": { correct: 0, total: 0 }
+    };
+
+    Object.keys(questionStates).forEach(index => {
+        const state = questionStates[index];
+        if (!state || !state.answered) return;
+
+        const level = questions[Number(index)].niveau;
+        if (!scores[level]) {
+            scores[level] = { correct: 0, total: 0 };
+        }
+
+        scores[level].total++;
+        if (state.correct) scores[level].correct++;
+    });
 }
 
 
@@ -3134,23 +3381,28 @@ function normalize(text) {
 
 function nextQuestion() {
 
+    captureCurrentQuestionState();
+
     currentQuestion++;
 
-
-    if (
-        currentQuestion >=
-        questions.length
-    ) {
-
+    if (currentQuestion >= questions.length) {
         showFinalResults();
-
         return;
-
     }
 
-
     loadQuestion();
+}
 
+
+function previousQuestion() {
+
+    if (currentQuestion <= 0) return;
+
+    // On conserve aussi une sélection qui n'a pas encore été validée.
+    captureCurrentQuestionState();
+
+    currentQuestion--;
+    loadQuestion();
 }
 
 
@@ -3159,6 +3411,8 @@ function nextQuestion() {
 ========================================================= */
 
 function showFinalResults() {
+
+    recalculateScores();
 
     const container =
         document.getElementById(
@@ -3261,6 +3515,7 @@ function skipQuestion() {
 
     // Une question passée compte comme une mauvaise réponse.
     registerScore(false);
+    alreadyAnswered = true;
 
     nextQuestion();
 }
@@ -3295,18 +3550,13 @@ function goToLevel(level) {
             q => q.niveau === level
         );
 
-
     if (index === -1) return;
 
-
-    currentQuestion =
-        index;
-
+    captureCurrentQuestionState();
+    currentQuestion = index;
 
     closeSkipMenu();
-
     loadQuestion();
-
 }
 
 
@@ -3318,13 +3568,12 @@ function returnHome() {
 
     // On garde toute la partie en mémoire pour pouvoir reprendre
     // exactement où on était après un retour au menu.
+    captureCurrentQuestionState();
+    recalculateScores();
+
     pausedQuizState = {
         currentQuestion,
-        scores: JSON.parse(JSON.stringify(scores)),
-        alreadyAnswered,
-        selectedAnswer,
-        orderList: [...orderList],
-        lastAnswerCorrect
+        questionStates: JSON.parse(JSON.stringify(questionStates))
     };
 
     selectedStartLevel = null;
