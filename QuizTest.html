@@ -992,7 +992,7 @@
                 ← Précédent
             </button>
 
-            <button class="skip-btn" onclick="skipQuestion()">
+            <button class="skip-btn" onclick="nextQuestion()">
                 Suivant →
             </button>
 
@@ -3381,6 +3381,13 @@ function normalize(text) {
 
 function nextQuestion() {
 
+    // Si la question n'a pas encore été répondue, elle est considérée
+    // comme passée (donc fausse), comme avec l'ancien bouton Passer.
+    if (!alreadyAnswered) {
+        registerScore(false);
+        alreadyAnswered = true;
+    }
+
     captureCurrentQuestionState();
 
     currentQuestion++;
@@ -3509,14 +3516,6 @@ function showFinalResults() {
 ========================================================= */
 
 function skipQuestion() {
-
-    // Si la question a déjà reçu une réponse, on ne la recompte pas.
-    if (alreadyAnswered) return;
-
-    // Une question passée compte comme une mauvaise réponse.
-    registerScore(false);
-    alreadyAnswered = true;
-
     nextQuestion();
 }
 
