@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monkey D. Quiz</title>
+<title>Questions pour une Exploration</title>
 
 <style>
 
@@ -70,6 +70,117 @@
         color: white;
         border-color: #555;
         background: #1c1c1c;
+    }
+
+    .music-controls {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .music-icon {
+        font-size: 15px;
+        margin-left: 3px;
+    }
+
+    .music-play-btn {
+        border: 1px solid #333;
+        background: #151515;
+        color: #aaa;
+        border-radius: 10px;
+        width: 37px;
+        height: 37px;
+        padding: 0;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+    }
+
+    .music-play-btn:hover {
+        color: white;
+        border-color: #555;
+        background: #1c1c1c;
+    }
+
+    .music-menu {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: calc(100% + 8px);
+        width: min(520px, 80vw);
+        background: #151515;
+        border: 1px solid #333;
+        border-radius: 13px;
+        padding: 10px;
+        z-index: 50;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.55);
+    }
+
+    .music-menu.open {
+        display: block;
+    }
+
+    .music-menu-navigation {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .music-menu-navigation button {
+        border: 1px solid #333;
+        background: #1b1b1b;
+        color: #bbb;
+        border-radius: 9px;
+        padding: 9px 10px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .music-menu-navigation button:hover {
+        color: white;
+        background: #252525;
+        border-color: #555;
+    }
+
+    .music-playlist {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: repeat(5, minmax(0, 1fr));
+        grid-auto-columns: minmax(125px, 1fr);
+        gap: 7px;
+        max-height: 245px;
+        overflow-y: auto;
+    }
+
+    .music-track-btn {
+        border: 1px solid #303030;
+        background: #1b1b1b;
+        color: #aaa;
+        border-radius: 8px;
+        padding: 9px 8px;
+        cursor: pointer;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: 0.2s;
+    }
+
+    .music-track-btn:hover {
+        color: white;
+        background: #252525;
+    }
+
+    .music-track-btn.active {
+        color: white;
+        background: #303030;
+        border-color: #666;
+        box-shadow: inset 0 0 0 1px #555;
     }
 
     .theme-fade.visible {
@@ -893,6 +1004,28 @@
             font-size: 12px;
         }
 
+        .music-controls {
+            width: 100%;
+        }
+
+        .music-btn {
+            flex: 1;
+        }
+
+        .music-play-btn {
+            width: 35px;
+            height: 35px;
+        }
+
+        .music-menu {
+            width: min(94vw, 430px);
+        }
+
+        .music-playlist {
+            grid-template-rows: repeat(5, minmax(0, 1fr));
+            grid-auto-columns: minmax(105px, 1fr);
+        }
+
         .true-false {
             grid-template-columns: 1fr;
         }
@@ -926,8 +1059,8 @@
     </div>
 
     <h1>
-        MONKEY D.
-        <span>QUIZ</span><br>
+        <span>QUESTIONS</span><br>
+        POUR UNE EXPLORATION
     </h1>
 
     <div class="difficulty-title">
@@ -982,9 +1115,23 @@
                 Retour menu
             </button>
 
-            <button id="musicToggle" class="music-btn" onclick="toggleMusic()">
-                Musique : ON
-            </button>
+            <div class="music-controls">
+                <button id="musicToggle" class="music-btn" onclick="toggleMusicMenu()">
+                    Musique <span class="music-icon">♪</span>
+                </button>
+
+                <button id="musicPlayPause" class="music-play-btn" onclick="toggleMusicPlayback()" aria-label="Pause">
+                    ❚❚
+                </button>
+
+                <div id="musicMenu" class="music-menu">
+                    <div class="music-menu-navigation">
+                        <button onclick="previousMusic()">← Précédent</button>
+                        <button onclick="nextMusic()">Suivant →</button>
+                    </div>
+                    <div id="musicPlaylist" class="music-playlist"></div>
+                </div>
+            </div>
         </div>
 
         <div class="quiz-top-right">
@@ -1933,7 +2080,6 @@ let questionStates = {};
 
 let lastAnswerCorrect = null;
 
-let musicEnabled = true;
 
 
 /*
@@ -2013,9 +2159,75 @@ function showScreen(id) {
    COMMENCER LE QUIZ
 ========================================================= */
 
-let musicStarted = false;
+/* =========================================================
+   LECTEUR MUSIQUE / OST
+========================================================= */
 
-function sendYouTubeCommand(func) {
+const musicPlaylist = [
+    { id: "g1OFUoK_QrA", name: "OST 01" },
+    { id: "6FscTa_Nqwo", name: "OST 02" },
+    { id: "QxpdFxnyrgw", name: "OST 03" },
+    { id: "xmujqY7sPR8", name: "OST 04" },
+    { id: "9nYy2mRWlec", name: "OST 05" },
+    { id: "zuESv_zqMT8", name: "OST 06" },
+    { id: "wcjgMjQpk98", name: "OST 07" },
+    { id: "5diKdl9p8JU", name: "OST 08" },
+    { id: "4g2PMdc-arg", name: "OST 09" },
+    { id: "d1wxAZUtP90", name: "OST 10" }
+];
+
+let musicEnabled = true;
+let musicStarted = false;
+let currentMusicIndex = 0;
+let musicPlaying = true;
+let youtubePlayer = null;
+let youtubeApiReady = false;
+
+function renderMusicPlaylist() {
+    const container = document.getElementById("musicPlaylist");
+    if (!container) return;
+
+    container.innerHTML = musicPlaylist.map((track, index) => `
+        <button
+            class="music-track-btn ${index === currentMusicIndex ? "active" : ""}"
+            onclick="selectMusic(${index})"
+            title="${track.name}"
+        >${track.name}</button>
+    `).join("");
+}
+
+function updateMusicControls() {
+    const button = document.getElementById("musicPlayPause");
+    if (!button) return;
+
+    button.textContent = musicPlaying ? "❚❚" : "▶";
+    button.setAttribute("aria-label", musicPlaying ? "Pause" : "Lecture");
+    renderMusicPlaylist();
+}
+
+function toggleMusicMenu() {
+    const menu = document.getElementById("musicMenu");
+    if (!menu) return;
+
+    menu.classList.toggle("open");
+    renderMusicPlaylist();
+}
+
+function closeMusicMenu() {
+    const menu = document.getElementById("musicMenu");
+    if (menu) menu.classList.remove("open");
+}
+
+function sendYouTubeCommand(func, args = []) {
+    if (youtubePlayer && youtubeApiReady) {
+        try {
+            youtubePlayer[func](...args);
+            return;
+        } catch (error) {
+            // On repasse au postMessage ci-dessous si nécessaire.
+        }
+    }
+
     const iframe = document.getElementById("youtubeMusic");
     if (!iframe || !iframe.contentWindow) return;
 
@@ -2024,7 +2236,7 @@ function sendYouTubeCommand(func) {
             JSON.stringify({
                 event: "command",
                 func,
-                args: []
+                args
             }),
             "https://www.youtube.com"
         );
@@ -2033,67 +2245,151 @@ function sendYouTubeCommand(func) {
     }
 }
 
+function setMusicVolume() {
+    // 50 % du volume du lecteur YouTube = environ deux fois moins fort.
+    sendYouTubeCommand("setVolume", [50]);
+}
+
+function loadMusic(index, autoplay = true) {
+    if (!musicPlaylist.length) return;
+
+    currentMusicIndex =
+        (index + musicPlaylist.length) % musicPlaylist.length;
+
+    const track = musicPlaylist[currentMusicIndex];
+    const iframe = document.getElementById("youtubeMusic");
+    if (!iframe) return;
+
+    musicPlaying = autoplay;
+    renderMusicPlaylist();
+    updateMusicControls();
+
+    if (youtubePlayer && youtubeApiReady) {
+        try {
+            if (autoplay) {
+                youtubePlayer.loadVideoById(track.id);
+            } else {
+                youtubePlayer.cueVideoById(track.id);
+            }
+            setTimeout(setMusicVolume, 150);
+            musicStarted = true;
+            return;
+        } catch (error) {
+            // Si l'API n'est pas encore prête, on utilise l'iframe.
+        }
+    }
+
+    const origin = window.location.origin;
+    const src =
+        "https://www.youtube.com/embed/" + track.id +
+        "?autoplay=" + (autoplay ? "1" : "0") +
+        "&controls=0&rel=0&playsinline=1" +
+        "&enablejsapi=1&origin=" + encodeURIComponent(origin);
+
+    iframe.onload = () => {
+        musicStarted = true;
+        setTimeout(setMusicVolume, 250);
+        if (autoplay) {
+            sendYouTubeCommand("playVideo");
+        }
+    };
+
+    iframe.src = src;
+    musicStarted = true;
+}
 
 function startMusic() {
-    const iframe = document.getElementById("youtubeMusic");
-    if (!iframe || !musicEnabled) return;
+    if (!musicEnabled) return;
 
-    // Première lecture : on charge YouTube une seule fois.
-    // Les fois suivantes, on utilise simplement playVideo() pour
-    // reprendre exactement à l'endroit où la musique était en pause.
     if (!musicStarted) {
-        const origin = window.location.origin;
-        const base = "https://www.youtube.com/embed/n6scuIRL5jk";
-        const src = base +
-            "?autoplay=1&loop=1&playlist=n6scuIRL5jk" +
-            "&controls=0&rel=0&playsinline=1" +
-            "&enablejsapi=1&origin=" + encodeURIComponent(origin);
-
-        iframe.onload = () => {
-            musicStarted = true;
-            sendYouTubeCommand("playVideo");
-        };
-
-        iframe.src = src;
-        musicStarted = true;
+        loadMusic(currentMusicIndex, true);
         return;
     }
 
+    musicPlaying = true;
     sendYouTubeCommand("playVideo");
+    setMusicVolume();
+    updateMusicControls();
 }
-
 
 function stopMusic() {
-    // IMPORTANT : on ne recharge surtout pas l'iframe.
-    // pauseVideo() conserve la position actuelle de la musique.
+    musicPlaying = false;
     sendYouTubeCommand("pauseVideo");
+    updateMusicControls();
 }
 
-
-function toggleMusic() {
-    musicEnabled = !musicEnabled;
-
-    const button = document.getElementById("musicToggle");
-
-    if (musicEnabled) {
+function toggleMusicPlayback() {
+    if (!musicStarted) {
         startMusic();
-        if (button) button.textContent = "Musique : ON";
+        return;
     }
-    else {
+
+    if (musicPlaying) {
         stopMusic();
-        if (button) button.textContent = "Musique : OFF";
+    } else {
+        startMusic();
     }
 }
 
+function selectMusic(index) {
+    musicEnabled = true;
+    loadMusic(index, true);
+    closeMusicMenu();
+}
+
+function previousMusic() {
+    if (!musicPlaylist.length) return;
+    loadMusic(currentMusicIndex - 1, true);
+}
+
+function nextMusic() {
+    if (!musicPlaylist.length) return;
+    loadMusic(currentMusicIndex + 1, true);
+}
 
 function updateMusicButton() {
+    // Le bouton principal ne change plus selon ON/OFF :
+    // il ouvre simplement le menu musical.
     const button = document.getElementById("musicToggle");
-    if (button) {
-        button.textContent = musicEnabled
-            ? "Musique : ON"
-            : "Musique : OFF";
-    }
+    if (button) button.innerHTML = 'Musique <span class="music-icon">♪</span>';
+    updateMusicControls();
 }
+
+// YouTube IFrame Player API : permet notamment de détecter la fin d'une OST.
+function onYouTubeIframeAPIReady() {
+    youtubeApiReady = true;
+
+    youtubePlayer = new YT.Player("youtubeMusic", {
+        events: {
+            onReady: () => {
+                setMusicVolume();
+            },
+            onStateChange: event => {
+                if (event.data === YT.PlayerState.PLAYING) {
+                    musicPlaying = true;
+                    setMusicVolume();
+                    updateMusicControls();
+                }
+                else if (event.data === YT.PlayerState.PAUSED) {
+                    musicPlaying = false;
+                    updateMusicControls();
+                }
+                else if (event.data === YT.PlayerState.ENDED) {
+                    nextMusic();
+                }
+            }
+        }
+    });
+}
+
+// Charge l'API une seule fois.
+if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+    const youtubeScript = document.createElement("script");
+    youtubeScript.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(youtubeScript);
+}
+
+renderMusicPlaylist();
 
 
 function startQuiz() {
