@@ -2166,6 +2166,7 @@ let currentMusicIndex = 0;
 let musicPlaying = true;
 let youtubePlayer = null;
 let youtubeApiReady = false;
+let youtubeApiLoading = false;
 
 function renderMusicPlaylist() {
     const container = document.getElementById("musicPlaylist");
@@ -2202,45 +2203,71 @@ function closeMusicMenu() {
     if (menu) menu.classList.remove("open");
 }
 
-function prepareYouTubeIframe() {
+function loadYouTubeAPI() {
+    if (youtubeApiReady || youtubeApiLoading) return;
+
+    youtubeApiLoading = true;
+
+    if (window.YT && window.YT.Player) {
+        youtubeApiReady = true;
+        youtubeApiLoading = false;
+        createYouTubePlayer();
+        return;
+    }
+
+    if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+        const youtubeScript = document.createElement("script");
+        youtubeScript.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(youtubeScript);
+    }
+}
+
+function createYouTubePlayer() {
     const iframe = document.getElementById("youtubeMusic");
-    if (!iframe || iframe.src) return;
-    if (!musicPlaylist.length) return;
+    if (!iframe || !iframe.src || iframe.src === "about:blank") return;
+    if (!youtubeApiReady || !window.YT || !YT.Player || youtubePlayer) return;
 
-    const origin = window.location.origin;
-    const firstTrack = musicPlaylist[0];
+    youtubePlayer = new YT.Player("youtubeMusic", {
+        events: {
+            onReady: () => {
+                setMusicVolume();
 
-    iframe.src =
-        "https://www.youtube.com/embed/" + firstTrack.id +
-        "?autoplay=0" +
-        "&controls=0&rel=0&playsinline=1" +
-        "&enablejsapi=1&origin=" + encodeURIComponent(origin);
+                if (musicPlaying) {
+                    try {
+                        youtubePlayer.playVideo();
+                    } catch (error) {
+                        // Le lecteur peut encore être en cours d'initialisation.
+                    }
+                }
+            },
+            onStateChange: event => {
+                if (event.data === YT.PlayerState.PLAYING) {
+                    musicPlaying = true;
+                    setMusicVolume();
+                    updateMusicControls();
+                }
+                else if (event.data === YT.PlayerState.PAUSED) {
+                    musicPlaying = false;
+                    updateMusicControls();
+                }
+                else if (event.data === YT.PlayerState.ENDED) {
+                    nextMusic();
+                }
+            }
+        }
+    });
 }
 
 function sendYouTubeCommand(func, args = []) {
-    if (youtubePlayer && youtubeApiReady) {
-        try {
-            youtubePlayer[func](...args);
-            return;
-        } catch (error) {
-            // On repasse au postMessage ci-dessous si nécessaire.
-        }
-    }
-
-    const iframe = document.getElementById("youtubeMusic");
-    if (!iframe || !iframe.contentWindow) return;
+    // On passe uniquement par l'API YouTube une fois le lecteur réellement prêt.
+    // L'ancien postMessage direct vers l'iframe provoquait les erreurs
+    // "target origin ... does not match recipient window's origin".
+    if (!youtubePlayer || !youtubeApiReady) return;
 
     try {
-        iframe.contentWindow.postMessage(
-            JSON.stringify({
-                event: "command",
-                func,
-                args
-            }),
-            "*"
-        );
+        youtubePlayer[func](...args);
     } catch (error) {
-        // Le navigateur peut bloquer le contrôle de l'iframe.
+        // Le lecteur peut être momentanément indisponible pendant un changement d'OST.
     }
 }
 
@@ -2274,7 +2301,7 @@ function loadMusic(index, autoplay = true) {
             musicStarted = true;
             return;
         } catch (error) {
-            // Si l'API n'est pas encore prête, on utilise l'iframe.
+            // Si l'API est momentanément indisponible, on recharge l'iframe.
         }
     }
 
@@ -2287,14 +2314,15 @@ function loadMusic(index, autoplay = true) {
 
     iframe.onload = () => {
         musicStarted = true;
-        setTimeout(setMusicVolume, 250);
-        if (autoplay) {
-            sendYouTubeCommand("playVideo");
-        }
+        createYouTubePlayer();
     };
 
     iframe.src = src;
     musicStarted = true;
+
+    // L'API n'est chargée qu'au premier vrai besoin de musique.
+    // Cela évite les messages postMessage dès l'ouverture du quiz.
+    loadYouTubeAPI();
 }
 
 function startMusic() {
@@ -2354,44 +2382,15 @@ function updateMusicButton() {
     updateMusicControls();
 }
 
-// YouTube IFrame Player API : permet notamment de détecter la fin d'une OST.
+// Appelée automatiquement par l'API YouTube lorsqu'elle a fini de charger.
 function onYouTubeIframeAPIReady() {
     youtubeApiReady = true;
-
-    youtubePlayer = new YT.Player("youtubeMusic", {
-        events: {
-            onReady: () => {
-                setMusicVolume();
-            },
-            onStateChange: event => {
-                if (event.data === YT.PlayerState.PLAYING) {
-                    musicPlaying = true;
-                    setMusicVolume();
-                    updateMusicControls();
-                }
-                else if (event.data === YT.PlayerState.PAUSED) {
-                    musicPlaying = false;
-                    updateMusicControls();
-                }
-                else if (event.data === YT.PlayerState.ENDED) {
-                    nextMusic();
-                }
-            }
-        }
-    });
+    youtubeApiLoading = false;
+    createYouTubePlayer();
 }
 
-// Prépare l'iframe avant que l'API YouTube ne crée le lecteur.
-// Cela évite que l'API travaille sur about:blank et génère des erreurs postMessage.
-prepareYouTubeIframe();
-
-// Charge l'API une seule fois.
-if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
-    const youtubeScript = document.createElement("script");
-    youtubeScript.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(youtubeScript);
-}
-
+// L'API YouTube et l'iframe ne sont volontairement PAS chargées ici.
+// Elles seront initialisées uniquement lorsque la musique sera utilisée.
 renderMusicPlaylist();
 
 
