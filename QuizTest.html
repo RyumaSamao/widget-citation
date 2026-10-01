@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Monkey D. Quiz</title>
+<link rel="icon" type="image/jpeg" href="Quiz/logo.jpg">
 
 <style>
 
@@ -1244,7 +1245,7 @@
 
 <div id="musicPlayer" aria-hidden="true" style="position:fixed;width:1px;height:1px;left:-10px;bottom:-10px;opacity:0;pointer-events:none;overflow:hidden;">
     <iframe id="youtubeMusic" width="1" height="1"
-        src="about:blank"
+        src=""
         title="Musique One Piece" frameborder="0"
         allow="autoplay; encrypted-media; picture-in-picture"
         allowfullscreen></iframe>
@@ -2201,6 +2202,21 @@ function closeMusicMenu() {
     if (menu) menu.classList.remove("open");
 }
 
+function prepareYouTubeIframe() {
+    const iframe = document.getElementById("youtubeMusic");
+    if (!iframe || iframe.src) return;
+    if (!musicPlaylist.length) return;
+
+    const origin = window.location.origin;
+    const firstTrack = musicPlaylist[0];
+
+    iframe.src =
+        "https://www.youtube.com/embed/" + firstTrack.id +
+        "?autoplay=0" +
+        "&controls=0&rel=0&playsinline=1" +
+        "&enablejsapi=1&origin=" + encodeURIComponent(origin);
+}
+
 function sendYouTubeCommand(func, args = []) {
     if (youtubePlayer && youtubeApiReady) {
         try {
@@ -2221,7 +2237,7 @@ function sendYouTubeCommand(func, args = []) {
                 func,
                 args
             }),
-            "https://www.youtube.com"
+            "*"
         );
     } catch (error) {
         // Le navigateur peut bloquer le contrôle de l'iframe.
@@ -2364,6 +2380,10 @@ function onYouTubeIframeAPIReady() {
         }
     });
 }
+
+// Prépare l'iframe avant que l'API YouTube ne crée le lecteur.
+// Cela évite que l'API travaille sur about:blank et génère des erreurs postMessage.
+prepareYouTubeIframe();
 
 // Charge l'API une seule fois.
 if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
@@ -3870,9 +3890,8 @@ document.addEventListener(
 
 
         if (
-            !skipContainer.contains(
-                event.target
-            )
+            !skipContainer ||
+            !skipContainer.contains(event.target)
         ) {
 
             closeSkipMenu();
