@@ -1019,6 +1019,10 @@
 
         .music-menu {
             width: min(94vw, 430px);
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: calc(100vw - 28px);
+            box-sizing: border-box;
         }
 
         .music-playlist {
@@ -1286,57 +1290,7 @@ function resetHomeTheme() {
 
 const questions = [
 
-     {
-        niveau: "EAST BLUE",
-        difficulte: "Facile",
-        mode: "libre",
 
-        categorie: "personnage",
-
-        question:
-            "Comment s'appelle l'imposteur qui se fait passer pour Luffy à Sabaody ?",
-
-        image: "Quiz/demalo.jpg",
-
-        reponses: [],
-
-        bonneReponse: [
-            "Demalo Black",
-            "Demaro Black",
-            "Demaro Burakku"
-        ],
-
-        explication:
-            "Cet imposteur s'appelle Demalo Black. On le revoit d'ailleurs plus tard pendant le discours de Vegapunk, dans la base G-4 de la Marine, alors qu'il est déguisé en Eustass Kid et qu'il affirme être bien plus fort que ce 'Joy Ball'."
-
-    },
-
-    {
-        niveau: "EAST BLUE",
-        difficulte: "Facile",
-        mode: "unique",
-
-        categorie: "personnage",
-
-        question:
-            "Quel katana de Zoro est détruit à Enies Lobby ?",
-
-        image: "Quiz/yubashiri.jpg",
-
-        reponses: [
-        "Enma",
-        "Wadō Ichimonji",
-        "Yubashiri",
-        "Sandai Kitetsu"
-        ],
-
-        bonneReponse: 2, 
-    
-        explication:
-            "Le katana que Zoro perd à Enies Lobby est 'Yubashiri', qui a été détruit par Shû, le détenteur du Sabi Sabi no Mi, le fruit de la rouille. Zoro lui a plus tard fait des funérailes à Thriller Bark, après l'avoir remplacé par Shusui."
-
-    },
-    
     {
         niveau: "EAST BLUE",
         difficulte: "Facile",
@@ -1372,9 +1326,7 @@ const questions = [
             "Robin",
             "Luffy"
         ],
-        
-    explication: "l'ordre correct est : Zoro, Brook, Usopp, Sanji, Franky, Nami, Chopper, Robin, Luffy."
-        
+
     },
 
     
@@ -1840,7 +1792,7 @@ const questions = [
         ],
 
         explication:
-            "Le katana de Kuina s'appelle le 'Wadō Ichimonji'. C'est une des 21 Grandes Lames (Ō Wazamono) forgée par Shimotsuki Kozaburo, que Zoro a récupéré et c'est le seul que Mihawk n'a pas brisé durant leur combat."
+            "Le katana de Kuina s'appelle le 'Wadô Ichimonji'. C'est une des 21 Grandes Lames (Ō Wazamono) forgée par Shimotsuki Kozaburo, que Zoro a récupéré et c'est le seul que Mihawk n'a pas brisé durant leur combat."
     },
             
     {
@@ -2031,6 +1983,78 @@ const questions = [
 
         explication:
             "Le premier chapitre de One Piece est sorti en 1997 et le premier épisode en 1999."
+    },
+
+
+    {
+        niveau: "GRAND LINE",
+        difficulte: "Moyen",
+        mode: "libre",
+
+        categorie: "Personnage",
+
+        question:
+            "Quel est le nom du médecin de l'équipage de Luffy ?",
+
+        image: "",
+
+        reponses: [],
+
+        bonneReponse:
+            "Tony Tony Chopper",
+
+        explication:
+            "Tony Tony Chopper est le médecin de l'équipage des Mugiwara."
+    },
+
+
+    {
+        niveau: "NOUVEAU MONDE",
+        difficulte: "Dur",
+        mode: "vrai_faux",
+
+        categorie: "Personnage",
+
+        question:
+            "Ace est le frère biologique de Luffy.",
+
+        image: "",
+
+        bonneReponse: false,
+
+        explication:
+            "Ace et Luffy ne sont pas frères biologiques. Ils sont frères jurés."
+    },
+
+
+    {
+        niveau: "LAUGH TALE",
+        difficulte: "Impossible",
+        mode: "ordre",
+
+        categorie: "Aventure",
+
+        question:
+            "Remets ces événements dans l'ordre chronologique.",
+
+        image: "",
+
+        reponses: [
+            "Départ de Luffy",
+            "Entrée dans Grand Line",
+            "Enies Lobby",
+            "Marineford"
+        ],
+
+        ordreCorrect: [
+            "Départ de Luffy",
+            "Entrée dans Grand Line",
+            "Enies Lobby",
+            "Marineford"
+        ],
+
+        explication:
+            "Ces événements sont présentés ici dans leur ordre chronologique."
     }
 
 ];
