@@ -2227,23 +2227,21 @@ function showScreen(id) {
 ========================================================= */
 
 const musicPlaylist = [
-    // "file" = emplacement exact du fichier MP3 sur GitHub.
-    // "name" = titre affiché dans le menu du quiz.
-    { file: "Quiz/music/After Eating, Grand Line !.mp3", name: "After Eating, Grand Line !" },
-    { file: "Quiz/music/Ashore to town.mp3", name: "Ashore to town" },
-    { file: "Quiz/music/Defeat Gasparde.mp3", name: "Defeat Gasparde" },
-    { file: "Quiz/music/Difficult.mp3", name: "Difficult" },
-    { file: "Quiz/music/Going Merry Ship, Fly!!.mp3", name: "Going Merry Ship, Fly!!" },
-    { file: "Quiz/music/Gold And Oden.mp3", name: "Gold And Oden" },
-    { file: "Quiz/music/If You Live.mp3", name: "If You Live" },
-    { file: "Quiz/music/Luffy’s here.mp3", name: "Luffy’s here" },
-    { file: "Quiz/music/Mother Sea.mp3", name: "Mother Sea" },
-    { file: "Quiz/music/Mother, Then Setting Off.mp3", name: "Mother, Then Setting Off" },
-    { file: "Quiz/music/Overtaken.mp3", name: "Overtaken" },
-    { file: "Quiz/music/The Fight Continues.mp3", name: "The Fight Continues" },
-    { file: "Quiz/music/The worlds number one Oden Store.mp3", name: "The worlds number one Oden Store" },
-    { file: "Quiz/music/To The Grand Line.mp3", name: "To The Grand Line" },
-    { file: "Quiz/music/We Did It! Party!.mp3", name: "We Did It! Party!" }
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/After%20Eating%2C%20Grand%20Line%20!.mp3", name: "After Eating, Grand Line !" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/Ashore%20to%20town.mp3", name: "Ashore to town" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/Defeat%20Gasparde.mp3", name: "Defeat Gasparde" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/Difficult.mp3", name: "Difficult" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/Going%20Merry%20Ship%2C%20Fly!!.mp3", name: "Going Merry Ship, Fly!!" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/Gold%20And%20Oden.mp3", name: "Gold And Oden" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/If%20You%20Live.mp3", name: "If You Live" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/Luffy%E2%80%99s%20here.mp3", name: "Luffy’s here" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/Mother%20Sea.mp3", name: "Mother Sea" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/Mother%2C%20Then%20Setting%20Off.mp3", name: "Mother, Then Setting Off" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/Overtaken.mp3", name: "Overtaken" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/The%20Fight%20Continues.mp3", name: "The Fight Continues" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/The%20worlds%20number%20one%20Oden%20Store.mp3", name: "The worlds number one Oden Store" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/To%20The%20Grand%20Line.mp3", name: "To The Grand Line" },
+    { file: "https://raw.githubusercontent.com/RyumaSamao/widget-citation/main/Quiz/music/We%20Did%20It!%20Party!.mp3", name: "We Did It! Party!" }
 ];
 
 let musicEnabled = true;
@@ -2287,6 +2285,27 @@ function closeMusicMenu() {
     if (menu) menu.classList.remove("open");
 }
 
+document.addEventListener("click", event => {
+    const menu = document.getElementById("musicMenu");
+    const toggle = document.getElementById("musicToggle");
+    if (!menu || !toggle || !menu.classList.contains("open")) return;
+    if (menu.contains(event.target) || toggle.contains(event.target)) return;
+    closeMusicMenu();
+});
+
+// Ferme automatiquement le menu si on clique/tape en dehors de celui-ci.
+document.addEventListener("click", event => {
+    const menu = document.getElementById("musicMenu");
+    const toggle = document.getElementById("musicToggle");
+
+    if (!menu || !toggle || !menu.classList.contains("open")) return;
+
+    // Un clic dans le menu ou sur son bouton d'ouverture ne le ferme pas.
+    if (menu.contains(event.target) || toggle.contains(event.target)) return;
+
+    closeMusicMenu();
+});
+
 function initMusicAudio() {
     if (musicAudio) return musicAudio;
 
@@ -2311,6 +2330,18 @@ function initMusicAudio() {
         updateMusicControls();
     });
 
+    musicAudio.addEventListener("error", () => {
+        musicPlaying = false;
+        updateMusicControls();
+        console.warn("Impossible de charger cette piste :", musicPlaylist[currentMusicIndex]?.name);
+    });
+
+    musicAudio.addEventListener("error", () => {
+        musicPlaying = false;
+        updateMusicControls();
+        console.warn("Impossible de charger cette piste :", musicPlaylist[currentMusicIndex]?.name);
+    });
+
     return musicAudio;
 }
 
@@ -2332,7 +2363,8 @@ function loadMusic(index, autoplay = true) {
 
     // On arrête proprement l'ancienne piste avant de charger la nouvelle.
     audio.pause();
-    audio.src = encodeURI(track.file);
+    // Les pistes utilisent directement les fichiers bruts de GitHub.
+    audio.src = track.file;
     audio.load();
 
     if (autoplay) {
