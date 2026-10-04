@@ -2227,23 +2227,23 @@ function showScreen(id) {
 ========================================================= */
 
 const musicPlaylist = [
-    // "file" = nom/emplacement du fichier MP3 sur GitHub.
+    // "file" = emplacement exact du fichier MP3 sur GitHub.
     // "name" = titre affiché dans le menu du quiz.
     { file: "Quiz/music/After Eating, Grand Line !.mp3", name: "After Eating, Grand Line !" },
     { file: "Quiz/music/Ashore to town.mp3", name: "Ashore to town" },
+    { file: "Quiz/music/Defeat Gasparde.mp3", name: "Defeat Gasparde" },
     { file: "Quiz/music/Difficult.mp3", name: "Difficult" },
-    { file: "Quiz/music/Gold and Oden.mp3", name: "Gold and Oden" },
+    { file: "Quiz/music/Going Merry Ship, Fly!!.mp3", name: "Going Merry Ship, Fly!!" },
+    { file: "Quiz/music/Gold And Oden.mp3", name: "Gold And Oden" },
+    { file: "Quiz/music/If You Live.mp3", name: "If You Live" },
+    { file: "Quiz/music/Luffy’s here.mp3", name: "Luffy’s here" },
     { file: "Quiz/music/Mother Sea.mp3", name: "Mother Sea" },
+    { file: "Quiz/music/Mother, Then Setting Off.mp3", name: "Mother, Then Setting Off" },
     { file: "Quiz/music/Overtaken.mp3", name: "Overtaken" },
     { file: "Quiz/music/The Fight Continues.mp3", name: "The Fight Continues" },
     { file: "Quiz/music/The worlds number one Oden Store.mp3", name: "The worlds number one Oden Store" },
     { file: "Quiz/music/To The Grand Line.mp3", name: "To The Grand Line" },
-    { file: "Quiz/music/We Did it! Party!.mp3", name: "We Did it ! Party !" },
-    { file: "Quiz/music/Mother, Then Setting Off.mp3", name: "Mother, Then Setting Off" },
-    { file: "Quiz/music/Going Merry Ship, Fly!!.mp3", name: "Going Merry Ship, Fly !!" },
-    { file: "Quiz/music/If You Live.mp3", name: "If You Live" },
-    { file: "Quiz/music/Defeat Gasparde.mp3", name: "Deafeat Gasparde" },
-    { file: "Quiz/music/Luffy's here.mp3", name: "Luffy's Here" }
+    { file: "Quiz/music/We Did It! Party!.mp3", name: "We Did It! Party!" }
 ];
 
 let musicEnabled = true;
@@ -2332,7 +2332,7 @@ function loadMusic(index, autoplay = true) {
 
     // On arrête proprement l'ancienne piste avant de charger la nouvelle.
     audio.pause();
-    audio.src = track.file;
+    audio.src = encodeURI(track.file);
     audio.load();
 
     if (autoplay) {
