@@ -1244,11 +1244,7 @@
 
 
 <div id="musicPlayer" aria-hidden="true" style="position:fixed;width:1px;height:1px;left:-10px;bottom:-10px;opacity:0;pointer-events:none;overflow:hidden;">
-    <iframe id="youtubeMusic" width="1" height="1"
-        src=""
-        title="Musique One Piece" frameborder="0"
-        allow="autoplay; encrypted-media; picture-in-picture"
-        allowfullscreen></iframe>
+    <audio id="musicAudio" preload="auto"></audio>
 </div>
 
 <script>
@@ -2231,25 +2227,25 @@ function showScreen(id) {
 ========================================================= */
 
 const musicPlaylist = [
-    { id: "g1OFUoK_QrA", name: "OST 01" },
-    { id: "6FscTa_Nqwo", name: "OST 02" },
-    { id: "QxpdFxnyrgw", name: "OST 03" },
-    { id: "xmujqY7sPR8", name: "OST 04" },
-    { id: "9nYy2mRWlec", name: "OST 05" },
-    { id: "zuESv_zqMT8", name: "OST 06" },
-    { id: "wcjgMjQpk98", name: "OST 07" },
-    { id: "5diKdl9p8JU", name: "OST 08" },
-    { id: "4g2PMdc-arg", name: "OST 09" },
-    { id: "d1wxAZUtP90", name: "OST 10" }
+    // "file" = nom/emplacement du fichier MP3 sur GitHub.
+    // "name" = titre affiché dans le menu du quiz.
+    { file: "Quiz/music/OST01.mp3", name: "OST 01" },
+    { file: "Quiz/music/OST02.mp3", name: "OST 02" },
+    { file: "Quiz/music/OST03.mp3", name: "OST 03" },
+    { file: "Quiz/music/OST04.mp3", name: "OST 04" },
+    { file: "Quiz/music/OST05.mp3", name: "OST 05" },
+    { file: "Quiz/music/OST06.mp3", name: "OST 06" },
+    { file: "Quiz/music/OST07.mp3", name: "OST 07" },
+    { file: "Quiz/music/OST08.mp3", name: "OST 08" },
+    { file: "Quiz/music/OST09.mp3", name: "OST 09" },
+    { file: "Quiz/music/OST10.mp3", name: "OST 10" }
 ];
 
 let musicEnabled = true;
 let musicStarted = false;
 let currentMusicIndex = 0;
-let musicPlaying = true;
-let youtubePlayer = null;
-let youtubeApiReady = false;
-let youtubeApiLoading = false;
+let musicPlaying = false;
+let musicAudio = null;
 
 function renderMusicPlaylist() {
     const container = document.getElementById("musicPlaylist");
@@ -2286,145 +2282,96 @@ function closeMusicMenu() {
     if (menu) menu.classList.remove("open");
 }
 
-function loadYouTubeAPI() {
-    if (youtubeApiReady || youtubeApiLoading) return;
+function initMusicAudio() {
+    if (musicAudio) return musicAudio;
 
-    youtubeApiLoading = true;
+    musicAudio = document.getElementById("musicAudio");
+    if (!musicAudio) return null;
 
-    if (window.YT && window.YT.Player) {
-        youtubeApiReady = true;
-        youtubeApiLoading = false;
-        createYouTubePlayer();
-        return;
-    }
+    // Même niveau sonore qu'avant : environ 50 %.
+    musicAudio.volume = 0.5;
 
-    if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
-        const youtubeScript = document.createElement("script");
-        youtubeScript.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(youtubeScript);
-    }
-}
-
-function createYouTubePlayer() {
-    const iframe = document.getElementById("youtubeMusic");
-    if (!iframe || !iframe.src || iframe.src === "about:blank") return;
-    if (!youtubeApiReady || !window.YT || !YT.Player || youtubePlayer) return;
-
-    youtubePlayer = new YT.Player("youtubeMusic", {
-        events: {
-            onReady: () => {
-                setMusicVolume();
-
-                if (musicPlaying) {
-                    try {
-                        youtubePlayer.playVideo();
-                    } catch (error) {
-                        // Le lecteur peut encore être en cours d'initialisation.
-                    }
-                }
-            },
-            onStateChange: event => {
-                if (event.data === YT.PlayerState.PLAYING) {
-                    musicPlaying = true;
-                    setMusicVolume();
-                    updateMusicControls();
-                }
-                else if (event.data === YT.PlayerState.PAUSED) {
-                    musicPlaying = false;
-                    updateMusicControls();
-                }
-                else if (event.data === YT.PlayerState.ENDED) {
-                    nextMusic();
-                }
-            }
-        }
+    // Quand une OST se termine, on passe automatiquement à la suivante.
+    musicAudio.addEventListener("ended", () => {
+        nextMusic();
     });
-}
 
-function sendYouTubeCommand(func, args = []) {
-    // On passe uniquement par l'API YouTube une fois le lecteur réellement prêt.
-    // L'ancien postMessage direct vers l'iframe provoquait les erreurs
-    // "target origin ... does not match recipient window's origin".
-    if (!youtubePlayer || !youtubeApiReady) return;
+    musicAudio.addEventListener("play", () => {
+        musicPlaying = true;
+        updateMusicControls();
+    });
 
-    try {
-        youtubePlayer[func](...args);
-    } catch (error) {
-        // Le lecteur peut être momentanément indisponible pendant un changement d'OST.
-    }
-}
+    musicAudio.addEventListener("pause", () => {
+        musicPlaying = false;
+        updateMusicControls();
+    });
 
-function setMusicVolume() {
-    // 50 % du volume du lecteur YouTube = environ deux fois moins fort.
-    sendYouTubeCommand("setVolume", [50]);
+    return musicAudio;
 }
 
 function loadMusic(index, autoplay = true) {
     if (!musicPlaylist.length) return;
 
+    const audio = initMusicAudio();
+    if (!audio) return;
+
     currentMusicIndex =
         (index + musicPlaylist.length) % musicPlaylist.length;
 
     const track = musicPlaylist[currentMusicIndex];
-    const iframe = document.getElementById("youtubeMusic");
-    if (!iframe) return;
 
+    musicStarted = true;
     musicPlaying = autoplay;
     renderMusicPlaylist();
     updateMusicControls();
 
-    if (youtubePlayer && youtubeApiReady) {
-        try {
-            if (autoplay) {
-                youtubePlayer.loadVideoById(track.id);
-            } else {
-                youtubePlayer.cueVideoById(track.id);
-            }
-            setTimeout(setMusicVolume, 150);
-            musicStarted = true;
-            return;
-        } catch (error) {
-            // Si l'API est momentanément indisponible, on recharge l'iframe.
+    // On arrête proprement l'ancienne piste avant de charger la nouvelle.
+    audio.pause();
+    audio.src = track.file;
+    audio.load();
+
+    if (autoplay) {
+        const playPromise = audio.play();
+
+        if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(() => {
+                // Si le navigateur bloque l'autoplay, le bouton Lecture permettra de lancer la piste.
+                musicPlaying = false;
+                updateMusicControls();
+            });
         }
     }
-
-    const origin = window.location.origin;
-    const src =
-        "https://www.youtube.com/embed/" + track.id +
-        "?autoplay=" + (autoplay ? "1" : "0") +
-        "&controls=0&rel=0&playsinline=1" +
-        "&enablejsapi=1&origin=" + encodeURIComponent(origin);
-
-    iframe.onload = () => {
-        musicStarted = true;
-        createYouTubePlayer();
-    };
-
-    iframe.src = src;
-    musicStarted = true;
-
-    // L'API n'est chargée qu'au premier vrai besoin de musique.
-    // Cela évite les messages postMessage dès l'ouverture du quiz.
-    loadYouTubeAPI();
 }
 
 function startMusic() {
     if (!musicEnabled) return;
+
+    const audio = initMusicAudio();
+    if (!audio) return;
 
     if (!musicStarted) {
         loadMusic(currentMusicIndex, true);
         return;
     }
 
-    musicPlaying = true;
-    sendYouTubeCommand("playVideo");
-    setMusicVolume();
-    updateMusicControls();
+    // play() reprend exactement là où la piste avait été mise en pause.
+    const playPromise = audio.play();
+
+    if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {
+            musicPlaying = false;
+            updateMusicControls();
+        });
+    }
 }
 
 function stopMusic() {
+    const audio = initMusicAudio();
+    if (!audio) return;
+
+    audio.pause();
+    // On ne remet volontairement PAS currentTime à 0 : la reprise continue au même endroit.
     musicPlaying = false;
-    sendYouTubeCommand("pauseVideo");
     updateMusicControls();
 }
 
@@ -2465,15 +2412,8 @@ function updateMusicButton() {
     updateMusicControls();
 }
 
-// Appelée automatiquement par l'API YouTube lorsqu'elle a fini de charger.
-function onYouTubeIframeAPIReady() {
-    youtubeApiReady = true;
-    youtubeApiLoading = false;
-    createYouTubePlayer();
-}
-
-// L'API YouTube et l'iframe ne sont volontairement PAS chargées ici.
-// Elles seront initialisées uniquement lorsque la musique sera utilisée.
+// Prépare le lecteur audio local sans lancer la musique automatiquement.
+initMusicAudio();
 renderMusicPlaylist();
 
 
