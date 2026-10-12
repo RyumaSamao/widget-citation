@@ -2295,6 +2295,9 @@ let musicStarted = false;
 let currentMusicIndex = 0;
 let musicPlaying = false;
 let musicAudio = null;
+let musicAudioBackup = null;
+let musicFadeToken = 0;
+let trackedQuestionMusicLevel = null;
 
 function renderMusicPlaylist() {
     const container = document.getElementById("musicPlaylist");
@@ -2364,29 +2367,42 @@ document.addEventListener("click", (event) => {
     }
 });
 
+function attachMusicAudioEvents(audio) {
+    if (!audio || audio.dataset.musicEventsAttached === "true") return;
+    audio.dataset.musicEventsAttached = "true";
+
+    audio.addEventListener("ended", () => {
+        // Seul le lecteur actif doit déclencher la piste suivante.
+        if (audio === musicAudio) nextMusic();
+    });
+    audio.addEventListener("play", () => {
+        if (audio === musicAudio) {
+            musicPlaying = true;
+            updateMusicControls();
+        }
+    });
+    audio.addEventListener("pause", () => {
+        if (audio === musicAudio) {
+            musicPlaying = false;
+            updateMusicControls();
+        }
+    });
+}
+
 function initMusicAudio() {
-    if (musicAudio) return musicAudio;
+    if (!musicAudio) {
+        musicAudio = document.getElementById("musicAudio");
+        if (!musicAudio) return null;
+        musicAudio.volume = 0.5;
+        attachMusicAudioEvents(musicAudio);
+    }
 
-    musicAudio = document.getElementById("musicAudio");
-    if (!musicAudio) return null;
-
-    // Même niveau sonore qu'avant : environ 50 %.
-    musicAudio.volume = 0.5;
-
-    // Quand une OST se termine, on passe automatiquement à la suivante.
-    musicAudio.addEventListener("ended", () => {
-        nextMusic();
-    });
-
-    musicAudio.addEventListener("play", () => {
-        musicPlaying = true;
-        updateMusicControls();
-    });
-
-    musicAudio.addEventListener("pause", () => {
-        musicPlaying = false;
-        updateMusicControls();
-    });
+    if (!musicAudioBackup) {
+        musicAudioBackup = new Audio();
+        musicAudioBackup.preload = "auto";
+        musicAudioBackup.volume = 0;
+        attachMusicAudioEvents(musicAudioBackup);
+    }
 
     return musicAudio;
 }
@@ -2397,9 +2413,8 @@ function loadMusic(index, autoplay = true) {
     const audio = initMusicAudio();
     if (!audio) return;
 
-    currentMusicIndex =
-        (index + musicPlaylist.length) % musicPlaylist.length;
-
+    musicFadeToken++; // Annule tout fondu encore en cours.
+    currentMusicIndex = (index + musicPlaylist.length) % musicPlaylist.length;
     const track = musicPlaylist[currentMusicIndex];
 
     musicStarted = true;
@@ -2407,21 +2422,88 @@ function loadMusic(index, autoplay = true) {
     renderMusicPlaylist();
     updateMusicControls();
 
-    // On arrête proprement l'ancienne piste avant de charger la nouvelle.
+    // Une sélection manuelle ou un changement classique reste immédiat.
+    musicAudioBackup.pause();
+    musicAudioBackup.currentTime = 0;
+    musicAudioBackup.src = "";
     audio.pause();
+    audio.volume = 0.5;
     audio.src = track.file;
     audio.load();
 
     if (autoplay) {
         const playPromise = audio.play();
-
         if (playPromise && typeof playPromise.catch === "function") {
             playPromise.catch(() => {
-                // Si le navigateur bloque l'autoplay, le bouton Lecture permettra de lancer la piste.
                 musicPlaying = false;
                 updateMusicControls();
             });
         }
+    }
+}
+
+// Transition douce entre deux difficultés : l'ancienne OST baisse pendant
+// que la première OST du nouveau niveau monte progressivement.
+function crossfadeToMusic(index, duration = 1800) {
+    if (!musicPlaylist.length) return;
+    const oldAudio = initMusicAudio();
+    if (!oldAudio) return;
+
+    const newAudio = oldAudio === musicAudio ? musicAudioBackup : musicAudio;
+    if (!newAudio) return;
+
+    musicFadeToken++;
+    const token = musicFadeToken;
+    currentMusicIndex = (index + musicPlaylist.length) % musicPlaylist.length;
+    const track = musicPlaylist[currentMusicIndex];
+    const targetVolume = 0.5;
+
+    newAudio.pause();
+    newAudio.currentTime = 0;
+    newAudio.src = track.file;
+    newAudio.volume = 0;
+    newAudio.load();
+    musicStarted = true;
+    musicPlaying = true;
+    renderMusicPlaylist();
+    updateMusicControls();
+
+    const startTransition = () => {
+        if (token !== musicFadeToken) return;
+        const start = performance.now();
+        const oldStartVolume = oldAudio.volume;
+        const fadeFrame = (now) => {
+            if (token !== musicFadeToken) return;
+            const progress = Math.min(1, (now - start) / duration);
+            newAudio.volume = targetVolume * progress;
+            oldAudio.volume = Math.max(0, oldStartVolume * (1 - progress));
+            if (progress < 1) {
+                requestAnimationFrame(fadeFrame);
+            } else {
+                oldAudio.pause();
+                oldAudio.volume = targetVolume;
+                newAudio.volume = targetVolume;
+                musicAudio = newAudio;
+                musicAudioBackup = oldAudio;
+                musicPlaying = !newAudio.paused;
+                updateMusicControls();
+            }
+        };
+        requestAnimationFrame(fadeFrame);
+    };
+
+    const playPromise = newAudio.play();
+    if (playPromise && typeof playPromise.then === "function") {
+        playPromise.then(startTransition).catch(() => {
+            // Si le navigateur refuse la lecture, on ne laisse pas l'ancien son muet.
+            if (token === musicFadeToken) {
+                oldAudio.volume = targetVolume;
+                musicPlaying = !oldAudio.paused;
+                updateMusicControls();
+            }
+        });
+    } else {
+        startTransition();
     }
 }
 
@@ -2451,7 +2533,9 @@ function stopMusic() {
     const audio = initMusicAudio();
     if (!audio) return;
 
+    musicFadeToken++;
     audio.pause();
+    if (musicAudioBackup) musicAudioBackup.pause();
     // On ne remet volontairement PAS currentTime à 0 : la reprise continue au même endroit.
     musicPlaying = false;
     updateMusicControls();
@@ -2590,6 +2674,18 @@ function loadQuestion() {
 
     const q = questions[currentQuestion];
     const state = questionStates[currentQuestion] || null;
+
+    // Si la question appartient à une autre difficulté, lancer sa première OST
+    // avec un fondu croisé. La sélection manuelle d'une OST reste inchangée.
+    if (trackedQuestionMusicLevel === null) {
+        trackedQuestionMusicLevel = q.niveau;
+    } else if (q.niveau !== trackedQuestionMusicLevel) {
+        trackedQuestionMusicLevel = q.niveau;
+        const firstTrackIndex = musicPlaylist.findIndex(track => track.level === q.niveau);
+        if (firstTrackIndex !== -1 && musicStarted && musicEnabled) {
+            crossfadeToMusic(firstTrackIndex, 1800);
+        }
+    }
 
     alreadyAnswered = !!(state && state.answered);
     selectedAnswer =
