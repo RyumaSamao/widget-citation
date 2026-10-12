@@ -158,6 +158,37 @@
         overflow-y: auto;
     }
 
+    .music-playlist {
+        display: block;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .music-group {
+        margin-bottom: 12px;
+    }
+
+    .music-group-title {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        padding: 7px 5px;
+        margin-bottom: 7px;
+        color: #eee;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: #151515;
+        border-bottom: 1px solid #383838;
+    }
+
+    .music-group-tracks {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+    }
+
     .music-track-btn {
         border: 1px solid #303030;
         background: #1b1b1b;
@@ -2231,32 +2262,32 @@ function showScreen(id) {
 const musicPlaylist = [
     // "file" = nom/emplacement du fichier MP3 sur GitHub.
     // "name" = titre affiché dans le menu du quiz.
-    { file: "Quiz/music/After Eating, Grand Line! - One Piece [OST].mp3", name: "After Eating, Grand Line !" },
-    { file: "Quiz/music/One Piece OST - Ashore to town.mp3", name: "Ashore to town" },
-    { file: "Quiz/music/One Piece Soundtrack Defeat Gasparde.mp3", name: "Defeat Gasparde" },
-    { file: "Quiz/music/One Piece OST Difficult.mp3", name: "Difficult" },
-    { file: "Quiz/music/One Piece OST Going Merry Ship, Fly!!.mp3", name: "Going Merry Ship, Fly !!" },
-    { file: "Quiz/music/One Piece Soundtrack - Gold And Oden HD.mp3", name: "Gold And Oden" },
-    { file: "Quiz/music/One Piece Ost - If You Live.mp3", name: "If You Live" },
-    { file: "Quiz/music/One piece OST Luffy’s here.mp3", name: "Luffy’s here" },
-    { file: "Quiz/music/Mother Sea  One Piece OST『ワンピース』 SOFT VERSION.mp3", name: "Mother Sea" },
-    { file: "Quiz/music/One Piece OST - Mother, Then Setting Off.mp3", name: "Mother, Then Setting Off" },
-    { file: "Quiz/music/One Piece OST - Rubber Bazooka!!, but its just the good part.mp3", name: "Rubber Bazooka !!" },
-    { file: "Quiz/music/One Piece - The Fight Continues - Shanks Theme (Ainme).mp3", name: "The Fight Continues" },
-    { file: "Quiz/music/One Piece   The worlds number one Oden store.mp3", name: "The worlds number one Oden store" },
-    { file: "Quiz/music/ONE PIECE OST To The Grand Line.mp3", name: "To The Grand Line" },
-    { file: "Quiz/music/We Did It! Party! - One Piece [OST].mp3", name: "We Did It ! Party !" },
-    { file: "Quiz/music/One Piece OST Set Sail.mp3", name: "Set Sail" },
-    { file: "Quiz/music/21 - One Piece Movie 5 - Ost - The Marine Swordsmans Battle Cry.mp3", name: "The Marine Swordsmans Battle Cry" },
-    { file: "Quiz/music/One Piece OST — The 3 Towers.mp3", name: "The 3 Towers" },
-    { file: "Quiz/music/ONE PIECE Luffy Fierce Attack (OST)!!.mp3", name: "Luffy Fierce Attack" },
-    { file: "Quiz/music/One Piece OST — The Very, Very, Strongest.mp3", name: "The Very, Very, Strongest" },
-    { file: "Quiz/music/One Piece-Karakuri Defense System, Deploy.mp3", name: "Karakuri Defense System, Deploy" },
-    { file: "Quiz/music/One Piece Soundtrack - Karakuri Castle, Transform.mp3", name: "Karakuri Castle, Transform" },
-    { file: "Quiz/music/One Piece Soundtrack - The Strawhats Begin The Counterattack.mp3", name: "The Strawhats Begin The Counterattack" },
-    { file: "Quiz/music/Luffy vs Ratchet Round 1.mp3", name: "Luffy vs Ratchet Round 1" },
-    { file: "Quiz/music/Rain in Alabasta.mp3", name: "Rain in Alabasta" },
-    { file: "Quiz/music/One Piece OST Overtaken.mp3", name: "Overtaken" }
+    { file: "Quiz/music/After Eating, Grand Line! - One Piece [OST].mp3", name: "After Eating, Grand Line !", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece OST - Ashore to town.mp3", name: "Ashore to town", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece Soundtrack Defeat Gasparde.mp3", name: "Defeat Gasparde", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece OST Difficult.mp3", name: "Difficult", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece OST Going Merry Ship, Fly!!.mp3", name: "Going Merry Ship, Fly !!", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece Soundtrack - Gold And Oden HD.mp3", name: "Gold And Oden", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece Ost - If You Live.mp3", name: "If You Live", level: "EAST BLUE" },
+    { file: "Quiz/music/One piece OST Luffy’s here.mp3", name: "Luffy’s here", level: "EAST BLUE" },
+    { file: "Quiz/music/Mother Sea  One Piece OST『ワンピース』 SOFT VERSION.mp3", name: "Mother Sea", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece OST - Mother, Then Setting Off.mp3", name: "Mother, Then Setting Off", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece OST - Rubber Bazooka!!, but its just the good part.mp3", name: "Rubber Bazooka !!", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece - The Fight Continues - Shanks Theme (Ainme).mp3", name: "The Fight Continues", level: "LAUGH TALE" },
+    { file: "Quiz/music/One Piece   The worlds number one Oden store.mp3", name: "The worlds number one Oden store", level: "EAST BLUE" },
+    { file: "Quiz/music/ONE PIECE OST To The Grand Line.mp3", name: "To The Grand Line", level: "GRAND LINE" },
+    { file: "Quiz/music/We Did It! Party! - One Piece [OST].mp3", name: "We Did It ! Party !", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece OST Set Sail.mp3", name: "Set Sail", level: "EAST BLUE" },
+    { file: "Quiz/music/21 - One Piece Movie 5 - Ost - The Marine Swordsmans Battle Cry.mp3", name: "The Marine Swordsmans Battle Cry", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece OST — The 3 Towers.mp3", name: "The 3 Towers", level: "EAST BLUE" },
+    { file: "Quiz/music/ONE PIECE Luffy Fierce Attack (OST)!!.mp3", name: "Luffy Fierce Attack", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece OST — The Very, Very, Strongest.mp3", name: "The Very, Very, Strongest", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece-Karakuri Defense System, Deploy.mp3", name: "Karakuri Defense System, Deploy", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece Soundtrack - Karakuri Castle, Transform.mp3", name: "Karakuri Castle, Transform", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece Soundtrack - The Strawhats Begin The Counterattack.mp3", name: "The Strawhats Begin The Counterattack", level: "EAST BLUE" },
+    { file: "Quiz/music/Luffy vs Ratchet Round 1.mp3", name: "Luffy vs Ratchet Round 1", level: "EAST BLUE" },
+    { file: "Quiz/music/Rain in Alabasta.mp3", name: "Rain in Alabasta", level: "EAST BLUE" },
+    { file: "Quiz/music/One Piece OST Overtaken.mp3", name: "Overtaken", level: "NOUVEAU MONDE" }
 ];
 
 let musicEnabled = true;
@@ -2269,13 +2300,35 @@ function renderMusicPlaylist() {
     const container = document.getElementById("musicPlaylist");
     if (!container) return;
 
-    container.innerHTML = musicPlaylist.map((track, index) => `
-        <button
-            class="music-track-btn ${index === currentMusicIndex ? "active" : ""}"
-            onclick="selectMusic(${index})"
-            title="${track.name}"
-        >${track.name}</button>
-    `).join("");
+    const levels = [
+        { id: "EAST BLUE", label: "East Blue" },
+        { id: "GRAND LINE", label: "Grand Line" },
+        { id: "NOUVEAU MONDE", label: "Nouveau Monde" },
+        { id: "LAUGH TALE", label: "Laugh Tale" }
+    ];
+
+    container.innerHTML = levels.map(level => {
+        const tracks = musicPlaylist
+            .map((track, index) => ({ ...track, index }))
+            .filter(track => track.level === level.id);
+
+        if (!tracks.length) return "";
+
+        return `
+            <div class="music-group">
+                <div class="music-group-title">${level.label}</div>
+                <div class="music-group-tracks">
+                    ${tracks.map(track => `
+                        <button
+                            class="music-track-btn ${track.index === currentMusicIndex ? "active" : ""}"
+                            onclick="selectMusic(${track.index})"
+                            title="${track.name}"
+                        >${track.name}</button>
+                    `).join("")}
+                </div>
+            </div>
+        `;
+    }).join("");
 }
 
 function updateMusicControls() {
@@ -2423,14 +2476,43 @@ function selectMusic(index) {
     closeMusicMenu();
 }
 
+function getCurrentMusicLevel() {
+    const question = questions[currentQuestion];
+    return question ? question.niveau : "EAST BLUE";
+}
+
+function getMusicIndexesForCurrentLevel() {
+    const level = getCurrentMusicLevel();
+    const indexes = musicPlaylist
+        .map((track, index) => track.level === level ? index : -1)
+        .filter(index => index !== -1);
+
+    // Sécurité : si aucune piste n'est classée dans ce niveau, toute la playlist reste utilisable.
+    return indexes.length ? indexes : musicPlaylist.map((_, index) => index);
+}
+
+function moveWithinCurrentLevel(direction) {
+    const indexes = getMusicIndexesForCurrentLevel();
+    if (!indexes.length) return;
+
+    const position = indexes.indexOf(currentMusicIndex);
+    let nextPosition;
+
+    if (position === -1) {
+        nextPosition = direction > 0 ? 0 : indexes.length - 1;
+    } else {
+        nextPosition = (position + direction + indexes.length) % indexes.length;
+    }
+
+    loadMusic(indexes[nextPosition], true);
+}
+
 function previousMusic() {
-    if (!musicPlaylist.length) return;
-    loadMusic(currentMusicIndex - 1, true);
+    moveWithinCurrentLevel(-1);
 }
 
 function nextMusic() {
-    if (!musicPlaylist.length) return;
-    loadMusic(currentMusicIndex + 1, true);
+    moveWithinCurrentLevel(1);
 }
 
 function updateMusicButton() {
@@ -3936,7 +4018,7 @@ document.addEventListener(
 
         const skipContainer =
             document.querySelector(
-                ".skip-container"
+                ".quiz-top-right"
             );
 
 
