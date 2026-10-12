@@ -162,6 +162,27 @@
         display: block;
         max-height: 300px;
         overflow-y: auto;
+        scrollbar-color: #454545 #191919;
+        scrollbar-width: thin;
+    }
+
+    .music-playlist::-webkit-scrollbar {
+        width: 9px;
+    }
+
+    .music-playlist::-webkit-scrollbar-track {
+        background: #191919;
+        border-radius: 8px;
+    }
+
+    .music-playlist::-webkit-scrollbar-thumb {
+        background: #454545;
+        border: 2px solid #191919;
+        border-radius: 8px;
+    }
+
+    .music-playlist::-webkit-scrollbar-thumb:hover {
+        background: #5a5a5a;
     }
 
     .music-group {
